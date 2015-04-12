@@ -1,3 +1,7 @@
+# Important notice
+
+This module should not yet be depended on, it is for the upcoming 0.7 compiler release.
+
 # Module Documentation
 
 ## Module Prelude
@@ -1103,6 +1107,19 @@ instance showArray :: (Show a) => Show [a]
 instance showOrdering :: Show Ordering
 ```
 
+
+
+## Module Prelude.Unsafe
+
+#### `unsafeIndex`
+
+``` purescript
+unsafeIndex :: forall a. [a] -> Number -> a
+```
+
+Find the element of an array at the specified index.
+
+Note: this function can cause unpredictable failure at runtime if the index is out-of-bounds.
 
 
 

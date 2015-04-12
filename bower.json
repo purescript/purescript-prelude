@@ -3,7 +3,7 @@
   "homepage": "https://github.com/purescript/purescript-prelude",
   "description": "The PureScript Prelude",
   "keywords": [
-    "purescript",
+    "purescript"
   ],
   "license": "MIT",
   "ignore": [
