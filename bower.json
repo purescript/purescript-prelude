@@ -1,0 +1,19 @@
+{
+  "name": "purescript-prelude",
+  "homepage": "https://github.com/purescript/purescript-prelude",
+  "description": "The PureScript Prelude",
+  "keywords": [
+    "purescript",
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "node_modules",
+    "output",
+    "tmp",
+    "bower.json",
+    "gulpfile.js",
+    "package.json"
+  ]
+}
