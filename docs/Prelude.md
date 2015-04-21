@@ -370,7 +370,7 @@ as follows:
 
 ```purescript
 instance functorF :: Functor F where
-  (<$>) = liftA1
+  map = liftA1
 ```
 
 #### `Bind`
@@ -460,7 +460,7 @@ as follows:
 
 ```purescript
 instance functorF :: Functor F where
-  (<$>) = liftM1
+  map = liftM1
 ```
 
 #### `ap`
@@ -478,7 +478,7 @@ follows:
 
 ```purescript
 instance applyF :: Apply F where
-  (<*>) = ap
+  apply = ap
 ```
 
 #### `Semigroup`
@@ -748,8 +748,6 @@ The `Eq` type class represents types which support decidable equality.
 - Symmetry: `x == y = y == x`
 - Transitivity: if `x == y` and `y == z` then `x == z`
 - Negation: `x /= y = not (x == y)`
-
-`(/=)` may be implemented in terms of `(==)`, but it might give a performance improvement to implement it separately.
 
 #### `(==)`
 
