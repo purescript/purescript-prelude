@@ -296,7 +296,7 @@ return = pure
 -- |
 -- | ```purescript
 -- | instance functorF :: Functor F where
--- |   (<$>) = liftA1
+-- |   map = liftA1
 -- | ```
 liftA1 :: forall f a b. (Applicative f) => (a -> b) -> f a -> f b
 liftA1 f a = pure f <*> a
@@ -361,7 +361,7 @@ instance monadArr :: Monad ((->) r)
 -- |
 -- | ```purescript
 -- | instance functorF :: Functor F where
--- |   (<$>) = liftM1
+-- |   map = liftM1
 -- | ```
 liftM1 :: forall m a b. (Monad m) => (a -> b) -> m a -> m b
 liftM1 f a = do
@@ -377,7 +377,7 @@ liftM1 f a = do
 -- |
 -- | ```purescript
 -- | instance applyF :: Apply F where
--- |   (<*>) = ap
+-- |   apply = ap
 -- | ```
 ap :: forall m a b. (Monad m) => m (a -> b) -> m a -> m b
 ap f a = do
@@ -595,8 +595,6 @@ infix 4 /=
 -- | - Symmetry: `x == y = y == x`
 -- | - Transitivity: if `x == y` and `y == z` then `x == z`
 -- | - Negation: `x /= y = not (x == y)`
--- |
--- | `(/=)` may be implemented in terms of `(==)`, but it might give a performance improvement to implement it separately.
 class Eq a where
   eq :: a -> a -> Boolean
 
