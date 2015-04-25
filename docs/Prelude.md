@@ -160,10 +160,10 @@ require an identity element `id`, just composable morphisms.
 One example of a `Semigroupoid` is the function type constructor `(->)`,
 with `(<<<)` defined as function composition.
 
-#### `semigroupoidArr`
+#### `semigroupoidFn`
 
 ``` purescript
-instance semigroupoidArr :: Semigroupoid Prim.Function
+instance semigroupoidFn :: Semigroupoid Prim.Function
 ```
 
 
@@ -198,10 +198,10 @@ Instances must satisfy the following law in addition to the
 
 - Identity: `id <<< p = p <<< id = p`
 
-#### `categoryArr`
+#### `categoryFn`
 
 ``` purescript
-instance categoryArr :: Category Prim.Function
+instance categoryFn :: Category Prim.Function
 ```
 
 
@@ -224,10 +224,17 @@ Instances must satisfy the following laws:
 - Identity: `(<$>) id = id`
 - Composition: `(<$>) (f <<< g) = (f <$>) <<< (g <$>)`
 
-#### `functorArr`
+#### `functorFn`
 
 ``` purescript
-instance functorArr :: Functor (Prim.Function r)
+instance functorFn :: Functor (Prim.Function r)
+```
+
+
+#### `functorArray`
+
+``` purescript
+instance functorArray :: Functor Prim.Array
 ```
 
 
@@ -299,10 +306,17 @@ laws:
 
 Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
 
-#### `applyArr`
+#### `applyFn`
 
 ``` purescript
-instance applyArr :: Apply (Prim.Function r)
+instance applyFn :: Apply (Prim.Function r)
+```
+
+
+#### `applyArray`
+
+``` purescript
+instance applyArray :: Apply Prim.Array
 ```
 
 
@@ -339,10 +353,17 @@ laws:
 - Homomorphism: `(pure f) <*> (pure x) = pure (f x)`
 - Interchange: `u <*> (pure y) = (pure ($ y)) <*> u`
 
-#### `applicativeArr`
+#### `applicativeFn`
 
 ``` purescript
-instance applicativeArr :: Applicative (Prim.Function r)
+instance applicativeFn :: Applicative (Prim.Function r)
+```
+
+
+#### `applicativeArray`
+
+``` purescript
+instance applicativeArray :: Applicative Prim.Array
 ```
 
 
@@ -407,10 +428,17 @@ do x <- m1
    m3 x y
 ```
 
-#### `bindArr`
+#### `bindFn`
 
 ``` purescript
-instance bindArr :: Bind (Prim.Function r)
+instance bindFn :: Bind (Prim.Function r)
+```
+
+
+#### `bindArray`
+
+``` purescript
+instance bindArray :: Bind Prim.Array
 ```
 
 
@@ -438,10 +466,17 @@ Instances must satisfy the following laws in addition to the
 - Left Identity: `pure x >>= f = f x`
 - Right Identity: `x >>= pure = x`
 
-#### `monadArr`
+#### `monadFn`
 
 ``` purescript
-instance monadArr :: Monad (Prim.Function r)
+instance monadFn :: Monad (Prim.Function r)
+```
+
+
+#### `monadArray`
+
+``` purescript
+instance monadArray :: Monad Prim.Array
 ```
 
 
@@ -527,10 +562,10 @@ instance semigroupUnit :: Semigroup Unit
 ```
 
 
-#### `semigroupArr`
+#### `semigroupFn`
 
 ``` purescript
-instance semigroupArr :: (Semigroup s') => Semigroup (s -> s')
+instance semigroupFn :: (Semigroup s') => Semigroup (s -> s')
 ```
 
 
@@ -538,6 +573,13 @@ instance semigroupArr :: (Semigroup s') => Semigroup (s -> s')
 
 ``` purescript
 instance semigroupOrdering :: Semigroup Ordering
+```
+
+
+#### `semigroupArray`
+
+``` purescript
+instance semigroupArray :: Semigroup [a]
 ```
 
 
@@ -567,6 +609,13 @@ Instances must satisfy the following laws:
   - Left distributivity: `a * (b + c) = (a * b) + (a * c)`
   - Right distributivity: `(a + b) * c = (a * c) + (b * c)`
 - Annihiliation: `zero * a = a * zero = zero`
+
+#### `semiringInt`
+
+``` purescript
+instance semiringInt :: Semiring Int
+```
+
 
 #### `semiringNumber`
 
@@ -611,6 +660,13 @@ laws:
 
 - Additive inverse: `a + (-a) = (-a) + a = zero`
 
+#### `ringInt`
+
+``` purescript
+instance ringInt :: Ring Int
+```
+
+
 #### `ringNumber`
 
 ``` purescript
@@ -654,6 +710,13 @@ Instances must satisfy the following law in addition to the `Semiring`
 laws:
 
 - Remainder: `a / b * b + (a `mod` b) = a`
+
+#### `moduloSemiringInt`
+
+``` purescript
+instance moduloSemiringInt :: ModuloSemiring Int
+```
+
 
 #### `moduloSemiringNumber`
 
@@ -770,10 +833,24 @@ instance eqBoolean :: Eq Boolean
 ```
 
 
+#### `eqInt`
+
+``` purescript
+instance eqInt :: Eq Int
+```
+
+
 #### `eqNumber`
 
 ``` purescript
 instance eqNumber :: Eq Number
+```
+
+
+#### `eqChar`
+
+``` purescript
+instance eqChar :: Eq Char
 ```
 
 
@@ -843,6 +920,13 @@ instance ordBoolean :: Ord Boolean
 ```
 
 
+#### `ordInt`
+
+``` purescript
+instance ordInt :: Ord Int
+```
+
+
 #### `ordNumber`
 
 ``` purescript
@@ -854,6 +938,13 @@ instance ordNumber :: Ord Number
 
 ``` purescript
 instance ordString :: Ord String
+```
+
+
+#### `ordChar`
+
+``` purescript
+instance ordChar :: Ord Char
 ```
 
 
@@ -1144,10 +1235,24 @@ instance showBoolean :: Show Boolean
 ```
 
 
+#### `showInt`
+
+``` purescript
+instance showInt :: Show Int
+```
+
+
 #### `showNumber`
 
 ``` purescript
 instance showNumber :: Show Number
+```
+
+
+#### `showChar`
+
+``` purescript
+instance showChar :: Show Char
 ```
 
 

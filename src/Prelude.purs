@@ -155,7 +155,7 @@ infixr 9 <<<
 class Semigroupoid a where
   compose :: forall b c d. a c d -> a b c -> a b d
 
-instance semigroupoidArr :: Semigroupoid (->) where
+instance semigroupoidFn :: Semigroupoid (->) where
   compose f g x = f (g x)
 
 (<<<) :: forall a b c d. (Semigroupoid a) => a c d -> a b c -> a b d
@@ -176,7 +176,7 @@ instance semigroupoidArr :: Semigroupoid (->) where
 class (Semigroupoid a) <= Category a where
   id :: forall t. a t t
 
-instance categoryArr :: Category (->) where
+instance categoryFn :: Category (->) where
   id x = x
 
 infixl 4 <$>
@@ -196,8 +196,25 @@ infixl 1 <#>
 class Functor f where
   map :: forall a b. (a -> b) -> f a -> f b
 
-instance functorArr :: Functor ((->) r) where
+instance functorFn :: Functor ((->) r) where
   map = compose
+
+instance functorArray :: Functor [] where
+  map = arrayMap
+
+foreign import arrayMap
+  """
+  function arrayMap(f) {
+    return function (arr) {
+      var l = arr.length;
+      var result = new Array(l);
+      for (var i = 0; i < l; i++) {
+        result[i] = f(arr[i]);
+      }
+      return result;
+    };
+  }
+  """ :: forall a b. (a -> b) -> [a] -> [b]
 
 (<$>) :: forall f a b. (Functor f) => (a -> b) -> f a -> f b
 (<$>) = map
@@ -252,8 +269,11 @@ infixl 4 <*>
 class (Functor f) <= Apply f where
   apply :: forall a b. f (a -> b) -> f a -> f b
 
-instance applyArr :: Apply ((->) r) where
+instance applyFn :: Apply ((->) r) where
   apply f g x = f x (g x)
+
+instance applyArray :: Apply [] where
+  apply = ap
 
 (<*>) :: forall f a b. (Apply f) => f (a -> b) -> f a -> f b
 (<*>) = apply
@@ -279,8 +299,11 @@ instance applyArr :: Apply ((->) r) where
 class (Apply f) <= Applicative f where
   pure :: forall a. a -> f a
 
-instance applicativeArr :: Applicative ((->) r) where
+instance applicativeFn :: Applicative ((->) r) where
   pure = const
+
+instance applicativeArray :: Applicative [] where
+  pure x = [x]
 
 -- | `return` is an alias for `pure`.
 return :: forall m a. (Applicative m) => a -> m a
@@ -332,8 +355,24 @@ infixl 1 >>=
 class (Apply m) <= Bind m where
   bind :: forall a b. m a -> (a -> m b) -> m b
 
-instance bindArr :: Bind ((->) r) where
+instance bindFn :: Bind ((->) r) where
   bind m f x = f (m x) x
+
+instance bindArray :: Bind [] where
+  bind = arrayBind
+
+foreign import arrayBind
+  """
+  function arrayBind (arr) {
+    return function (f) {
+      var result = [];
+      for (var i = 0, l = arr.length; i < l; i++) {
+        Array.prototype.push.apply(result, f(arr[i]));
+      }
+      return result;
+    };
+  }
+  """ :: forall a b. [a] -> (a -> [b]) -> [b]
 
 (>>=) :: forall m a b. (Monad m) => m a -> (a -> m b) -> m b
 (>>=) = bind
@@ -350,7 +389,9 @@ instance bindArr :: Bind ((->) r) where
 -- | - Right Identity: `x >>= pure = x`
 class (Applicative m, Bind m) <= Monad m
 
-instance monadArr :: Monad ((->) r)
+instance monadFn :: Monad ((->) r)
+
+instance monadArray :: Monad []
 
 -- | `liftM1` provides a default implementation of `(<$>)` for any
 -- | [`Monad`](#monad), without using `(<$>)` as provided by the
@@ -413,13 +454,16 @@ instance semigroupString :: Semigroup String where
 instance semigroupUnit :: Semigroup Unit where
   append _ _ = unit
 
-instance semigroupArr :: (Semigroup s') => Semigroup (s -> s') where
+instance semigroupFn :: (Semigroup s') => Semigroup (s -> s') where
   append f g = \x -> f x <> g x
 
 instance semigroupOrdering :: Semigroup Ordering where
   append LT _ = LT
   append GT _ = GT
   append EQ y = y
+
+instance semigroupArray :: Semigroup [a] where
+  append = concatArray
 
 foreign import concatString
   """
@@ -429,6 +473,15 @@ foreign import concatString
     };
   }
   """ :: String -> String -> String
+
+foreign import concatArray
+  """
+  function append (xs) {
+    return function (ys) {
+      return xs.concat(ys);
+    };
+  }
+  """ :: forall a. [a] -> [a] -> [a]
 
 infixl 6 +
 infixl 7 *
@@ -455,11 +508,17 @@ class Semiring a where
   mul  :: a -> a -> a
   one  :: a
 
+instance semiringInt :: Semiring Int where
+  add = intAdd
+  zero = 0
+  mul = intMul
+  one = 1
+
 instance semiringNumber :: Semiring Number where
   add = numAdd
-  zero = 0
+  zero = 0.0
   mul = numMul
-  one = 1
+  one = 1.0
 
 instance semiringUnit :: Semiring Unit where
   add _ _ = unit
@@ -484,6 +543,9 @@ infixl 6 -
 -- | - Additive inverse: `a + (-a) = (-a) + a = zero`
 class (Semiring a) <= Ring a where
   sub :: a -> a -> a
+
+instance ringInt :: Ring Int where
+  sub = intSub
 
 instance ringNumber :: Ring Number where
   sub = numSub
@@ -510,9 +572,13 @@ class (Semiring a) <= ModuloSemiring a where
   div :: a -> a -> a
   mod :: a -> a -> a
 
+instance moduloSemiringInt :: ModuloSemiring Int where
+  div = intDiv
+  mod = intMod
+
 instance moduloSemiringNumber :: ModuloSemiring Number where
   div = numDiv
-  mod _ _ = 0
+  mod _ _ = 0.0
 
 instance moduloSemiringUnit :: ModuloSemiring Unit where
   div _ _ = unit
@@ -547,6 +613,51 @@ class (DivisionRing a) <= Num a
 instance numNumber :: Num Number
 
 instance numUnit :: Num Unit
+
+foreign import intAdd
+  """
+  function intAdd(x) {
+    return function(y) {
+      return (x + y)|0;
+    };
+  }
+  """ :: Int -> Int -> Int
+
+foreign import intMul
+  """
+  function intMul(x) {
+    return function(y) {
+      return (x * y)|0;
+    };
+  }
+  """ :: Int -> Int -> Int
+
+foreign import intDiv
+  """
+  function intDiv(x) {
+    return function(y) {
+      return (x / y)|0;
+    };
+  }
+  """ :: Int -> Int -> Int
+
+foreign import intMod
+  """
+  function intMod(x) {
+    return function(y) {
+      return x % y;
+    };
+  }
+  """ :: Int -> Int -> Int
+
+foreign import intSub
+  """
+  function intSub(x) {
+    return function(y) {
+      return (x - y)|0;
+    };
+  }
+  """ :: Int -> Int -> Int
 
 foreign import numAdd
   """
@@ -607,7 +718,13 @@ class Eq a where
 instance eqBoolean :: Eq Boolean where
   eq = refEq
 
+instance eqInt :: Eq Int where
+  eq = refEq
+
 instance eqNumber :: Eq Number where
+  eq = refEq
+
+instance eqChar :: Eq Char where
   eq = refEq
 
 instance eqString :: Eq String where
@@ -677,15 +794,18 @@ class (Eq a) <= Ord a where
   compare :: a -> a -> Ordering
 
 instance ordBoolean :: Ord Boolean where
-  compare false false = EQ
-  compare false true  = LT
-  compare true  true  = EQ
-  compare true  false = GT
+  compare = unsafeCompare
+
+instance ordInt :: Ord Int where
+  compare = unsafeCompare
 
 instance ordNumber :: Ord Number where
   compare = unsafeCompare
 
 instance ordString :: Ord String where
+  compare = unsafeCompare
+
+instance ordChar :: Ord Char where
   compare = unsafeCompare
 
 instance ordUnit :: Ord Unit where
@@ -918,8 +1038,14 @@ instance showBoolean :: Show Boolean where
   show true = "true"
   show false = "false"
 
+instance showInt :: Show Int where
+  show = showIntImpl
+
 instance showNumber :: Show Number where
   show = showNumberImpl
+
+instance showChar :: Show Char where
+  show = showCharImpl
 
 instance showString :: Show String where
   show = showStringImpl
@@ -935,12 +1061,26 @@ instance showOrdering :: Show Ordering where
   show GT = "GT"
   show EQ = "EQ"
 
+foreign import showIntImpl
+  """
+  function showIntImpl(n) {
+    return n.toString();
+  }
+  """ :: Int -> String
+
 foreign import showNumberImpl
   """
   function showNumberImpl(n) {
-    return n.toString();
+    return n === (n|0) ? n + ".0" : n.toString();
   }
   """ :: Number -> String
+
+foreign import showCharImpl
+  """
+  function showCharImpl(c) {
+    return c === "'" ? "'\\''" : "'" + c + "'";
+  }
+  """ :: Char -> String
 
 foreign import showStringImpl
   """
