@@ -476,7 +476,7 @@ foreign import concatString
 
 foreign import concatArray
   """
-  function append (xs) {
+  function concatArray (xs) {
     return function (ys) {
       return xs.concat(ys);
     };
