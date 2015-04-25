@@ -6,20 +6,20 @@ module Prelude
   , asTypeOf
   , otherwise
   , (:), cons
-  , Semigroupoid, (<<<), (>>>)
+  , Semigroupoid, compose, (<<<), (>>>)
   , Category, id
-  , Functor, (<$>), (<#>), void
-  , Apply, (<*>)
+  , Functor, map, (<$>), (<#>), void
+  , Apply, apply, (<*>)
   , Applicative, pure, liftA1
-  , Bind, (>>=)
+  , Bind, bind, (>>=)
   , Monad, return, liftM1, ap
-  , Semigroup, (<>), (++)
-  , Semiring, (+), zero, (*), one
-  , ModuloSemiring, (/), mod
-  , Ring, (-), negate
+  , Semigroup, append, (<>), (++)
+  , Semiring, add, zero, mul, one, (+), (*)
+  , ModuloSemiring, div, mod, (/)
+  , Ring, sub, negate, (-)
   , Num
   , DivisionRing
-  , Eq, (==), (/=)
+  , Eq, eq, (==), (/=)
   , Ordering(..), Ord, compare, (<), (>), (<=), (>=)
   , Bounded, top, bottom
   , Lattice, sup, inf, (||), (&&)
@@ -153,10 +153,13 @@ infixr 9 <<<
 -- | One example of a `Semigroupoid` is the function type constructor `(->)`,
 -- | with `(<<<)` defined as function composition.
 class Semigroupoid a where
-  (<<<) :: forall b c d. a c d -> a b c -> a b d
+  compose :: forall b c d. a c d -> a b c -> a b d
 
 instance semigroupoidArr :: Semigroupoid (->) where
-  (<<<) f g x = f (g x)
+  compose f g x = f (g x)
+
+(<<<) :: forall a b c d. (Semigroupoid a) => a c d -> a b c -> a b d
+(<<<) = compose
 
 -- | Forwards composition, or `(<<<)` with its arguments reversed.
 (>>>) :: forall a b c d. (Semigroupoid a) => a b c -> a c d -> a b d
@@ -191,10 +194,13 @@ infixl 1 <#>
 -- | - Identity: `(<$>) id = id`
 -- | - Composition: `(<$>) (f <<< g) = (f <$>) <<< (g <$>)`
 class Functor f where
-  (<$>) :: forall a b. (a -> b) -> f a -> f b
+  map :: forall a b. (a -> b) -> f a -> f b
 
 instance functorArr :: Functor ((->) r) where
-  (<$>) = (<<<)
+  map = compose
+
+(<$>) :: forall f a b. (Functor f) => (a -> b) -> f a -> f b
+(<$>) = map
 
 -- | `(<#>)` is `(<$>)` with its arguments reversed. For example:
 -- |
@@ -244,10 +250,13 @@ infixl 4 <*>
 -- |
 -- | Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
 class (Functor f) <= Apply f where
-  (<*>) :: forall a b. f (a -> b) -> f a -> f b
+  apply :: forall a b. f (a -> b) -> f a -> f b
 
 instance applyArr :: Apply ((->) r) where
-  (<*>) f g x = f x (g x)
+  apply f g x = f x (g x)
+
+(<*>) :: forall f a b. (Apply f) => f (a -> b) -> f a -> f b
+(<*>) = apply
 
 -- | The `Applicative` type class extends the [`Apply`](#apply) type class
 -- | with a `pure` function, which can be used to create values of type `f a`
@@ -287,7 +296,7 @@ return = pure
 -- |
 -- | ```purescript
 -- | instance functorF :: Functor F where
--- |   (<$>) = liftA1
+-- |   map = liftA1
 -- | ```
 liftA1 :: forall f a b. (Applicative f) => (a -> b) -> f a -> f b
 liftA1 f a = pure f <*> a
@@ -321,10 +330,13 @@ infixl 1 >>=
 -- |    m3 x y
 -- | ```
 class (Apply m) <= Bind m where
-  (>>=) :: forall a b. m a -> (a -> m b) -> m b
+  bind :: forall a b. m a -> (a -> m b) -> m b
 
 instance bindArr :: Bind ((->) r) where
-  (>>=) m f x = f (m x) x
+  bind m f x = f (m x) x
+
+(>>=) :: forall m a b. (Monad m) => m a -> (a -> m b) -> m b
+(>>=) = bind
 
 -- | The `Monad` type class combines the operations of the `Bind` and
 -- | `Applicative` type classes. Therefore, `Monad` instances represent type
@@ -349,7 +361,7 @@ instance monadArr :: Monad ((->) r)
 -- |
 -- | ```purescript
 -- | instance functorF :: Functor F where
--- |   (<$>) = liftM1
+-- |   map = liftM1
 -- | ```
 liftM1 :: forall m a b. (Monad m) => (a -> b) -> m a -> m b
 liftM1 f a = do
@@ -365,7 +377,7 @@ liftM1 f a = do
 -- |
 -- | ```purescript
 -- | instance applyF :: Apply F where
--- |   (<*>) = ap
+-- |   apply = ap
 -- | ```
 ap :: forall m a b. (Monad m) => m (a -> b) -> m a -> m b
 ap f a = do
@@ -385,25 +397,29 @@ infixr 5 ++
 -- | One example of a `Semigroup` is `String`, with `(<>)` defined as string
 -- | concatenation.
 class Semigroup a where
-  (<>) :: a -> a -> a
+  append :: a -> a -> a
 
--- | `(++)` is an alias for `(<>)`.
+-- | `(<>)` is an alias for `append`.
+(<>) :: forall s. (Semigroup s) => s -> s -> s
+(<>) = append
+
+-- | `(++)` is an alias for `append`.
 (++) :: forall s. (Semigroup s) => s -> s -> s
-(++) = (<>)
+(++) = append
 
 instance semigroupString :: Semigroup String where
-  (<>) = concatString
+  append = concatString
 
 instance semigroupUnit :: Semigroup Unit where
-  (<>) _ _ = unit
+  append _ _ = unit
 
 instance semigroupArr :: (Semigroup s') => Semigroup (s -> s') where
-  (<>) f g = \x -> f x <> g x
+  append f g = \x -> f x <> g x
 
 instance semigroupOrdering :: Semigroup Ordering where
-  (<>) LT _ = LT
-  (<>) GT _ = GT
-  (<>) EQ y = y
+  append LT _ = LT
+  append GT _ = GT
+  append EQ y = y
 
 foreign import concatString
   """
@@ -434,22 +450,28 @@ infixl 7 *
 -- |   - Right distributivity: `(a + b) * c = (a * c) + (b * c)`
 -- | - Annihiliation: `zero * a = a * zero = zero`
 class Semiring a where
-  (+)  :: a -> a -> a
+  add  :: a -> a -> a
   zero :: a
-  (*)  :: a -> a -> a
+  mul  :: a -> a -> a
   one  :: a
 
 instance semiringNumber :: Semiring Number where
-  (+) = numAdd
+  add = numAdd
   zero = 0
-  (*) = numMul
+  mul = numMul
   one = 1
 
 instance semiringUnit :: Semiring Unit where
-  (+) _ _ = unit
+  add _ _ = unit
   zero = unit
-  (*) _ _ = unit
+  mul _ _ = unit
   one = unit
+
+(+) :: forall a. (Semiring a) => a -> a -> a
+(+) = add
+
+(*) :: forall a. (Semiring a) => a -> a -> a
+(*) = mul
 
 infixl 6 -
 
@@ -461,13 +483,16 @@ infixl 6 -
 -- |
 -- | - Additive inverse: `a + (-a) = (-a) + a = zero`
 class (Semiring a) <= Ring a where
-  (-) :: a -> a -> a
+  sub :: a -> a -> a
 
 instance ringNumber :: Ring Number where
-  (-) = numSub
+  sub = numSub
 
 instance ringUnit :: Ring Unit where
-  (-) _ _ = unit
+  sub _ _ = unit
+
+(-) :: forall a. (Ring a) => a -> a -> a
+(-) = sub
 
 negate :: forall a. (Ring a) => a -> a
 negate a = zero - a
@@ -482,16 +507,19 @@ infixl 7 /
 -- |
 -- | - Remainder: `a / b * b + (a `mod` b) = a`
 class (Semiring a) <= ModuloSemiring a where
-  (/) :: a -> a -> a
+  div :: a -> a -> a
   mod :: a -> a -> a
 
 instance moduloSemiringNumber :: ModuloSemiring Number where
-  (/) = numDiv
+  div = numDiv
   mod _ _ = 0
 
 instance moduloSemiringUnit :: ModuloSemiring Unit where
-  (/) _ _ = unit
+  div _ _ = unit
   mod _ _ = unit
+
+(/) :: forall a. (ModuloSemiring a) => a -> a -> a
+(/) = div
 
 -- | A `Ring` where every nonzero element has a multiplicative inverse.
 -- |
@@ -567,38 +595,35 @@ infix 4 /=
 -- | - Symmetry: `x == y = y == x`
 -- | - Transitivity: if `x == y` and `y == z` then `x == z`
 -- | - Negation: `x /= y = not (x == y)`
--- |
--- | `(/=)` may be implemented in terms of `(==)`, but it might give a performance improvement to implement it separately.
 class Eq a where
-  (==) :: a -> a -> Boolean
-  (/=) :: a -> a -> Boolean
+  eq :: a -> a -> Boolean
+
+(==) :: forall a. (Eq a) => a -> a -> Boolean
+(==) = eq
+
+(/=) :: forall a. (Eq a) => a -> a -> Boolean
+(/=) x y = not (x == y)
 
 instance eqBoolean :: Eq Boolean where
-  (==) = refEq
-  (/=) = refIneq
+  eq = refEq
 
 instance eqNumber :: Eq Number where
-  (==) = refEq
-  (/=) = refIneq
+  eq = refEq
 
 instance eqString :: Eq String where
-  (==) = refEq
-  (/=) = refIneq
+  eq = refEq
 
 instance eqUnit :: Eq Unit where
-  (==) _ _ = true
-  (/=) _ _ = false
+  eq _ _ = true
 
 instance eqArray :: (Eq a) => Eq [a] where
-  (==) = eqArrayImpl (==)
-  (/=) xs ys = not (xs == ys)
+  eq = eqArrayImpl (==)
 
 instance eqOrdering :: Eq Ordering where
-  (==) LT LT = true
-  (==) GT GT = true
-  (==) EQ EQ = true
-  (==) _  _  = false
-  (/=) x y = not (x == y)
+  eq LT LT = true
+  eq GT GT = true
+  eq EQ EQ = true
+  eq _  _  = false
 
 foreign import refEq
   """
