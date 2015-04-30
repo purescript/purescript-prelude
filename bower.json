@@ -15,5 +15,9 @@
     "bower.json",
     "gulpfile.js",
     "package.json"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript/purescript-prelude.git"
+  }
 }
