@@ -1,5 +1,5 @@
 
-module Main where
+module Test.Main where
 
 import Console (log)
 import Control.Monad.Eff
