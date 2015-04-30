@@ -820,36 +820,6 @@ foreign import ordArrayImpl """
   }
   """ :: forall a. (a -> a -> Int) -> Array a -> Array a -> Int
 
-foreign import compareArrayImpl
-  """
-  function compareArrayImpl(checkEqOr) {
-    return function(eq) {
-      return function(xs) {
-        return function(ys) {
-          var minlen = xs.length
-          var maxlen = ys.length
-          var result = null
-
-          if (maxlen < minlen) {
-             var tmp = minlen
-             minlen = maxlen
-             maxlen = tmp
-          }
-
-          for (var i = 0; i < minlen && result === null; ++i) {
-            checkEqOr(xs[i])(ys[i])(function(other) { result = other })
-          }
-
-          if (result === null) {
-             result = eq
-           }
-          return result
-        }
-      }
-    }
-  }
-  """ :: forall a. (a -> a -> (Ordering -> Unit) -> Unit) -> Ordering -> Array a -> Array a -> Ordering
-
 instance ordOrdering :: Ord Ordering where
   compare LT LT = EQ
   compare EQ EQ = EQ
