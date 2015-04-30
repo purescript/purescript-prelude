@@ -10,4 +10,4 @@ foreign import unsafeIndex
       return xs[n];
     };
   }
-  """ :: forall a. [a] -> Number -> a
+  """ :: forall a. Array a -> Number -> a
