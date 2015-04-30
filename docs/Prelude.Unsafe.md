@@ -5,7 +5,7 @@
 #### `unsafeIndex`
 
 ``` purescript
-unsafeIndex :: forall a. [a] -> Number -> a
+unsafeIndex :: forall a. Array a -> Number -> a
 ```
 
 Find the element of an array at the specified index.
