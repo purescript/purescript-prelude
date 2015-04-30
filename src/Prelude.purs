@@ -787,12 +787,38 @@ instance ordUnit :: Ord Unit where
   compare _ _ = EQ
 
 instance ordArray :: (Ord a) => Ord (Array a) where
-  compare = compareArrayImpl checkEqOr EQ
-    where
-    checkEqOr a b callback =
-      case compare a b of
-        EQ -> unit
-        other -> callback other
+  compare xs ys = compare 0 $ ordArrayImpl (\x y -> case compare x y of
+                                                EQ -> 0
+                                                LT -> 1
+                                                GT -> -1) xs ys
+
+foreign import ordArrayImpl """
+  function ordArrayImpl(f) {
+    return function (xs) {
+      return function (ys) {
+        var i = 0;
+        var xlen = xs.length;
+        var ylen = ys.length;
+        while (i < xlen && i < ylen) {
+          var x = xs[i];
+          var y = ys[i];
+          var o = f(x)(y);
+          if (o !== 0) {
+            return o;
+          }
+          i++;
+        }
+        if (xlen == ylen) {
+          return 0;
+        } else if (xlen > ylen) {
+          return -1;
+        } else {
+          return 1;
+        }
+      };
+    };
+  }
+  """ :: forall a. (a -> a -> Int) -> Array a -> Array a -> Int
 
 foreign import compareArrayImpl
   """
