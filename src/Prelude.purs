@@ -5,7 +5,6 @@ module Prelude
   , const
   , asTypeOf
   , otherwise
-  , (:), cons
   , Semigroupoid, compose, (<<<), (>>>)
   , Category, id
   , Functor, map, (<$>), (<#>), void
@@ -115,30 +114,6 @@ asTypeOf x _ = x
 -- | ```
 otherwise :: Boolean
 otherwise = true
-
--- | Attaches an element to the front of an array, creating a new array.
--- |
--- | ```purescript
--- | cons 1 [2, 3, 4] = [1, 2, 3, 4]
--- | ```
--- |
--- | Note, the running time of this function is `O(n)`.
-foreign import cons
-  """
-  function cons(e) {
-    return function(l) {
-      return [e].concat(l);
-    };
-  }
-  """ :: forall a. a -> [a] -> [a]
-
-infixr 6 :
-
--- | An infix alias for `cons`.
--- |
--- | Note, the running time of this function is `O(n)`.
-(:) :: forall a. a -> [a] -> [a]
-(:) = cons
 
 infixr 9 >>>
 infixr 9 <<<
