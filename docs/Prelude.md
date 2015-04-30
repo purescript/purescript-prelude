@@ -119,30 +119,6 @@ max x y | x >= y    = x
         | otherwise = y
 ```
 
-#### `cons`
-
-``` purescript
-cons :: forall a. a -> [a] -> [a]
-```
-
-Attaches an element to the front of an array, creating a new array.
-
-```purescript
-cons 1 [2, 3, 4] = [1, 2, 3, 4]
-```
-
-Note, the running time of this function is `O(n)`.
-
-#### `(:)`
-
-``` purescript
-(:) :: forall a. a -> [a] -> [a]
-```
-
-An infix alias for `cons`.
-
-Note, the running time of this function is `O(n)`.
-
 #### `Semigroupoid`
 
 ``` purescript
@@ -234,7 +210,7 @@ instance functorFn :: Functor (Prim.Function r)
 #### `functorArray`
 
 ``` purescript
-instance functorArray :: Functor Prim.Array
+instance functorArray :: Functor Array
 ```
 
 
@@ -316,7 +292,7 @@ instance applyFn :: Apply (Prim.Function r)
 #### `applyArray`
 
 ``` purescript
-instance applyArray :: Apply Prim.Array
+instance applyArray :: Apply Array
 ```
 
 
@@ -363,7 +339,7 @@ instance applicativeFn :: Applicative (Prim.Function r)
 #### `applicativeArray`
 
 ``` purescript
-instance applicativeArray :: Applicative Prim.Array
+instance applicativeArray :: Applicative Array
 ```
 
 
@@ -438,7 +414,7 @@ instance bindFn :: Bind (Prim.Function r)
 #### `bindArray`
 
 ``` purescript
-instance bindArray :: Bind Prim.Array
+instance bindArray :: Bind Array
 ```
 
 
@@ -476,7 +452,7 @@ instance monadFn :: Monad (Prim.Function r)
 #### `monadArray`
 
 ``` purescript
-instance monadArray :: Monad Prim.Array
+instance monadArray :: Monad Array
 ```
 
 
@@ -579,7 +555,7 @@ instance semigroupOrdering :: Semigroup Ordering
 #### `semigroupArray`
 
 ``` purescript
-instance semigroupArray :: Semigroup [a]
+instance semigroupArray :: Semigroup (Array a)
 ```
 
 
@@ -871,7 +847,7 @@ instance eqUnit :: Eq Unit
 #### `eqArray`
 
 ``` purescript
-instance eqArray :: (Eq a) => Eq [a]
+instance eqArray :: (Eq a) => Eq (Array a)
 ```
 
 
@@ -958,7 +934,7 @@ instance ordUnit :: Ord Unit
 #### `ordArray`
 
 ``` purescript
-instance ordArray :: (Ord a) => Ord [a]
+instance ordArray :: (Ord a) => Ord (Array a)
 ```
 
 
@@ -1273,7 +1249,7 @@ instance showUnit :: Show Unit
 #### `showArray`
 
 ``` purescript
-instance showArray :: (Show a) => Show [a]
+instance showArray :: (Show a) => Show (Array a)
 ```
 
 

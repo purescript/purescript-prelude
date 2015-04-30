@@ -5,7 +5,6 @@ module Prelude
   , const
   , asTypeOf
   , otherwise
-  , (:), cons
   , Semigroupoid, compose, (<<<), (>>>)
   , Category, id
   , Functor, map, (<$>), (<#>), void
@@ -116,30 +115,6 @@ asTypeOf x _ = x
 otherwise :: Boolean
 otherwise = true
 
--- | Attaches an element to the front of an array, creating a new array.
--- |
--- | ```purescript
--- | cons 1 [2, 3, 4] = [1, 2, 3, 4]
--- | ```
--- |
--- | Note, the running time of this function is `O(n)`.
-foreign import cons
-  """
-  function cons(e) {
-    return function(l) {
-      return [e].concat(l);
-    };
-  }
-  """ :: forall a. a -> [a] -> [a]
-
-infixr 6 :
-
--- | An infix alias for `cons`.
--- |
--- | Note, the running time of this function is `O(n)`.
-(:) :: forall a. a -> [a] -> [a]
-(:) = cons
-
 infixr 9 >>>
 infixr 9 <<<
 
@@ -199,7 +174,7 @@ class Functor f where
 instance functorFn :: Functor ((->) r) where
   map = compose
 
-instance functorArray :: Functor [] where
+instance functorArray :: Functor Array where
   map = arrayMap
 
 foreign import arrayMap
@@ -214,7 +189,7 @@ foreign import arrayMap
       return result;
     };
   }
-  """ :: forall a b. (a -> b) -> [a] -> [b]
+  """ :: forall a b. (a -> b) -> Array a -> Array b
 
 (<$>) :: forall f a b. (Functor f) => (a -> b) -> f a -> f b
 (<$>) = map
@@ -272,7 +247,7 @@ class (Functor f) <= Apply f where
 instance applyFn :: Apply ((->) r) where
   apply f g x = f x (g x)
 
-instance applyArray :: Apply [] where
+instance applyArray :: Apply Array where
   apply = ap
 
 (<*>) :: forall f a b. (Apply f) => f (a -> b) -> f a -> f b
@@ -302,7 +277,7 @@ class (Apply f) <= Applicative f where
 instance applicativeFn :: Applicative ((->) r) where
   pure = const
 
-instance applicativeArray :: Applicative [] where
+instance applicativeArray :: Applicative Array where
   pure x = [x]
 
 -- | `return` is an alias for `pure`.
@@ -358,7 +333,7 @@ class (Apply m) <= Bind m where
 instance bindFn :: Bind ((->) r) where
   bind m f x = f (m x) x
 
-instance bindArray :: Bind [] where
+instance bindArray :: Bind Array where
   bind = arrayBind
 
 foreign import arrayBind
@@ -372,7 +347,7 @@ foreign import arrayBind
       return result;
     };
   }
-  """ :: forall a b. [a] -> (a -> [b]) -> [b]
+  """ :: forall a b. Array a -> (a -> Array b) -> Array b
 
 (>>=) :: forall m a b. (Monad m) => m a -> (a -> m b) -> m b
 (>>=) = bind
@@ -391,7 +366,7 @@ class (Applicative m, Bind m) <= Monad m
 
 instance monadFn :: Monad ((->) r)
 
-instance monadArray :: Monad []
+instance monadArray :: Monad Array
 
 -- | `liftM1` provides a default implementation of `(<$>)` for any
 -- | [`Monad`](#monad), without using `(<$>)` as provided by the
@@ -462,7 +437,7 @@ instance semigroupOrdering :: Semigroup Ordering where
   append GT _ = GT
   append EQ y = y
 
-instance semigroupArray :: Semigroup [a] where
+instance semigroupArray :: Semigroup (Array a) where
   append = concatArray
 
 foreign import concatString
@@ -481,7 +456,7 @@ foreign import concatArray
       return xs.concat(ys);
     };
   }
-  """ :: forall a. [a] -> [a] -> [a]
+  """ :: forall a. Array a -> Array a -> Array a
 
 infixl 6 +
 infixl 7 *
@@ -733,7 +708,7 @@ instance eqString :: Eq String where
 instance eqUnit :: Eq Unit where
   eq _ _ = true
 
-instance eqArray :: (Eq a) => Eq [a] where
+instance eqArray :: (Eq a) => Eq (Array a) where
   eq = eqArrayImpl (==)
 
 instance eqOrdering :: Eq Ordering where
@@ -773,7 +748,7 @@ foreign import eqArrayImpl
       };
     };
   }
-  """ :: forall a. (a -> a -> Boolean) -> [a] -> [a] -> Boolean
+  """ :: forall a. (a -> a -> Boolean) -> Array a -> Array a -> Boolean
 
 -- | The `Ordering` data type represents the three possible outcomes of
 -- | comparing two values:
@@ -811,13 +786,39 @@ instance ordChar :: Ord Char where
 instance ordUnit :: Ord Unit where
   compare _ _ = EQ
 
-instance ordArray :: (Ord a) => Ord [a] where
-  compare [] [] = EQ
-  compare [] _ = LT
-  compare _ [] = GT
-  compare (x:xs) (y:ys) = case compare x y of
-    EQ -> compare xs ys
-    other -> other
+instance ordArray :: (Ord a) => Ord (Array a) where
+  compare xs ys = compare 0 $ ordArrayImpl (\x y -> case compare x y of
+                                                EQ -> 0
+                                                LT -> 1
+                                                GT -> -1) xs ys
+
+foreign import ordArrayImpl """
+  function ordArrayImpl(f) {
+    return function (xs) {
+      return function (ys) {
+        var i = 0;
+        var xlen = xs.length;
+        var ylen = ys.length;
+        while (i < xlen && i < ylen) {
+          var x = xs[i];
+          var y = ys[i];
+          var o = f(x)(y);
+          if (o !== 0) {
+            return o;
+          }
+          i++;
+        }
+        if (xlen == ylen) {
+          return 0;
+        } else if (xlen > ylen) {
+          return -1;
+        } else {
+          return 1;
+        }
+      };
+    };
+  }
+  """ :: forall a. (a -> a -> Int) -> Array a -> Array a -> Int
 
 instance ordOrdering :: Ord Ordering where
   compare LT LT = EQ
@@ -1053,7 +1054,7 @@ instance showString :: Show String where
 instance showUnit :: Show Unit where
   show _ = "unit"
 
-instance showArray :: (Show a) => Show [a] where
+instance showArray :: (Show a) => Show (Array a) where
   show = showArrayImpl show
 
 instance showOrdering :: Show Ordering where
@@ -1100,4 +1101,4 @@ foreign import showArrayImpl
       return '[' + ss.join(',') + ']';
     };
   }
-  """ :: forall a. (a -> String) -> [a] -> String
+  """ :: forall a. (a -> String) -> Array a -> String
