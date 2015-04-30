@@ -22,8 +22,9 @@ check expected a b =
 main = do
   check EQ [] ([] :: Array Number)
   check LT [] [0]
+  check GT [0] []
   check EQ [1,2,3] [1,2,3]
   check LT [1,1,3] [1,2,3]
-
+  check GT [1,3,3] [1,2,3]
 
   log "All good!"
