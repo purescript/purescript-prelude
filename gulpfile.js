@@ -4,6 +4,7 @@ var gulp = require("gulp");
 var plumber = require("gulp-plumber");
 var purescript = require("gulp-purescript");
 var jsvalidate = require("gulp-jsvalidate");
+var run = require('gulp-run');
 
 var paths = [
   "src/**/*.purs",
@@ -44,5 +45,12 @@ gulp.task("dotpsci", function () {
     .pipe(plumber())
     .pipe(purescript.dotPsci());
 });
+
+gulp.task("test", function() {
+  return gulp.src(paths.concat(['test/Main.purs']))
+    .pipe(plumber())
+    .pipe(purescript.psc({ main: "Test.Main" }))
+    .pipe(run("node"));
+})
 
 gulp.task("default", ["jsvalidate", "docs", "dotpsci"]);
