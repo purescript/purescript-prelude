@@ -349,7 +349,7 @@ foreign import arrayBind
   }
   """ :: forall a b. Array a -> (a -> Array b) -> Array b
 
-(>>=) :: forall m a b. (Monad m) => m a -> (a -> m b) -> m b
+(>>=) :: forall m a b. (Bind m) => m a -> (a -> m b) -> m b
 (>>=) = bind
 
 -- | The `Monad` type class combines the operations of the `Bind` and
