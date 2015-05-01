@@ -421,7 +421,7 @@ instance bindArray :: Bind Array
 #### `(>>=)`
 
 ``` purescript
-(>>=) :: forall m a b. (Monad m) => m a -> (a -> m b) -> m b
+(>>=) :: forall m a b. (Bind m) => m a -> (a -> m b) -> m b
 ```
 
 
