@@ -1027,6 +1027,12 @@ sets with a supremum (`sup` or `||`) and infimum (`inf` or `&&`).
 Instances should satisfy the following laws in addition to the `Ord`
 laws:
 
+- Supremum:
+  - `a || b >= a`
+  - `a || b >= b`
+- Infimum:
+  - `a && b <= a`
+  - `a && b <= b`
 - Associativity:
   - `a || (b || c) = (a || b) || c`
   - `a && (b && c) = (a && b) && c`
