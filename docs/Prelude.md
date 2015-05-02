@@ -613,6 +613,7 @@ instance semiringUnit :: Semiring Unit
 (+) :: forall a. (Semiring a) => a -> a -> a
 ```
 
+`(+)` is an alias for `add`.
 
 #### `(*)`
 
@@ -620,6 +621,7 @@ instance semiringUnit :: Semiring Unit
 (*) :: forall a. (Semiring a) => a -> a -> a
 ```
 
+`(*)` is an alias for `mul`.
 
 #### `Ring`
 
@@ -663,6 +665,7 @@ instance ringUnit :: Ring Unit
 (-) :: forall a. (Ring a) => a -> a -> a
 ```
 
+`(-)` is an alias for `sub`.
 
 #### `negate`
 
@@ -714,6 +717,7 @@ instance moduloSemiringUnit :: ModuloSemiring Unit
 (/) :: forall a. (ModuloSemiring a) => a -> a -> a
 ```
 
+`(/)` is an alias for `div`.
 
 #### `DivisionRing`
 
@@ -786,7 +790,6 @@ The `Eq` type class represents types which support decidable equality.
 - Reflexivity: `x == x = true`
 - Symmetry: `x == y = y == x`
 - Transitivity: if `x == y` and `y == z` then `x == z`
-- Negation: `x /= y = not (x == y)`
 
 #### `(==)`
 
@@ -794,6 +797,7 @@ The `Eq` type class represents types which support decidable equality.
 (==) :: forall a. (Eq a) => a -> a -> Boolean
 ```
 
+`(==)` is an alias for `eq`.
 
 #### `(/=)`
 
