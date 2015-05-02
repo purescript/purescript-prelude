@@ -42,7 +42,7 @@ unit :: Unit
 unit = Unit {}
 
 infixr 0 $
-infixl 0 #
+infixl 1 #
 
 -- | Applies a function to its argument.
 -- |
