@@ -898,6 +898,10 @@ instance boundedOrdering :: Bounded Ordering where
   top = GT
   bottom = LT
 
+instance boundedInt :: Bounded Int where
+  top = 2147483647
+  bottom = -2147483648
+
 -- | The `Lattice` type class represents types that are partially ordered
 -- | sets with a supremum (`sup` or `||`) and infimum (`inf` or `&&`).
 -- |
