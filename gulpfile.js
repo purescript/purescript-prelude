@@ -39,7 +39,7 @@ var docTask = function(name) {
   docTasks.push(taskName);
 };
 
-["Prelude", "Prelude.Unsafe"].forEach(docTask);
+["Prelude"].forEach(docTask);
 
 gulp.task("docs", docTasks);
 
