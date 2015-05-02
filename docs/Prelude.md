@@ -1013,6 +1013,13 @@ instance boundedOrdering :: Bounded Ordering
 ```
 
 
+#### `boundedInt`
+
+``` purescript
+instance boundedInt :: Bounded Int
+```
+
+
 #### `Lattice`
 
 ``` purescript
