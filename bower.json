@@ -6,18 +6,18 @@
     "purescript"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/purescript/purescript-prelude.git"
+  },
   "ignore": [
     "**/.*",
     "bower_components",
     "node_modules",
     "output",
-    "tmp",
+    "test",
     "bower.json",
     "gulpfile.js",
     "package.json"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/purescript/purescript-prelude.git"
-  }
+  ]
 }
