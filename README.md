@@ -13,4 +13,3 @@ bower install purescript-prelude
 ## Module documentation
 
 - [Prelude](docs/Prelude.md)
-- [Prelude.Unsafe](docs/Prelude.Unsafe.md)

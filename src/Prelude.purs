@@ -138,7 +138,7 @@ instance semigroupoidFn :: Semigroupoid (->) where
 
 -- | Forwards composition, or `(<<<)` with its arguments reversed.
 (>>>) :: forall a b c d. (Semigroupoid a) => a b c -> a c d -> a b d
-(>>>) f g = g <<< f
+(>>>) = flip compose
 
 -- | `Category`s consist of objects and composable morphisms between them, and
 -- | as such are [`Semigroupoids`](#semigroupoid), but unlike `semigroupoids`
@@ -177,19 +177,7 @@ instance functorFn :: Functor ((->) r) where
 instance functorArray :: Functor Array where
   map = arrayMap
 
-foreign import arrayMap
-  """
-  function arrayMap(f) {
-    return function (arr) {
-      var l = arr.length;
-      var result = new Array(l);
-      for (var i = 0; i < l; i++) {
-        result[i] = f(arr[i]);
-      }
-      return result;
-    };
-  }
-  """ :: forall a b. (a -> b) -> Array a -> Array b
+foreign import arrayMap :: forall a b. (a -> b) -> Array a -> Array b
 
 (<$>) :: forall f a b. (Functor f) => (a -> b) -> f a -> f b
 (<$>) = map
@@ -336,18 +324,7 @@ instance bindFn :: Bind ((->) r) where
 instance bindArray :: Bind Array where
   bind = arrayBind
 
-foreign import arrayBind
-  """
-  function arrayBind (arr) {
-    return function (f) {
-      var result = [];
-      for (var i = 0, l = arr.length; i < l; i++) {
-        Array.prototype.push.apply(result, f(arr[i]));
-      }
-      return result;
-    };
-  }
-  """ :: forall a b. Array a -> (a -> Array b) -> Array b
+foreign import arrayBind :: forall a b. Array a -> (a -> Array b) -> Array b
 
 (>>=) :: forall m a b. (Bind m) => m a -> (a -> m b) -> m b
 (>>=) = bind
@@ -365,7 +342,6 @@ foreign import arrayBind
 class (Applicative m, Bind m) <= Monad m
 
 instance monadFn :: Monad ((->) r)
-
 instance monadArray :: Monad Array
 
 -- | `liftM1` provides a default implementation of `(<$>)` for any
@@ -440,23 +416,8 @@ instance semigroupOrdering :: Semigroup Ordering where
 instance semigroupArray :: Semigroup (Array a) where
   append = concatArray
 
-foreign import concatString
-  """
-  function concatString(s1) {
-    return function(s2) {
-      return s1 + s2;
-    };
-  }
-  """ :: String -> String -> String
-
-foreign import concatArray
-  """
-  function concatArray (xs) {
-    return function (ys) {
-      return xs.concat(ys);
-    };
-  }
-  """ :: forall a. Array a -> Array a -> Array a
+foreign import concatString :: String -> String -> String
+foreign import concatArray :: forall a. Array a -> Array a -> Array a
 
 infixl 6 +
 infixl 7 *
@@ -501,11 +462,18 @@ instance semiringUnit :: Semiring Unit where
   mul _ _ = unit
   one = unit
 
+-- | `(+)` is an alias for `add`.
 (+) :: forall a. (Semiring a) => a -> a -> a
 (+) = add
 
+-- | `(*)` is an alias for `mul`.
 (*) :: forall a. (Semiring a) => a -> a -> a
 (*) = mul
+
+foreign import intAdd :: Int -> Int -> Int
+foreign import intMul :: Int -> Int -> Int
+foreign import numAdd :: Number -> Number -> Number
+foreign import numMul :: Number -> Number -> Number
 
 infixl 6 -
 
@@ -528,11 +496,15 @@ instance ringNumber :: Ring Number where
 instance ringUnit :: Ring Unit where
   sub _ _ = unit
 
+-- | `(-)` is an alias for `sub`.
 (-) :: forall a. (Ring a) => a -> a -> a
 (-) = sub
 
 negate :: forall a. (Ring a) => a -> a
 negate a = zero - a
+
+foreign import intSub :: Int -> Int -> Int
+foreign import numSub :: Number -> Number -> Number
 
 infixl 7 /
 
@@ -559,8 +531,13 @@ instance moduloSemiringUnit :: ModuloSemiring Unit where
   div _ _ = unit
   mod _ _ = unit
 
+-- | `(/)` is an alias for `div`.
 (/) :: forall a. (ModuloSemiring a) => a -> a -> a
 (/) = div
+
+foreign import intDiv :: Int -> Int -> Int
+foreign import numDiv :: Number -> Number -> Number
+foreign import intMod :: Int -> Int -> Int
 
 -- | A `Ring` where every nonzero element has a multiplicative inverse.
 -- |
@@ -574,7 +551,6 @@ instance moduloSemiringUnit :: ModuloSemiring Unit where
 class (Ring a, ModuloSemiring a) <= DivisionRing a
 
 instance divisionRingNumber :: DivisionRing Number
-
 instance divisionRingUnit :: DivisionRing Unit
 
 -- | The `Num` class is for types that are commutative fields.
@@ -586,89 +562,7 @@ instance divisionRingUnit :: DivisionRing Unit
 class (DivisionRing a) <= Num a
 
 instance numNumber :: Num Number
-
 instance numUnit :: Num Unit
-
-foreign import intAdd
-  """
-  function intAdd(x) {
-    return function(y) {
-      return (x + y)|0;
-    };
-  }
-  """ :: Int -> Int -> Int
-
-foreign import intMul
-  """
-  function intMul(x) {
-    return function(y) {
-      return (x * y)|0;
-    };
-  }
-  """ :: Int -> Int -> Int
-
-foreign import intDiv
-  """
-  function intDiv(x) {
-    return function(y) {
-      return (x / y)|0;
-    };
-  }
-  """ :: Int -> Int -> Int
-
-foreign import intMod
-  """
-  function intMod(x) {
-    return function(y) {
-      return x % y;
-    };
-  }
-  """ :: Int -> Int -> Int
-
-foreign import intSub
-  """
-  function intSub(x) {
-    return function(y) {
-      return (x - y)|0;
-    };
-  }
-  """ :: Int -> Int -> Int
-
-foreign import numAdd
-  """
-  function numAdd(n1) {
-    return function(n2) {
-      return n1 + n2;
-    };
-  }
-  """ :: Number -> Number -> Number
-
-foreign import numMul
-  """
-  function numMul(n1) {
-    return function(n2) {
-      return n1 * n2;
-    };
-  }
-  """ :: Number -> Number -> Number
-
-foreign import numDiv
-  """
-  function numDiv(n1) {
-    return function(n2) {
-      return n1 / n2;
-    };
-  }
-  """ :: Number -> Number -> Number
-
-foreign import numSub
-  """
-  function numSub(n1) {
-    return function(n2) {
-      return n1 - n2;
-    };
-  }
-  """ :: Number -> Number -> Number
 
 infix 4 ==
 infix 4 /=
@@ -680,10 +574,10 @@ infix 4 /=
 -- | - Reflexivity: `x == x = true`
 -- | - Symmetry: `x == y = y == x`
 -- | - Transitivity: if `x == y` and `y == z` then `x == z`
--- | - Negation: `x /= y = not (x == y)`
 class Eq a where
   eq :: a -> a -> Boolean
 
+-- | `(==)` is an alias for `eq`.
 (==) :: forall a. (Eq a) => a -> a -> Boolean
 (==) = eq
 
@@ -717,38 +611,9 @@ instance eqOrdering :: Eq Ordering where
   eq EQ EQ = true
   eq _  _  = false
 
-foreign import refEq
-  """
-  function refEq(r1) {
-    return function(r2) {
-      return r1 === r2;
-    };
-  }
-  """ :: forall a. a -> a -> Boolean
-
-foreign import refIneq
-  """
-  function refIneq(r1) {
-    return function(r2) {
-      return r1 !== r2;
-    };
-  }
-  """ :: forall a. a -> a -> Boolean
-
-foreign import eqArrayImpl
-  """
-  function eqArrayImpl(f) {
-    return function(xs) {
-      return function(ys) {
-        if (xs.length !== ys.length) return false;
-        for (var i = 0; i < xs.length; i++) {
-          if (!f(xs[i])(ys[i])) return false;
-        }
-        return true;
-      };
-    };
-  }
-  """ :: forall a. (a -> a -> Boolean) -> Array a -> Array a -> Boolean
+foreign import refEq :: forall a. a -> a -> Boolean
+foreign import refIneq :: forall a. a -> a -> Boolean
+foreign import eqArrayImpl :: forall a. (a -> a -> Boolean) -> Array a -> Array a -> Boolean
 
 -- | The `Ordering` data type represents the three possible outcomes of
 -- | comparing two values:
@@ -792,33 +657,7 @@ instance ordArray :: (Ord a) => Ord (Array a) where
                                                 LT -> 1
                                                 GT -> -1) xs ys
 
-foreign import ordArrayImpl """
-  function ordArrayImpl(f) {
-    return function (xs) {
-      return function (ys) {
-        var i = 0;
-        var xlen = xs.length;
-        var ylen = ys.length;
-        while (i < xlen && i < ylen) {
-          var x = xs[i];
-          var y = ys[i];
-          var o = f(x)(y);
-          if (o !== 0) {
-            return o;
-          }
-          i++;
-        }
-        if (xlen == ylen) {
-          return 0;
-        } else if (xlen > ylen) {
-          return -1;
-        } else {
-          return 1;
-        }
-      };
-    };
-  }
-  """ :: forall a. (a -> a -> Int) -> Array a -> Array a -> Int
+foreign import ordArrayImpl :: forall a. (a -> a -> Int) -> Array a -> Array a -> Int
 
 instance ordOrdering :: Ord Ordering where
   compare LT LT = EQ
@@ -861,20 +700,7 @@ infixl 4 >=
 unsafeCompare :: forall a. a -> a -> Ordering
 unsafeCompare = unsafeCompareImpl LT EQ GT
 
-foreign import unsafeCompareImpl
-  """
-  function unsafeCompareImpl(lt) {
-    return function(eq) {
-      return function(gt) {
-        return function(x) {
-          return function(y) {
-            return x < y ? lt : x > y ? gt : eq;
-          };
-        };
-      };
-    };
-  }
-  """ :: forall a. Ordering -> Ordering -> Ordering -> a -> a -> Ordering
+foreign import unsafeCompareImpl :: forall a. Ordering -> Ordering -> Ordering -> a -> a -> Ordering
 
 -- | The `Bounded` type class represents types that are finite partially
 -- | ordered sets.
@@ -949,6 +775,9 @@ infixr 3 &&
 (&&) :: forall a. (Lattice a) => a -> a -> a
 (&&) = inf
 
+foreign import boolOr :: Boolean -> Boolean -> Boolean
+foreign import boolAnd :: Boolean -> Boolean -> Boolean
+
 -- | The `BoundedLattice` type class represents types that are finite
 -- | lattices.
 -- |
@@ -987,6 +816,8 @@ instance complementedLatticeBoolean :: ComplementedLattice Boolean where
 instance complementedLatticeUnit :: ComplementedLattice Unit where
   not _ = unit
 
+foreign import boolNot :: Boolean -> Boolean
+
 -- | The `DistributiveLattice` type class represents types that are lattices
 -- | where the `&&` and `||` distribute over each other.
 -- |
@@ -997,7 +828,6 @@ instance complementedLatticeUnit :: ComplementedLattice Unit where
 class (Lattice a) <= DistributiveLattice a
 
 instance distributiveLatticeBoolean :: DistributiveLattice Boolean
-
 instance distributiveLatticeUnit :: DistributiveLattice Unit
 
 -- | The `BooleanAlgebra` type class represents types that are Boolean
@@ -1008,33 +838,7 @@ instance distributiveLatticeUnit :: DistributiveLattice Unit
 class (ComplementedLattice a, DistributiveLattice a) <= BooleanAlgebra a
 
 instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
-
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
-
-foreign import boolOr
-  """
-  function boolOr(b1) {
-    return function(b2) {
-      return b1 || b2;
-    };
-  }
-  """ :: Boolean -> Boolean -> Boolean
-
-foreign import boolAnd
-  """
-  function boolAnd(b1) {
-    return function(b2) {
-      return b1 && b2;
-    };
-  }
-  """  :: Boolean -> Boolean -> Boolean
-
-foreign import boolNot
-  """
-  function boolNot(b) {
-    return !b;
-  }
-  """ :: Boolean -> Boolean
 
 -- | The `Show` type class represents those types which can be converted into
 -- | a human-readable `String` representation.
@@ -1072,43 +876,8 @@ instance showOrdering :: Show Ordering where
   show GT = "GT"
   show EQ = "EQ"
 
-foreign import showIntImpl
-  """
-  function showIntImpl(n) {
-    return n.toString();
-  }
-  """ :: Int -> String
-
-foreign import showNumberImpl
-  """
-  function showNumberImpl(n) {
-    return n === (n|0) ? n + ".0" : n.toString();
-  }
-  """ :: Number -> String
-
-foreign import showCharImpl
-  """
-  function showCharImpl(c) {
-    return c === "'" ? "'\\''" : "'" + c + "'";
-  }
-  """ :: Char -> String
-
-foreign import showStringImpl
-  """
-  function showStringImpl(s) {
-    return JSON.stringify(s);
-  }
-  """ :: String -> String
-
-foreign import showArrayImpl
-  """
-  function showArrayImpl(f) {
-    return function(xs) {
-      var ss = [];
-      for (var i = 0, l = xs.length; i < l; i++) {
-        ss[i] = f(xs[i]);
-      }
-      return '[' + ss.join(',') + ']';
-    };
-  }
-  """ :: forall a. (a -> String) -> Array a -> String
+foreign import showIntImpl :: Int -> String
+foreign import showNumberImpl :: Number -> String
+foreign import showCharImpl :: Char -> String
+foreign import showStringImpl :: String -> String
+foreign import showArrayImpl :: forall a. (a -> String) -> Array a -> String

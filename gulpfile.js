@@ -1,26 +1,29 @@
+/* jshint node: true */
 "use strict";
 
 var gulp = require("gulp");
+var jshint = require("gulp-jshint");
+var jscs = require("gulp-jscs");
 var plumber = require("gulp-plumber");
 var purescript = require("gulp-purescript");
-var jsvalidate = require("gulp-jsvalidate");
-var run = require('gulp-run');
+var run = require("gulp-run");
 
 var paths = [
   "src/**/*.purs",
   "bower_components/purescript-*/src/**/*.purs"
 ];
 
-gulp.task("make", function() {
+gulp.task("lint", function() {
+  return gulp.src("src/**/*.js")
+    .pipe(jshint())
+    .pipe(jshint.reporter())
+    .pipe(jscs());
+});
+
+gulp.task("make", ["lint"], function() {
   return gulp.src(paths)
     .pipe(plumber())
     .pipe(purescript.pscMake());
-});
-
-gulp.task("jsvalidate", ["make"], function () {
-  return gulp.src("output/**/*.js")
-    .pipe(plumber())
-    .pipe(jsvalidate());
 });
 
 var docTasks = [];
@@ -36,7 +39,7 @@ var docTask = function(name) {
   docTasks.push(taskName);
 };
 
-["Prelude", "Prelude.Unsafe"].forEach(docTask);
+["Prelude"].forEach(docTask);
 
 gulp.task("docs", docTasks);
 
@@ -47,10 +50,10 @@ gulp.task("dotpsci", function () {
 });
 
 gulp.task("test", function() {
-  return gulp.src(paths.concat(['test/Main.purs']))
+  return gulp.src(paths.concat(["test/Main.purs"]))
     .pipe(plumber())
     .pipe(purescript.psc({ main: "Test.Main" }))
     .pipe(run("node"));
-})
+});
 
-gulp.task("default", ["jsvalidate", "docs", "dotpsci"]);
+gulp.task("default", ["make", "docs", "dotpsci"]);
