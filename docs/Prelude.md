@@ -515,6 +515,7 @@ class Semiring a where
 ``` purescript
 instance semiringInt :: Semiring Int
 instance semiringNumber :: Semiring Number
+instance semiringBoolean :: Semiring Boolean
 instance semiringUnit :: Semiring Unit
 ```
 
@@ -975,6 +976,5 @@ a human-readable `String` representation.
 While not required, it is recommended that for any expression `x`, the
 string `show x` be executable PureScript code which evaluates to the same
 value as the expression `x`.
-
 
 
