@@ -483,7 +483,7 @@ infixl 6 -
 -- | Instances must satisfy the following law in addition to the `Semiring`
 -- | laws:
 -- |
--- | - Additive inverse: `a + (-a) = (-a) + a = zero`
+-- | - Additive inverse: `a - a = (zero - a) + a = zero`
 class (Semiring a) <= Ring a where
   sub :: a -> a -> a
 
@@ -500,6 +500,7 @@ instance ringUnit :: Ring Unit where
 (-) :: forall a. (Ring a) => a -> a -> a
 (-) = sub
 
+-- | `negate x` can be used as a shorthand for `zero - x`.
 negate :: forall a. (Ring a) => a -> a
 negate a = zero - a
 
