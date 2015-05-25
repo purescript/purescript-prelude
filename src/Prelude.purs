@@ -456,6 +456,12 @@ instance semiringNumber :: Semiring Number where
   mul = numMul
   one = 1.0
 
+instance semiringBoolean :: Semiring Boolean where
+  add = (||)
+  zero = false
+  mul = (&&)
+  one = true
+
 instance semiringUnit :: Semiring Unit where
   add _ _ = unit
   zero = unit

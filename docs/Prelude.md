@@ -515,6 +515,7 @@ class Semiring a where
 ``` purescript
 instance semiringInt :: Semiring Int
 instance semiringNumber :: Semiring Number
+instance semiringBoolean :: Semiring Boolean
 instance semiringUnit :: Semiring Unit
 ```
 
