@@ -571,7 +571,7 @@ and subtraction operations.
 Instances must satisfy the following law in addition to the `Semiring`
 laws:
 
-- Additive inverse: `a + (-a) = (-a) + a = zero`
+- Additive inverse: `a - a = (zero - a) + a = zero`
 
 #### `(-)`
 
@@ -586,6 +586,8 @@ laws:
 ``` purescript
 negate :: forall a. (Ring a) => a -> a
 ```
+
+`negate x` can be used as a shorthand for `zero - x`.
 
 #### `ModuloSemiring`
 
@@ -975,6 +977,5 @@ a human-readable `String` representation.
 While not required, it is recommended that for any expression `x`, the
 string `show x` be executable PureScript code which evaluates to the same
 value as the expression `x`.
-
 
 
