@@ -551,6 +551,14 @@ Instances must satisfy the following laws:
 
 `(*)` is an alias for `mul`.
 
+#### `succ`
+
+``` purescript
+succ :: forall a. (Semiring a) => a -> a
+```
+
+Adds `one` to a value.
+
 #### `Ring`
 
 ``` purescript
@@ -589,6 +597,23 @@ negate :: forall a. (Ring a) => a -> a
 
 `negate x` can be used as a shorthand for `zero - x`.
 
+#### `pred`
+
+``` purescript
+pred :: forall a. (Ring a) => a -> a
+```
+
+Subtracts `one` from a value.
+
+#### `abs`
+
+``` purescript
+abs :: forall a. (Ord a, Ring a) => a -> a
+```
+
+The absolute value of a value. Defined as
+`if x <= zero then negate x else x`.
+
 #### `ModuloSemiring`
 
 ``` purescript
@@ -619,6 +644,15 @@ laws:
 ```
 
 `(/)` is an alias for `div`.
+
+#### `sigNum`
+
+``` purescript
+sigNum :: forall a. (Ord a, Ring a, ModuloSemiring a) => a -> a
+```
+
+The 'sign' of a value. Defined as
+`if x == zero then zero else x / abs x`.
 
 #### `DivisionRing`
 
@@ -678,6 +712,7 @@ instance eqString :: Eq String
 instance eqUnit :: Eq Unit
 instance eqArray :: (Eq a) => Eq (Array a)
 instance eqOrdering :: Eq Ordering
+instance eqDesc :: (Eq a) => Eq (Desc a)
 ```
 
 The `Eq` type class represents types which support decidable equality.
@@ -701,6 +736,16 @@ The `Eq` type class represents types which support decidable equality.
 ``` purescript
 (/=) :: forall a. (Eq a) => a -> a -> Boolean
 ```
+
+#### `equaling`
+
+``` purescript
+equaling :: forall a b. (Eq b) => (a -> b) -> a -> a -> Boolean
+```
+
+Given a function `a -> b`, create a new binary function which takes two
+`a` values and returns true if and only if the results of the given
+function are equal.
 
 #### `Ordering`
 
@@ -744,6 +789,7 @@ instance ordChar :: Ord Char
 instance ordUnit :: Ord Unit
 instance ordArray :: (Ord a) => Ord (Array a)
 instance ordOrdering :: Ord Ordering
+instance ordDesc :: (Ord a) => Ord (Desc a)
 ```
 
 The `Ord` type class represents types which support comparisons.
@@ -785,6 +831,80 @@ Test whether one value is _non-strictly less than_ another.
 ```
 
 Test whether one value is _non-strictly greater than_ another.
+
+#### `min`
+
+``` purescript
+min :: forall a. (Ord a) => a -> a -> a
+```
+
+Choose the smaller of two values. If they compare `EQ`, the first is
+chosen. For example: `min 0 1 == 0`.
+
+#### `max`
+
+``` purescript
+max :: forall a. (Ord a) => a -> a -> a
+```
+
+Choose the larger of two values. If they compare `EQ`, the first is
+chosen. For example: `max 0 1 == 1`.
+
+#### `clamp`
+
+``` purescript
+clamp :: forall a. (Ord a) => a -> a -> a -> a
+```
+
+Ensure that a value is between a lower and upper bound. For example:
+`let f = clamp 0 10 in map f [-5, 5, 15] == [0, 5, 10]`
+
+#### `between`
+
+``` purescript
+between :: forall a. (Ord a) => a -> a -> a -> Boolean
+```
+
+Test if a value is between two other values. For example:
+`let f = between 0 10 in map f [-5, 5, 15] = [false, true, false]`
+
+#### `ascending`
+
+``` purescript
+ascending :: forall a b. (Ord b) => (a -> b) -> a -> a -> Ordering
+```
+
+Compare two values based on the results of applying the given function
+to both of them. Useful with functions like `Data.Array.sortBy`. For
+example, `sortBy (ascending _.x)` will sort an array of records by their
+`x` property, in ascending order.
+
+#### `descending`
+
+``` purescript
+descending :: forall a b. (Ord b) => (a -> b) -> a -> a -> Ordering
+```
+
+Compare two values based on the results of applying the given function
+to both of them, but flipped. Useful with functions like
+`Data.Array.sortBy`. For example, `sortBy (descending _.x)` will sort an
+array of records by their `x` property, in descending order.
+
+#### `Desc`
+
+``` purescript
+newtype Desc a
+  = Desc a
+```
+
+##### Instances
+``` purescript
+instance eqDesc :: (Eq a) => Eq (Desc a)
+instance ordDesc :: (Ord a) => Ord (Desc a)
+```
+
+The `Desc` newtype reverses the order of a type's `Ord` instance. For
+example: `Desc 5 < Desc 6 == true`.
 
 #### `Bounded`
 
