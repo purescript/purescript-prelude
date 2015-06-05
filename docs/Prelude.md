@@ -17,10 +17,6 @@ instance numUnit :: Num Unit
 instance eqUnit :: Eq Unit
 instance ordUnit :: Ord Unit
 instance boundedUnit :: Bounded Unit
-instance latticeUnit :: Lattice Unit
-instance boundedLatticeUnit :: BoundedLattice Unit
-instance complementedLatticeUnit :: ComplementedLattice Unit
-instance distributiveLatticeUnit :: DistributiveLattice Unit
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
 instance showUnit :: Show Unit
 ```
@@ -809,135 +805,13 @@ Instances should satisfy the following law in addition to the `Ord` laws:
 
 - Ordering: `bottom <= a <= top`
 
-#### `Lattice`
-
-``` purescript
-class (Ord a) <= Lattice a where
-  sup :: a -> a -> a
-  inf :: a -> a -> a
-```
-
-##### Instances
-``` purescript
-instance latticeBoolean :: Lattice Boolean
-instance latticeUnit :: Lattice Unit
-```
-
-The `Lattice` type class represents types that are partially ordered
-sets with a supremum (`sup` or `||`) and infimum (`inf` or `&&`).
-
-Instances should satisfy the following laws in addition to the `Ord`
-laws:
-
-- Supremum:
-  - `a || b >= a`
-  - `a || b >= b`
-- Infimum:
-  - `a && b <= a`
-  - `a && b <= b`
-- Associativity:
-  - `a || (b || c) = (a || b) || c`
-  - `a && (b && c) = (a && b) && c`
-- Commutativity:
-  - `a || b = b || a`
-  - `a && b = b && a`
-- Absorption:
-  - `a || (a && b) = a`
-  - `a && (a || b) = a`
-- Idempotent:
-  - `a || a = a`
-  - `a && a = a`
-
-#### `(||)`
-
-``` purescript
-(||) :: forall a. (Lattice a) => a -> a -> a
-```
-
-The `sup` operator.
-
-#### `(&&)`
-
-``` purescript
-(&&) :: forall a. (Lattice a) => a -> a -> a
-```
-
-The `inf` operator.
-
-#### `BoundedLattice`
-
-``` purescript
-class (Bounded a, Lattice a) <= BoundedLattice a
-```
-
-##### Instances
-``` purescript
-instance boundedLatticeBoolean :: BoundedLattice Boolean
-instance boundedLatticeUnit :: BoundedLattice Unit
-```
-
-The `BoundedLattice` type class represents types that are finite
-lattices.
-
-Instances should satisfy the following law in addition to the `Lattice`
-and `Bounded` laws:
-
-- Identity:
-  - `a || bottom = a`
-  - `a && top = a`
-- Annihiliation:
-  - `a || top = top`
-  - `a && bottom = bottom`
-
-#### `ComplementedLattice`
-
-``` purescript
-class (BoundedLattice a) <= ComplementedLattice a where
-  not :: a -> a
-```
-
-##### Instances
-``` purescript
-instance complementedLatticeBoolean :: ComplementedLattice Boolean
-instance complementedLatticeUnit :: ComplementedLattice Unit
-```
-
-The `ComplementedLattice` type class represents types that are lattices
-where every member is also uniquely complemented.
-
-Instances should satisfy the following law in addition to the
-`BoundedLattice` laws:
-
-- Complemented:
-  - `not a || a == top`
-  - `not a && a == bottom`
-- Double negation:
-  - `not <<< not == id`
-
-#### `DistributiveLattice`
-
-``` purescript
-class (Lattice a) <= DistributiveLattice a
-```
-
-##### Instances
-``` purescript
-instance distributiveLatticeBoolean :: DistributiveLattice Boolean
-instance distributiveLatticeUnit :: DistributiveLattice Unit
-```
-
-The `DistributiveLattice` type class represents types that are lattices
-where the `&&` and `||` distribute over each other.
-
-Instances should satisfy the following law in addition to the `Lattice`
-laws:
-
-- Distributivity: `x && (y || z) = (x && y) || (x && z)`
-
 #### `BooleanAlgebra`
 
 ``` purescript
-class (ComplementedLattice a, DistributiveLattice a) <= BooleanAlgebra a
+class (Bounded a) <= BooleanAlgebra a where
+  conj :: a -> a -> a
+  disj :: a -> a -> a
+  not :: a -> a
 ```
 
 ##### Instances
@@ -946,11 +820,35 @@ instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
 ```
 
-The `BooleanAlgebra` type class represents types that are Boolean
-algebras, also known as Boolean lattices.
+The `BooleanAlgebra` type class represents types that behave like boolean
+values.
 
-Instances should satisfy the `ComplementedLattice` and
-`DistributiveLattice` laws.
+Instances should satisfy the following laws in addition to the `Bounded`
+laws:
+
+- Associativity:
+  - `a || (b || c) = (a || b) || c`
+  - `a && (b && c) = (a && b) && c`
+- Commutativity:
+  - `a || b = b || a`
+  - `a && b = b && a`
+- Distributivity:
+  - `a && (b || c) = (a && b) || (a && c)`
+  - `a || (b && c) = (a || b) && (a || c)`
+- Identity:
+  - `a || bottom = a`
+  - `a && top = a`
+- Idempotent:
+  - `a || a = a`
+  - `a && a = a`
+- Absorption:
+  - `a || (a && b) = a`
+  - `a && (a || b) = a`
+- Annhiliation:
+  - `a || top = top`
+- Complementation:
+  - `a && not a = bottom`
+  - `a || not a = top`
 
 #### `Show`
 
