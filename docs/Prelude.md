@@ -850,6 +850,22 @@ laws:
   - `a && not a = bottom`
   - `a || not a = top`
 
+#### `(||)`
+
+``` purescript
+(||) :: forall a. (BooleanAlgebra a) => a -> a -> a
+```
+
+The `conj` operator.
+
+#### `(&&)`
+
+``` purescript
+(&&) :: forall a. (BooleanAlgebra a) => a -> a -> a
+```
+
+The `disj` operator.
+
 #### `Show`
 
 ``` purescript

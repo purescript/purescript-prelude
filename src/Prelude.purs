@@ -21,7 +21,7 @@ module Prelude
   , Eq, eq, (==), (/=)
   , Ordering(..), Ord, compare, (<), (>), (<=), (>=)
   , Bounded, top, bottom
-  , BooleanAlgebra, conj, disj, not
+  , BooleanAlgebra, conj, disj, not, (&&), (||)
   , Show, show
   ) where
 
