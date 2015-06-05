@@ -21,11 +21,7 @@ module Prelude
   , Eq, eq, (==), (/=)
   , Ordering(..), Ord, compare, (<), (>), (<=), (>=)
   , Bounded, top, bottom
-  , Lattice, sup, inf, (||), (&&)
-  , BoundedLattice
-  , ComplementedLattice, not
-  , DistributiveLattice
-  , BooleanAlgebra
+  , BooleanAlgebra, conj, disj, not
   , Show, show
   ) where
 
@@ -729,117 +725,64 @@ instance boundedInt :: Bounded Int where
   top = 2147483647
   bottom = -2147483648
 
--- | The `Lattice` type class represents types that are partially ordered
--- | sets with a supremum (`sup` or `||`) and infimum (`inf` or `&&`).
+-- | The `BooleanAlgebra` type class represents types that behave like boolean
+-- | values.
 -- |
--- | Instances should satisfy the following laws in addition to the `Ord`
+-- | Instances should satisfy the following laws in addition to the `Bounded`
 -- | laws:
 -- |
--- | - Supremum:
--- |   - `a || b >= a`
--- |   - `a || b >= b`
--- | - Infimum:
--- |   - `a && b <= a`
--- |   - `a && b <= b`
 -- | - Associativity:
 -- |   - `a || (b || c) = (a || b) || c`
 -- |   - `a && (b && c) = (a && b) && c`
 -- | - Commutativity:
 -- |   - `a || b = b || a`
 -- |   - `a && b = b && a`
--- | - Absorption:
--- |   - `a || (a && b) = a`
--- |   - `a && (a || b) = a`
+-- | - Distributivity:
+-- |   - `a && (b || c) = (a && b) || (a && c)`
+-- |   - `a || (b && c) = (a || b) && (a || c)`
+-- | - Identity:
+-- |   - `a || bottom = a`
+-- |   - `a && top = a`
 -- | - Idempotent:
 -- |   - `a || a = a`
 -- |   - `a && a = a`
-class (Ord a) <= Lattice a where
-  sup :: a -> a -> a
-  inf :: a -> a -> a
+-- | - Absorption:
+-- |   - `a || (a && b) = a`
+-- |   - `a && (a || b) = a`
+-- | - Annhiliation:
+-- |   - `a || top = top`
+-- | - Complementation:
+-- |   - `a && not a = bottom`
+-- |   - `a || not a = top`
+class (Bounded a) <= BooleanAlgebra a where
+  conj :: a -> a -> a
+  disj :: a -> a -> a
+  not :: a -> a
 
-instance latticeBoolean :: Lattice Boolean where
-  sup = boolOr
-  inf = boolAnd
+instance booleanAlgebraBoolean :: BooleanAlgebra Boolean where
+  conj = boolAnd
+  disj = boolOr
+  not = boolNot
 
-instance latticeUnit :: Lattice Unit where
-  sup _ _ = unit
-  inf _ _ = unit
+instance booleanAlgebraUnit :: BooleanAlgebra Unit where
+  conj _ _ = unit
+  disj _ _ = unit
+  not _ = unit
 
 infixr 2 ||
 infixr 3 &&
 
--- | The `sup` operator.
-(||) :: forall a. (Lattice a) => a -> a -> a
-(||) = sup
+-- | The `conj` operator.
+(||) :: forall a. (BooleanAlgebra a) => a -> a -> a
+(||) = conj
 
--- | The `inf` operator.
-(&&) :: forall a. (Lattice a) => a -> a -> a
-(&&) = inf
+-- | The `disj` operator.
+(&&) :: forall a. (BooleanAlgebra a) => a -> a -> a
+(&&) = disj
 
 foreign import boolOr :: Boolean -> Boolean -> Boolean
 foreign import boolAnd :: Boolean -> Boolean -> Boolean
-
--- | The `BoundedLattice` type class represents types that are finite
--- | lattices.
--- |
--- | Instances should satisfy the following law in addition to the `Lattice`
--- | and `Bounded` laws:
--- |
--- | - Identity:
--- |   - `a || bottom = a`
--- |   - `a && top = a`
--- | - Annihiliation:
--- |   - `a || top = top`
--- |   - `a && bottom = bottom`
-class (Bounded a, Lattice a) <= BoundedLattice a
-
-instance boundedLatticeBoolean :: BoundedLattice Boolean
-
-instance boundedLatticeUnit :: BoundedLattice Unit
-
--- | The `ComplementedLattice` type class represents types that are lattices
--- | where every member is also uniquely complemented.
--- |
--- | Instances should satisfy the following law in addition to the
--- | `BoundedLattice` laws:
--- |
--- | - Complemented:
--- |   - `not a || a == top`
--- |   - `not a && a == bottom`
--- | - Double negation:
--- |   - `not <<< not == id`
-class (BoundedLattice a) <= ComplementedLattice a where
-  not :: a -> a
-
-instance complementedLatticeBoolean :: ComplementedLattice Boolean where
-  not = boolNot
-
-instance complementedLatticeUnit :: ComplementedLattice Unit where
-  not _ = unit
-
 foreign import boolNot :: Boolean -> Boolean
-
--- | The `DistributiveLattice` type class represents types that are lattices
--- | where the `&&` and `||` distribute over each other.
--- |
--- | Instances should satisfy the following law in addition to the `Lattice`
--- | laws:
--- |
--- | - Distributivity: `x && (y || z) = (x && y) || (x && z)`
-class (Lattice a) <= DistributiveLattice a
-
-instance distributiveLatticeBoolean :: DistributiveLattice Boolean
-instance distributiveLatticeUnit :: DistributiveLattice Unit
-
--- | The `BooleanAlgebra` type class represents types that are Boolean
--- | algebras, also known as Boolean lattices.
--- |
--- | Instances should satisfy the `ComplementedLattice` and
--- | `DistributiveLattice` laws.
-class (ComplementedLattice a, DistributiveLattice a) <= BooleanAlgebra a
-
-instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
-instance booleanAlgebraUnit :: BooleanAlgebra Unit
 
 -- | The `Show` type class represents those types which can be converted into
 -- | a human-readable `String` representation.
