@@ -13,13 +13,13 @@ module Prelude
   , Bind, bind, (>>=)
   , Monad, return, liftM1, ap
   , Semigroup, append, (<>), (++)
-  , Semiring, add, zero, mul, one, (+), (*)
-  , ModuloSemiring, div, mod, (/)
-  , Ring, sub, negate, (-)
+  , Semiring, add, zero, mul, one, (+), (*), succ
+  , ModuloSemiring, div, mod, (/), sigNum
+  , Ring, sub, negate, (-), pred, abs
   , Num
   , DivisionRing
-  , Eq, eq, (==), (/=)
-  , Ordering(..), Ord, compare, (<), (>), (<=), (>=)
+  , Eq, eq, (==), (/=), equaling
+  , Ordering(..), Ord, compare, (<), (>), (<=), (>=), min, max, clamp, between, ascending, descending, Desc(..)
   , Bounded, top, bottom
   , BooleanAlgebra, conj, disj, not, (&&), (||)
   , Show, show
@@ -471,6 +471,10 @@ foreign import intMul :: Int -> Int -> Int
 foreign import numAdd :: Number -> Number -> Number
 foreign import numMul :: Number -> Number -> Number
 
+-- | Adds `one` to a value.
+succ :: forall a. (Semiring a) => a -> a
+succ x = x + one
+
 infixl 6 -
 
 -- | The `Ring` class is for types that support addition, multiplication,
@@ -502,6 +506,15 @@ negate a = zero - a
 
 foreign import intSub :: Int -> Int -> Int
 foreign import numSub :: Number -> Number -> Number
+
+-- | Subtracts `one` from a value.
+pred :: forall a. (Ring a) => a -> a
+pred x = x - one
+
+-- | The absolute value of a value. Defined as
+-- | `if x <= zero then negate x else x`.
+abs :: forall a. (Ord a, Ring a) => a -> a
+abs x = if x <= zero then negate x else x
 
 infixl 7 /
 
@@ -535,6 +548,11 @@ instance moduloSemiringUnit :: ModuloSemiring Unit where
 foreign import intDiv :: Int -> Int -> Int
 foreign import numDiv :: Number -> Number -> Number
 foreign import intMod :: Int -> Int -> Int
+
+-- | The 'sign' of a value. Defined as
+-- | `if x == zero then zero else x / abs x`.
+sigNum :: forall a. (Ord a, Ring a, ModuloSemiring a) => a -> a
+sigNum x = if x == zero then zero else x / abs x
 
 -- | A `Ring` where every nonzero element has a multiplicative inverse.
 -- |
@@ -607,6 +625,12 @@ instance eqOrdering :: Eq Ordering where
   eq GT GT = true
   eq EQ EQ = true
   eq _  _  = false
+
+-- | Given a function `a -> b`, create a new binary function which takes two
+-- | `a` values and returns true if and only if the results of the given
+-- | function are equal.
+equaling :: forall a b. (Eq b) => (a -> b) -> a -> a -> Boolean
+equaling f x y = f x == f y
 
 foreign import refEq :: forall a. a -> a -> Boolean
 foreign import refIneq :: forall a. a -> a -> Boolean
@@ -698,6 +722,50 @@ unsafeCompare :: forall a. a -> a -> Ordering
 unsafeCompare = unsafeCompareImpl LT EQ GT
 
 foreign import unsafeCompareImpl :: forall a. Ordering -> Ordering -> Ordering -> a -> a -> Ordering
+
+-- | Choose the smaller of two values. If they compare `EQ`, the first is
+-- | chosen. For example: `min 0 1 == 0`.
+min :: forall a. (Ord a) => a -> a -> a
+min x y = if x <= y then x else y
+
+-- | Choose the larger of two values. If they compare `EQ`, the first is
+-- | chosen. For example: `max 0 1 == 1`.
+max :: forall a. (Ord a) => a -> a -> a
+max x y = if x >= y then x else y
+
+-- | Ensure that a value is between a lower and upper bound. For example:
+-- | `let f = clamp 0 10 in map f [-5, 5, 15] == [0, 5, 10]`
+clamp :: forall a. (Ord a) => a -> a -> a -> a
+clamp low high x = max low (min high x)
+
+-- | Test if a value is between two other values. For example:
+-- | `let f = between 0 10 in map f [-5, 5, 15] = [false, true, false]`
+between :: forall a. (Ord a) => a -> a -> a -> Boolean
+between low high x = low <= x && x <= high
+
+-- | Compare two values based on the results of applying the given function
+-- | to both of them. Useful with functions like `Data.Array.sortBy`. For
+-- | example, `sortBy (ascending _.x)` will sort an array of records by their
+-- | `x` property, in ascending order.
+ascending :: forall a b. (Ord b) => (a -> b) -> a -> a -> Ordering
+ascending f x y = compare (f x) (f y)
+
+-- | Compare two values based on the results of applying the given function
+-- | to both of them, but flipped. Useful with functions like
+-- | `Data.Array.sortBy`. For example, `sortBy (descending _.x)` will sort an
+-- | array of records by their `x` property, in descending order.
+descending :: forall a b. (Ord b) => (a -> b) -> a -> a -> Ordering
+descending f x y = compare (f y) (f x)
+
+-- | The `Desc` newtype reverses the order of a type's `Ord` instance. For
+-- | example: `Desc 5 < Desc 6 == true`.
+newtype Desc a = Desc a
+
+instance eqDesc :: (Eq a) => Eq (Desc a) where
+  eq (Desc x) (Desc y) = x == y
+
+instance ordDesc :: (Ord a) => Ord (Desc a) where
+  compare (Desc x) (Desc y) = compare y x
 
 -- | The `Bounded` type class represents types that are finite partially
 -- | ordered sets.
