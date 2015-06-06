@@ -1,6 +1,8 @@
 
 module Test.Main where
 
+import Prelude
+
 import Console (log)
 import Control.Monad.Eff
 
