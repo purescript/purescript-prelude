@@ -160,6 +160,8 @@ with `(<<<)` defined as function composition.
 (<<<) :: forall a b c d. (Semigroupoid a) => a c d -> a b c -> a b d
 ```
 
+`(<<<)` is an alias for `compose`.
+
 #### `(>>>)`
 
 ``` purescript
@@ -219,6 +221,8 @@ Instances must satisfy the following laws:
 ``` purescript
 (<$>) :: forall f a b. (Functor f) => (a -> b) -> f a -> f b
 ```
+
+`(<$>)` is an alias for `map`
 
 #### `(<#>)`
 
@@ -292,6 +296,8 @@ Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
 ``` purescript
 (<*>) :: forall f a b. (Apply f) => f (a -> b) -> f a -> f b
 ```
+
+`(<*>)` is an alias for `apply`.
 
 #### `Applicative`
 
@@ -398,6 +404,8 @@ do x <- m1
 (>>=) :: forall m a b. (Bind m) => m a -> (a -> m b) -> m b
 ```
 
+`(>>=)` is an alias for `bind`.
+
 #### `Monad`
 
 ``` purescript
@@ -496,7 +504,7 @@ concatenation.
 (++) :: forall s. (Semigroup s) => s -> s -> s
 ```
 
-`(++)` is an alias for `append`.
+`(++)` is an alternative alias for `append`.
 
 #### `Semiring`
 
@@ -691,13 +699,16 @@ The `Eq` type class represents types which support decidable equality.
 (==) :: forall a. (Eq a) => a -> a -> Boolean
 ```
 
-`(==)` is an alias for `eq`.
+`(==)` is an alias for `eq`. Tests whether one value is equal to another.
 
 #### `(/=)`
 
 ``` purescript
 (/=) :: forall a. (Eq a) => a -> a -> Boolean
 ```
+
+`(/=)` tests whether one value is _not equal_ to another. Shorthand for
+`not (x == y)`.
 
 #### `Ordering`
 
@@ -857,21 +868,21 @@ laws:
   - `a && not a = bottom`
   - `a || not a = top`
 
-#### `(||)`
-
-``` purescript
-(||) :: forall a. (BooleanAlgebra a) => a -> a -> a
-```
-
-The `conj` operator.
-
 #### `(&&)`
 
 ``` purescript
 (&&) :: forall a. (BooleanAlgebra a) => a -> a -> a
 ```
 
-The `disj` operator.
+`(&&)` is an alias for `conj`.
+
+#### `(||)`
+
+``` purescript
+(||) :: forall a. (BooleanAlgebra a) => a -> a -> a
+```
+
+`(||)` is an alias for `disj`.
 
 #### `Show`
 

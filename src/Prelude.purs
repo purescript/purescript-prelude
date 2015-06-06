@@ -111,9 +111,6 @@ asTypeOf x _ = x
 otherwise :: Boolean
 otherwise = true
 
-infixr 9 >>>
-infixr 9 <<<
-
 -- | A `Semigroupoid` is similar to a [`Category`](#category) but does not
 -- | require an identity element `id`, just composable morphisms.
 -- |
@@ -129,6 +126,10 @@ class Semigroupoid a where
 instance semigroupoidFn :: Semigroupoid (->) where
   compose f g x = f (g x)
 
+infixr 9 >>>
+infixr 9 <<<
+
+-- | `(<<<)` is an alias for `compose`.
 (<<<) :: forall a b c d. (Semigroupoid a) => a c d -> a b c -> a b d
 (<<<) = compose
 
@@ -149,9 +150,6 @@ class (Semigroupoid a) <= Category a where
 
 instance categoryFn :: Category (->) where
   id x = x
-
-infixl 4 <$>
-infixl 1 <#>
 
 -- | A `Functor` is a type constructor which supports a mapping operation
 -- | `(<$>)`.
@@ -175,6 +173,10 @@ instance functorArray :: Functor Array where
 
 foreign import arrayMap :: forall a b. (a -> b) -> Array a -> Array b
 
+infixl 4 <$>
+infixl 1 <#>
+
+-- | `(<$>)` is an alias for `map`
 (<$>) :: forall f a b. (Functor f) => (a -> b) -> f a -> f b
 (<$>) = map
 
@@ -200,8 +202,6 @@ foreign import arrayMap :: forall a b. (a -> b) -> Array a -> Array b
 -- | ```
 void :: forall f a. (Functor f) => f a -> f Unit
 void fa = const unit <$> fa
-
-infixl 4 <*>
 
 -- | The `Apply` class provides the `(<*>)` which is used to apply a function
 -- | to an argument under a type constructor.
@@ -234,6 +234,9 @@ instance applyFn :: Apply ((->) r) where
 instance applyArray :: Apply Array where
   apply = ap
 
+infixl 4 <*>
+
+-- | `(<*>)` is an alias for `apply`.
 (<*>) :: forall f a b. (Apply f) => f (a -> b) -> f a -> f b
 (<*>) = apply
 
@@ -283,8 +286,6 @@ return = pure
 liftA1 :: forall f a b. (Applicative f) => (a -> b) -> f a -> f b
 liftA1 f a = pure f <*> a
 
-infixl 1 >>=
-
 -- | The `Bind` type class extends the [`Apply`](#apply) type class with a
 -- | "bind" operation `(>>=)` which composes computations in sequence, using
 -- | the return value of one computation to determine the next computation.
@@ -322,6 +323,9 @@ instance bindArray :: Bind Array where
 
 foreign import arrayBind :: forall a b. Array a -> (a -> Array b) -> Array b
 
+infixl 1 >>=
+
+-- | `(>>=)` is an alias for `bind`.
 (>>=) :: forall m a b. (Bind m) => m a -> (a -> m b) -> m b
 (>>=) = bind
 
@@ -373,9 +377,6 @@ ap f a = do
   a' <- a
   return (f' a')
 
-infixr 5 <>
-infixr 5 ++
-
 -- | The `Semigroup` type class identifies an associative operation on a type.
 -- |
 -- | Instances are required to satisfy the following law:
@@ -387,11 +388,14 @@ infixr 5 ++
 class Semigroup a where
   append :: a -> a -> a
 
+infixr 5 <>
+infixr 5 ++
+
 -- | `(<>)` is an alias for `append`.
 (<>) :: forall s. (Semigroup s) => s -> s -> s
 (<>) = append
 
--- | `(++)` is an alias for `append`.
+-- | `(++)` is an alternative alias for `append`.
 (++) :: forall s. (Semigroup s) => s -> s -> s
 (++) = append
 
@@ -414,9 +418,6 @@ instance semigroupArray :: Semigroup (Array a) where
 
 foreign import concatString :: String -> String -> String
 foreign import concatArray :: forall a. Array a -> Array a -> Array a
-
-infixl 6 +
-infixl 7 *
 
 -- | The `Semiring` class is for types that support an addition and
 -- | multiplication operation.
@@ -458,6 +459,9 @@ instance semiringUnit :: Semiring Unit where
   mul _ _ = unit
   one = unit
 
+infixl 6 +
+infixl 7 *
+
 -- | `(+)` is an alias for `add`.
 (+) :: forall a. (Semiring a) => a -> a -> a
 (+) = add
@@ -470,8 +474,6 @@ foreign import intAdd :: Int -> Int -> Int
 foreign import intMul :: Int -> Int -> Int
 foreign import numAdd :: Number -> Number -> Number
 foreign import numMul :: Number -> Number -> Number
-
-infixl 6 -
 
 -- | The `Ring` class is for types that support addition, multiplication,
 -- | and subtraction operations.
@@ -492,6 +494,8 @@ instance ringNumber :: Ring Number where
 instance ringUnit :: Ring Unit where
   sub _ _ = unit
 
+infixl 6 -
+
 -- | `(-)` is an alias for `sub`.
 (-) :: forall a. (Ring a) => a -> a -> a
 (-) = sub
@@ -502,8 +506,6 @@ negate a = zero - a
 
 foreign import intSub :: Int -> Int -> Int
 foreign import numSub :: Number -> Number -> Number
-
-infixl 7 /
 
 -- | The `ModuloSemiring` class is for types that support addition,
 -- | multiplication, division, and modulo (division remainder) operations.
@@ -527,6 +529,8 @@ instance moduloSemiringNumber :: ModuloSemiring Number where
 instance moduloSemiringUnit :: ModuloSemiring Unit where
   div _ _ = unit
   mod _ _ = unit
+
+infixl 7 /
 
 -- | `(/)` is an alias for `div`.
 (/) :: forall a. (ModuloSemiring a) => a -> a -> a
@@ -561,9 +565,6 @@ class (DivisionRing a) <= Num a
 instance numNumber :: Num Number
 instance numUnit :: Num Unit
 
-infix 4 ==
-infix 4 /=
-
 -- | The `Eq` type class represents types which support decidable equality.
 -- |
 -- | `Eq` instances should satisfy the following laws:
@@ -574,10 +575,15 @@ infix 4 /=
 class Eq a where
   eq :: a -> a -> Boolean
 
--- | `(==)` is an alias for `eq`.
+infix 4 ==
+infix 4 /=
+
+-- | `(==)` is an alias for `eq`. Tests whether one value is equal to another.
 (==) :: forall a. (Eq a) => a -> a -> Boolean
 (==) = eq
 
+-- | `(/=)` tests whether one value is _not equal_ to another. Shorthand for
+-- | `not (x == y)`.
 (/=) :: forall a. (Eq a) => a -> a -> Boolean
 (/=) x y = not (x == y)
 
@@ -793,16 +799,16 @@ instance booleanAlgebraFn :: (BooleanAlgebra b) => BooleanAlgebra (a -> b) where
   disj fx fy a = fx a `disj` fy a
   not fx a = not (fx a)
 
-infixr 2 ||
 infixr 3 &&
+infixr 2 ||
 
--- | The `conj` operator.
-(||) :: forall a. (BooleanAlgebra a) => a -> a -> a
-(||) = conj
-
--- | The `disj` operator.
+-- | `(&&)` is an alias for `conj`.
 (&&) :: forall a. (BooleanAlgebra a) => a -> a -> a
-(&&) = disj
+(&&) = conj
+
+-- | `(||)` is an alias for `disj`.
+(||) :: forall a. (BooleanAlgebra a) => a -> a -> a
+(||) = disj
 
 foreign import boolOr :: Boolean -> Boolean -> Boolean
 foreign import boolAnd :: Boolean -> Boolean -> Boolean
