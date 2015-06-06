@@ -822,6 +822,26 @@ The lack of explicit `Ord` constraint allows flexibility in the use of
 `Bounded` so it can apply to total and partially ordered sets, boolean
 algebras, etc.
 
+#### `BoundedOrd`
+
+``` purescript
+class (Bounded a, Ord a) <= BoundedOrd a
+```
+
+##### Instances
+``` purescript
+instance boundedOrdBoolean :: BoundedOrd Boolean
+instance boundedOrdUnit :: BoundedOrd Unit
+instance boundedOrdOrdering :: BoundedOrd Ordering
+instance boundedOrdInt :: BoundedOrd Int
+```
+
+The `BoundedOrd` type class represents totally ordered finite data types.
+
+Instances should satisfy the following law in addition to the `Ord` laws:
+
+- Ordering: `bottom <= a <= top`
+
 #### `BooleanAlgebra`
 
 ``` purescript
