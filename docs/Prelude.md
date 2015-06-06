@@ -17,6 +17,7 @@ instance numUnit :: Num Unit
 instance eqUnit :: Eq Unit
 instance ordUnit :: Ord Unit
 instance boundedUnit :: Bounded Unit
+instance boundedOrdUnit :: BoundedOrd Unit
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
 instance showUnit :: Show Unit
 ```
@@ -713,6 +714,7 @@ instance semigroupOrdering :: Semigroup Ordering
 instance eqOrdering :: Eq Ordering
 instance ordOrdering :: Ord Ordering
 instance boundedOrdering :: Bounded Ordering
+instance boundedOrdOrdering :: BoundedOrd Ordering
 instance showOrdering :: Show Ordering
 ```
 
@@ -785,7 +787,7 @@ Test whether one value is _non-strictly greater than_ another.
 #### `Bounded`
 
 ``` purescript
-class (Ord a) <= Bounded a where
+class Bounded a where
   top :: a
   bottom :: a
 ```
@@ -796,14 +798,18 @@ instance boundedBoolean :: Bounded Boolean
 instance boundedUnit :: Bounded Unit
 instance boundedOrdering :: Bounded Ordering
 instance boundedInt :: Bounded Int
+instance boundedFn :: (Bounded b) => Bounded (a -> b)
 ```
 
-The `Bounded` type class represents types that are finite partially
-ordered sets.
+The `Bounded` type class represents types that are finite.
 
-Instances should satisfy the following law in addition to the `Ord` laws:
+Although there are no "internal" laws for `Bounded`, every value of `a`
+should be considered less than or equal to `top` by some means, and greater
+than or equal to `bottom`.
 
-- Ordering: `bottom <= a <= top`
+The lack of explicit `Ord` constraint allows flexibility in the use of
+`Bounded` so it can apply to total and partially ordered sets, boolean
+algebras, etc.
 
 #### `BooleanAlgebra`
 
@@ -818,6 +824,7 @@ class (Bounded a) <= BooleanAlgebra a where
 ``` purescript
 instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
+instance booleanAlgebraFn :: (BooleanAlgebra b) => BooleanAlgebra (a -> b)
 ```
 
 The `BooleanAlgebra` type class represents types that behave like boolean

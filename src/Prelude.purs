@@ -699,13 +699,16 @@ unsafeCompare = unsafeCompareImpl LT EQ GT
 
 foreign import unsafeCompareImpl :: forall a. Ordering -> Ordering -> Ordering -> a -> a -> Ordering
 
--- | The `Bounded` type class represents types that are finite partially
--- | ordered sets.
+-- | The `Bounded` type class represents types that are finite.
 -- |
--- | Instances should satisfy the following law in addition to the `Ord` laws:
+-- | Although there are no "internal" laws for `Bounded`, every value of `a`
+-- | should be considered less than or equal to `top` by some means, and greater
+-- | than or equal to `bottom`.
 -- |
--- | - Ordering: `bottom <= a <= top`
-class (Ord a) <= Bounded a where
+-- | The lack of explicit `Ord` constraint allows flexibility in the use of
+-- | `Bounded` so it can apply to total and partially ordered sets, boolean
+-- | algebras, etc.
+class Bounded a where
   top :: a
   bottom :: a
 
@@ -724,6 +727,22 @@ instance boundedOrdering :: Bounded Ordering where
 instance boundedInt :: Bounded Int where
   top = 2147483647
   bottom = -2147483648
+
+instance boundedFn :: (Bounded b) => Bounded (a -> b) where
+  top _ = top
+  bottom _ = bottom
+
+-- | The `BoundedOrd` type class represents totally ordered finite data types.
+-- |
+-- | Instances should satisfy the following law in addition to the `Ord` laws:
+-- |
+-- | - Ordering: `bottom <= a <= top`
+class (Bounded a, Ord a) <= BoundedOrd a
+
+instance boundedOrdBoolean :: BoundedOrd Boolean where
+instance boundedOrdUnit :: BoundedOrd Unit where
+instance boundedOrdOrdering :: BoundedOrd Ordering where
+instance boundedOrdInt :: BoundedOrd Int where
 
 -- | The `BooleanAlgebra` type class represents types that behave like boolean
 -- | values.
@@ -768,6 +787,11 @@ instance booleanAlgebraUnit :: BooleanAlgebra Unit where
   conj _ _ = unit
   disj _ _ = unit
   not _ = unit
+
+instance booleanAlgebraFn :: (BooleanAlgebra b) => BooleanAlgebra (a -> b) where
+  conj fx fy a = fx a `conj` fy a
+  disj fx fy a = fx a `disj` fy a
+  not fx a = not (fx a)
 
 infixr 2 ||
 infixr 3 &&
