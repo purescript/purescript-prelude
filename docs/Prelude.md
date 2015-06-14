@@ -6,6 +6,13 @@
 newtype Unit
 ```
 
+The `Unit` type has a single inhabitant, called `unit`. It represents
+values with no computational content.
+
+`Unit` is often used, wrapped in a monadic type constructor, as the
+return type of a computation where only
+the _effects_ are important.
+
 ##### Instances
 ``` purescript
 instance semigroupUnit :: Semigroup Unit
@@ -22,13 +29,6 @@ instance booleanAlgebraUnit :: BooleanAlgebra Unit
 instance showUnit :: Show Unit
 ```
 
-The `Unit` type has a single inhabitant, called `unit`. It represents
-values with no computational content.
-
-`Unit` is often used, wrapped in a monadic type constructor, as the
-return type of a computation where only
-the _effects_ are important.
-
 #### `unit`
 
 ``` purescript
@@ -42,6 +42,8 @@ unit :: Unit
 ``` purescript
 ($) :: forall a b. (a -> b) -> a -> b
 ```
+
+_right-associative / precedence 0_
 
 Applies a function to its argument.
 
@@ -63,6 +65,8 @@ left: `a $ b $ c $ d x = a $ (b $ (c $ (d $ x))) = a (b (c (d x)))`
 ``` purescript
 (#) :: forall a b. a -> (a -> b) -> b
 ```
+
+_left-associative / precedence 1_
 
 Applies an argument to a function.
 
@@ -139,11 +143,6 @@ class Semigroupoid a where
   compose :: forall b c d. a c d -> a b c -> a b d
 ```
 
-##### Instances
-``` purescript
-instance semigroupoidFn :: Semigroupoid Function
-```
-
 A `Semigroupoid` is similar to a [`Category`](#category) but does not
 require an identity element `id`, just composable morphisms.
 
@@ -154,11 +153,18 @@ require an identity element `id`, just composable morphisms.
 One example of a `Semigroupoid` is the function type constructor `(->)`,
 with `(<<<)` defined as function composition.
 
+##### Instances
+``` purescript
+instance semigroupoidFn :: Semigroupoid Function
+```
+
 #### `(<<<)`
 
 ``` purescript
 (<<<) :: forall a b c d. (Semigroupoid a) => a c d -> a b c -> a b d
 ```
+
+_right-associative / precedence 9_
 
 `(<<<)` is an alias for `compose`.
 
@@ -168,6 +174,8 @@ with `(<<<)` defined as function composition.
 (>>>) :: forall a b c d. (Semigroupoid a) => a b c -> a c d -> a b d
 ```
 
+_right-associative / precedence 9_
+
 Forwards composition, or `(<<<)` with its arguments reversed.
 
 #### `Category`
@@ -175,11 +183,6 @@ Forwards composition, or `(<<<)` with its arguments reversed.
 ``` purescript
 class (Semigroupoid a) <= Category a where
   id :: forall t. a t t
-```
-
-##### Instances
-``` purescript
-instance categoryFn :: Category Function
 ```
 
 `Category`s consist of objects and composable morphisms between them, and
@@ -191,17 +194,16 @@ Instances must satisfy the following law in addition to the
 
 - Identity: `id <<< p = p <<< id = p`
 
+##### Instances
+``` purescript
+instance categoryFn :: Category Function
+```
+
 #### `Functor`
 
 ``` purescript
 class Functor f where
   map :: forall a b. (a -> b) -> f a -> f b
-```
-
-##### Instances
-``` purescript
-instance functorFn :: Functor (Function r)
-instance functorArray :: Functor Array
 ```
 
 A `Functor` is a type constructor which supports a mapping operation
@@ -216,11 +218,19 @@ Instances must satisfy the following laws:
 - Identity: `(<$>) id = id`
 - Composition: `(<$>) (f <<< g) = (f <$>) <<< (g <$>)`
 
+##### Instances
+``` purescript
+instance functorFn :: Functor (Function r)
+instance functorArray :: Functor Array
+```
+
 #### `(<$>)`
 
 ``` purescript
 (<$>) :: forall f a b. (Functor f) => (a -> b) -> f a -> f b
 ```
+
+_left-associative / precedence 4_
 
 `(<$>)` is an alias for `map`
 
@@ -229,6 +239,8 @@ Instances must satisfy the following laws:
 ``` purescript
 (<#>) :: forall f a b. (Functor f) => f a -> (a -> b) -> f b
 ```
+
+_left-associative / precedence 1_
 
 `(<#>)` is `(<$>)` with its arguments reversed. For example:
 
@@ -262,12 +274,6 @@ class (Functor f) <= Apply f where
   apply :: forall a b. f (a -> b) -> f a -> f b
 ```
 
-##### Instances
-``` purescript
-instance applyFn :: Apply (Function r)
-instance applyArray :: Apply Array
-```
-
 The `Apply` class provides the `(<*>)` which is used to apply a function
 to an argument under a type constructor.
 
@@ -291,11 +297,19 @@ laws:
 
 Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
 
+##### Instances
+``` purescript
+instance applyFn :: Apply (Function r)
+instance applyArray :: Apply Array
+```
+
 #### `(<*>)`
 
 ``` purescript
 (<*>) :: forall f a b. (Apply f) => f (a -> b) -> f a -> f b
 ```
+
+_left-associative / precedence 4_
 
 `(<*>)` is an alias for `apply`.
 
@@ -304,12 +318,6 @@ Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
 ``` purescript
 class (Apply f) <= Applicative f where
   pure :: forall a. a -> f a
-```
-
-##### Instances
-``` purescript
-instance applicativeFn :: Applicative (Function r)
-instance applicativeArray :: Applicative Array
 ```
 
 The `Applicative` type class extends the [`Apply`](#apply) type class
@@ -330,6 +338,12 @@ laws:
 - Composition: `(pure <<<) <*> f <*> g <*> h = f <*> (g <*> h)`
 - Homomorphism: `(pure f) <*> (pure x) = pure (f x)`
 - Interchange: `u <*> (pure y) = (pure ($ y)) <*> u`
+
+##### Instances
+``` purescript
+instance applicativeFn :: Applicative (Function r)
+instance applicativeArray :: Applicative Array
+```
 
 #### `return`
 
@@ -365,12 +379,6 @@ class (Apply m) <= Bind m where
   bind :: forall a b. m a -> (a -> m b) -> m b
 ```
 
-##### Instances
-``` purescript
-instance bindFn :: Bind (Function r)
-instance bindArray :: Bind Array
-```
-
 The `Bind` type class extends the [`Apply`](#apply) type class with a
 "bind" operation `(>>=)` which composes computations in sequence, using
 the return value of one computation to determine the next computation.
@@ -398,11 +406,19 @@ do x <- m1
    m3 x y
 ```
 
+##### Instances
+``` purescript
+instance bindFn :: Bind (Function r)
+instance bindArray :: Bind Array
+```
+
 #### `(>>=)`
 
 ``` purescript
 (>>=) :: forall m a b. (Bind m) => m a -> (a -> m b) -> m b
 ```
+
+_left-associative / precedence 1_
 
 `(>>=)` is an alias for `bind`.
 
@@ -410,12 +426,6 @@ do x <- m1
 
 ``` purescript
 class (Applicative m, Bind m) <= Monad m
-```
-
-##### Instances
-``` purescript
-instance monadFn :: Monad (Function r)
-instance monadArray :: Monad Array
 ```
 
 The `Monad` type class combines the operations of the `Bind` and
@@ -428,6 +438,12 @@ Instances must satisfy the following laws in addition to the
 
 - Left Identity: `pure x >>= f = f x`
 - Right Identity: `x >>= pure = x`
+
+##### Instances
+``` purescript
+instance monadFn :: Monad (Function r)
+instance monadArray :: Monad Array
+```
 
 #### `liftM1`
 
@@ -472,15 +488,6 @@ class Semigroup a where
   append :: a -> a -> a
 ```
 
-##### Instances
-``` purescript
-instance semigroupString :: Semigroup String
-instance semigroupUnit :: Semigroup Unit
-instance semigroupFn :: (Semigroup s') => Semigroup (s -> s')
-instance semigroupOrdering :: Semigroup Ordering
-instance semigroupArray :: Semigroup (Array a)
-```
-
 The `Semigroup` type class identifies an associative operation on a type.
 
 Instances are required to satisfy the following law:
@@ -490,11 +497,22 @@ Instances are required to satisfy the following law:
 One example of a `Semigroup` is `String`, with `(<>)` defined as string
 concatenation.
 
+##### Instances
+``` purescript
+instance semigroupString :: Semigroup String
+instance semigroupUnit :: Semigroup Unit
+instance semigroupFn :: (Semigroup s') => Semigroup (s -> s')
+instance semigroupOrdering :: Semigroup Ordering
+instance semigroupArray :: Semigroup (Array a)
+```
+
 #### `(<>)`
 
 ``` purescript
 (<>) :: forall s. (Semigroup s) => s -> s -> s
 ```
+
+_right-associative / precedence 5_
 
 `(<>)` is an alias for `append`.
 
@@ -503,6 +521,8 @@ concatenation.
 ``` purescript
 (++) :: forall s. (Semigroup s) => s -> s -> s
 ```
+
+_right-associative / precedence 5_
 
 `(++)` is an alternative alias for `append`.
 
@@ -514,13 +534,6 @@ class Semiring a where
   zero :: a
   mul :: a -> a -> a
   one :: a
-```
-
-##### Instances
-``` purescript
-instance semiringInt :: Semiring Int
-instance semiringNumber :: Semiring Number
-instance semiringUnit :: Semiring Unit
 ```
 
 The `Semiring` class is for types that support an addition and
@@ -540,11 +553,20 @@ Instances must satisfy the following laws:
   - Right distributivity: `(a + b) * c = (a * c) + (b * c)`
 - Annihiliation: `zero * a = a * zero = zero`
 
+##### Instances
+``` purescript
+instance semiringInt :: Semiring Int
+instance semiringNumber :: Semiring Number
+instance semiringUnit :: Semiring Unit
+```
+
 #### `(+)`
 
 ``` purescript
 (+) :: forall a. (Semiring a) => a -> a -> a
 ```
+
+_left-associative / precedence 6_
 
 `(+)` is an alias for `add`.
 
@@ -553,6 +575,8 @@ Instances must satisfy the following laws:
 ``` purescript
 (*) :: forall a. (Semiring a) => a -> a -> a
 ```
+
+_left-associative / precedence 7_
 
 `(*)` is an alias for `mul`.
 
@@ -563,13 +587,6 @@ class (Semiring a) <= Ring a where
   sub :: a -> a -> a
 ```
 
-##### Instances
-``` purescript
-instance ringInt :: Ring Int
-instance ringNumber :: Ring Number
-instance ringUnit :: Ring Unit
-```
-
 The `Ring` class is for types that support addition, multiplication,
 and subtraction operations.
 
@@ -578,11 +595,20 @@ laws:
 
 - Additive inverse: `a - a = (zero - a) + a = zero`
 
+##### Instances
+``` purescript
+instance ringInt :: Ring Int
+instance ringNumber :: Ring Number
+instance ringUnit :: Ring Unit
+```
+
 #### `(-)`
 
 ``` purescript
 (-) :: forall a. (Ring a) => a -> a -> a
 ```
+
+_left-associative / precedence 6_
 
 `(-)` is an alias for `sub`.
 
@@ -602,13 +628,6 @@ class (Semiring a) <= ModuloSemiring a where
   mod :: a -> a -> a
 ```
 
-##### Instances
-``` purescript
-instance moduloSemiringInt :: ModuloSemiring Int
-instance moduloSemiringNumber :: ModuloSemiring Number
-instance moduloSemiringUnit :: ModuloSemiring Unit
-```
-
 The `ModuloSemiring` class is for types that support addition,
 multiplication, division, and modulo (division remainder) operations.
 
@@ -617,11 +636,20 @@ laws:
 
 - Remainder: `a / b * b + (a `mod` b) = a`
 
+##### Instances
+``` purescript
+instance moduloSemiringInt :: ModuloSemiring Int
+instance moduloSemiringNumber :: ModuloSemiring Number
+instance moduloSemiringUnit :: ModuloSemiring Unit
+```
+
 #### `(/)`
 
 ``` purescript
 (/) :: forall a. (ModuloSemiring a) => a -> a -> a
 ```
+
+_left-associative / precedence 7_
 
 `(/)` is an alias for `div`.
 
@@ -629,12 +657,6 @@ laws:
 
 ``` purescript
 class (Ring a, ModuloSemiring a) <= DivisionRing a
-```
-
-##### Instances
-``` purescript
-instance divisionRingNumber :: DivisionRing Number
-instance divisionRingUnit :: DivisionRing Unit
 ```
 
 A `Ring` where every nonzero element has a multiplicative inverse.
@@ -647,16 +669,16 @@ Instances must satisfy the following law in addition to the `Ring` and
 As a consequence of this ```a `mod` b = zero``` as no divide operation
 will have a remainder.
 
+##### Instances
+``` purescript
+instance divisionRingNumber :: DivisionRing Number
+instance divisionRingUnit :: DivisionRing Unit
+```
+
 #### `Num`
 
 ``` purescript
 class (DivisionRing a) <= Num a
-```
-
-##### Instances
-``` purescript
-instance numNumber :: Num Number
-instance numUnit :: Num Unit
 ```
 
 The `Num` class is for types that are commutative fields.
@@ -666,12 +688,26 @@ Instances must satisfy the following law in addition to the
 
 - Commutative multiplication: `a * b = b * a`
 
+##### Instances
+``` purescript
+instance numNumber :: Num Number
+instance numUnit :: Num Unit
+```
+
 #### `Eq`
 
 ``` purescript
 class Eq a where
   eq :: a -> a -> Boolean
 ```
+
+The `Eq` type class represents types which support decidable equality.
+
+`Eq` instances should satisfy the following laws:
+
+- Reflexivity: `x == x = true`
+- Symmetry: `x == y = y == x`
+- Transitivity: if `x == y` and `y == z` then `x == z`
 
 ##### Instances
 ``` purescript
@@ -685,19 +721,13 @@ instance eqArray :: (Eq a) => Eq (Array a)
 instance eqOrdering :: Eq Ordering
 ```
 
-The `Eq` type class represents types which support decidable equality.
-
-`Eq` instances should satisfy the following laws:
-
-- Reflexivity: `x == x = true`
-- Symmetry: `x == y = y == x`
-- Transitivity: if `x == y` and `y == z` then `x == z`
-
 #### `(==)`
 
 ``` purescript
 (==) :: forall a. (Eq a) => a -> a -> Boolean
 ```
+
+_non-associative / precedence 4_
 
 `(==)` is an alias for `eq`. Tests whether one value is equal to another.
 
@@ -706,6 +736,8 @@ The `Eq` type class represents types which support decidable equality.
 ``` purescript
 (/=) :: forall a. (Eq a) => a -> a -> Boolean
 ```
+
+_non-associative / precedence 4_
 
 `(/=)` tests whether one value is _not equal_ to another. Shorthand for
 `not (x == y)`.
@@ -719,6 +751,13 @@ data Ordering
   | EQ
 ```
 
+The `Ordering` data type represents the three possible outcomes of
+comparing two values:
+
+`LT` - The first value is _less than_ the second.
+`GT` - The first value is _greater than_ the second.
+`EQ` - The first value is _equal to_ or _incomparable to_ the second.
+
 ##### Instances
 ``` purescript
 instance semigroupOrdering :: Semigroup Ordering
@@ -729,19 +768,20 @@ instance boundedOrdOrdering :: BoundedOrd Ordering
 instance showOrdering :: Show Ordering
 ```
 
-The `Ordering` data type represents the three possible outcomes of
-comparing two values:
-
-`LT` - The first value is _less than_ the second.
-`GT` - The first value is _greater than_ the second.
-`EQ` - The first value is _equal to_ or _incomparable to_ the second.
-
 #### `Ord`
 
 ``` purescript
 class (Eq a) <= Ord a where
   compare :: a -> a -> Ordering
 ```
+
+The `Ord` type class represents types which support comparisons.
+
+`Ord` instances should satisfy the laws of _partially orderings_:
+
+- Reflexivity: `a <= a`
+- Antisymmetry: if `a <= b` and `b <= a` then `a = b`
+- Transitivity: if `a <= b` and `b <= c` then `a <= c`
 
 ##### Instances
 ``` purescript
@@ -755,19 +795,13 @@ instance ordArray :: (Ord a) => Ord (Array a)
 instance ordOrdering :: Ord Ordering
 ```
 
-The `Ord` type class represents types which support comparisons.
-
-`Ord` instances should satisfy the laws of _partially orderings_:
-
-- Reflexivity: `a <= a`
-- Antisymmetry: if `a <= b` and `b <= a` then `a = b`
-- Transitivity: if `a <= b` and `b <= c` then `a <= c`
-
 #### `(<)`
 
 ``` purescript
 (<) :: forall a. (Ord a) => a -> a -> Boolean
 ```
+
+_left-associative / precedence 4_
 
 Test whether one value is _strictly less than_ another.
 
@@ -777,6 +811,8 @@ Test whether one value is _strictly less than_ another.
 (>) :: forall a. (Ord a) => a -> a -> Boolean
 ```
 
+_left-associative / precedence 4_
+
 Test whether one value is _strictly greater than_ another.
 
 #### `(<=)`
@@ -784,6 +820,8 @@ Test whether one value is _strictly greater than_ another.
 ``` purescript
 (<=) :: forall a. (Ord a) => a -> a -> Boolean
 ```
+
+_left-associative / precedence 4_
 
 Test whether one value is _non-strictly less than_ another.
 
@@ -793,6 +831,8 @@ Test whether one value is _non-strictly less than_ another.
 (>=) :: forall a. (Ord a) => a -> a -> Boolean
 ```
 
+_left-associative / precedence 4_
+
 Test whether one value is _non-strictly greater than_ another.
 
 #### `Bounded`
@@ -801,15 +841,6 @@ Test whether one value is _non-strictly greater than_ another.
 class Bounded a where
   top :: a
   bottom :: a
-```
-
-##### Instances
-``` purescript
-instance boundedBoolean :: Bounded Boolean
-instance boundedUnit :: Bounded Unit
-instance boundedOrdering :: Bounded Ordering
-instance boundedInt :: Bounded Int
-instance boundedFn :: (Bounded b) => Bounded (a -> b)
 ```
 
 The `Bounded` type class represents types that are finite.
@@ -822,11 +853,26 @@ The lack of explicit `Ord` constraint allows flexibility in the use of
 `Bounded` so it can apply to total and partially ordered sets, boolean
 algebras, etc.
 
+##### Instances
+``` purescript
+instance boundedBoolean :: Bounded Boolean
+instance boundedUnit :: Bounded Unit
+instance boundedOrdering :: Bounded Ordering
+instance boundedInt :: Bounded Int
+instance boundedFn :: (Bounded b) => Bounded (a -> b)
+```
+
 #### `BoundedOrd`
 
 ``` purescript
 class (Bounded a, Ord a) <= BoundedOrd a
 ```
+
+The `BoundedOrd` type class represents totally ordered finite data types.
+
+Instances should satisfy the following law in addition to the `Ord` laws:
+
+- Ordering: `bottom <= a <= top`
 
 ##### Instances
 ``` purescript
@@ -836,12 +882,6 @@ instance boundedOrdOrdering :: BoundedOrd Ordering
 instance boundedOrdInt :: BoundedOrd Int
 ```
 
-The `BoundedOrd` type class represents totally ordered finite data types.
-
-Instances should satisfy the following law in addition to the `Ord` laws:
-
-- Ordering: `bottom <= a <= top`
-
 #### `BooleanAlgebra`
 
 ``` purescript
@@ -849,13 +889,6 @@ class (Bounded a) <= BooleanAlgebra a where
   conj :: a -> a -> a
   disj :: a -> a -> a
   not :: a -> a
-```
-
-##### Instances
-``` purescript
-instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
-instance booleanAlgebraUnit :: BooleanAlgebra Unit
-instance booleanAlgebraFn :: (BooleanAlgebra b) => BooleanAlgebra (a -> b)
 ```
 
 The `BooleanAlgebra` type class represents types that behave like boolean
@@ -888,11 +921,20 @@ laws:
   - `a && not a = bottom`
   - `a || not a = top`
 
+##### Instances
+``` purescript
+instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
+instance booleanAlgebraUnit :: BooleanAlgebra Unit
+instance booleanAlgebraFn :: (BooleanAlgebra b) => BooleanAlgebra (a -> b)
+```
+
 #### `(&&)`
 
 ``` purescript
 (&&) :: forall a. (BooleanAlgebra a) => a -> a -> a
 ```
+
+_right-associative / precedence 3_
 
 `(&&)` is an alias for `conj`.
 
@@ -902,6 +944,8 @@ laws:
 (||) :: forall a. (BooleanAlgebra a) => a -> a -> a
 ```
 
+_right-associative / precedence 2_
+
 `(||)` is an alias for `disj`.
 
 #### `Show`
@@ -910,6 +954,13 @@ laws:
 class Show a where
   show :: a -> String
 ```
+
+The `Show` type class represents those types which can be converted into
+a human-readable `String` representation.
+
+While not required, it is recommended that for any expression `x`, the
+string `show x` be executable PureScript code which evaluates to the same
+value as the expression `x`.
 
 ##### Instances
 ``` purescript
@@ -922,12 +973,5 @@ instance showUnit :: Show Unit
 instance showArray :: (Show a) => Show (Array a)
 instance showOrdering :: Show Ordering
 ```
-
-The `Show` type class represents those types which can be converted into
-a human-readable `String` representation.
-
-While not required, it is recommended that for any expression `x`, the
-string `show x` be executable PureScript code which evaluates to the same
-value as the expression `x`.
 
 
