@@ -1,4 +1,5 @@
 language: node_js
+sudo: false
 node_js:
   - 0.10
 env:
@@ -8,7 +9,6 @@ install:
   - wget -O $HOME/purescript.tar.gz https://github.com/purescript/purescript/releases/download/$TAG/linux64.tar.gz
   - tar -xvf $HOME/purescript.tar.gz -C $HOME/
   - chmod a+x $HOME/purescript
-  - npm install bower gulp -g
-  - npm install && bower install
+  - npm install
 script:
-  - gulp
+  - npm run build

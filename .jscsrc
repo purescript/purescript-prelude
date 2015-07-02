@@ -5,6 +5,8 @@
     "beforeOpeningRoundBrace": true,
     "beforeOpeningCurlyBrace": true
   },
+  "disallowSpacesInsideObjectBrackets": null,
+  "requireSpacesInsideObjectBrackets": "all",
   "validateQuoteMarks": "\"",
   "requireCurlyBraces": null
 }

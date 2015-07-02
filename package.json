@@ -1,11 +1,13 @@
 {
   "private": true,
+  "scripts": {
+    "postinstall": "pulp dep install",
+    "build": "jshint src && jscs src && pulp build && rimraf docs && pulp docs"
+  },
   "devDependencies": {
-    "gulp": "^3.8.11",
-    "gulp-jscs": "^1.6.0",
-    "gulp-jshint": "^1.10.0",
-    "gulp-plumber": "^1.0.0",
-    "gulp-purescript": "^0.5.0-rc.1",
-    "gulp-run": "~1.6.7"
+    "jscs": "^1.13.1",
+    "jshint": "^2.8.0",
+    "pulp": "^4.0.2",
+    "rimraf": "^2.4.1"
   }
 }
