@@ -20,6 +20,7 @@ module Prelude
   , DivisionRing
   , Eq, eq, (==), (/=)
   , Ordering(..), Ord, compare, (<), (>), (<=), (>=)
+  , unsafeCompare
   , Bounded, top, bottom
   , BoundedOrd
   , BooleanAlgebra, conj, disj, not, (&&), (||)

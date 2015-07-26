@@ -975,4 +975,9 @@ instance showArray :: (Show a) => Show (Array a)
 instance showOrdering :: Show Ordering
 ```
 
+#### `unsafeCompare`
 
+``` purescript
+unsafeCompare :: forall a. a -> a -> Ordering
+```
+The `unsafeCompare` function is mainly intended for module writers supporting native types via the FFI, and not for general comparisons.
