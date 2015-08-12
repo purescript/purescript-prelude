@@ -634,7 +634,7 @@ multiplication, division, and modulo (division remainder) operations.
 Instances must satisfy the following law in addition to the `Semiring`
 laws:
 
-- Remainder: `a / b * b + (a `mod` b) = a`
+- Remainder: ``a / b * b + (a `mod` b) = a``
 
 ##### Instances
 ``` purescript
