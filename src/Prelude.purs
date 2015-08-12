@@ -515,7 +515,7 @@ foreign import numSub :: Number -> Number -> Number
 -- | Instances must satisfy the following law in addition to the `Semiring`
 -- | laws:
 -- |
--- | - Remainder: `a / b * b + (a `mod` b) = a`
+-- | - Remainder: ``a / b * b + (a `mod` b) = a``
 class (Semiring a) <= ModuloSemiring a where
   div :: a -> a -> a
   mod :: a -> a -> a
