@@ -172,12 +172,7 @@ exports.unsafeCompareImpl = function (lt) {
   };
 };
 
-//- Bounded --------------------------------------------------------------------
-
-exports.topChar = String.fromCharCode(65535);
-exports.bottomChar = String.fromCharCode(0);
-
-//- BooleanAlgebra -------------------------------------------------------------
+//- Lattice --------------------------------------------------------------------
 
 exports.boolOr = function (b1) {
   return function (b2) {
@@ -190,6 +185,8 @@ exports.boolAnd = function (b1) {
     return b1 && b2;
   };
 };
+
+//- ComplementedLattice --------------------------------------------------------
 
 exports.boolNot = function (b) {
   return !b;
