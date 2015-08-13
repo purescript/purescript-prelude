@@ -737,17 +737,9 @@ instance boundedInt :: Bounded Int where
   top = 2147483647
   bottom = -2147483648
 
--- | Characters fall within the Unicode range.
-instance boundedChar :: Bounded Char where
-  top = topChar
-  bottom = bottomChar
-
 instance boundedFn :: (Bounded b) => Bounded (a -> b) where
   top _ = top
   bottom _ = bottom
-
-foreign import topChar :: Char
-foreign import bottomChar :: Char
 
 -- | The `BoundedOrd` type class represents totally ordered finite data types.
 -- |
@@ -760,7 +752,6 @@ instance boundedOrdBoolean :: BoundedOrd Boolean where
 instance boundedOrdUnit :: BoundedOrd Unit where
 instance boundedOrdOrdering :: BoundedOrd Ordering where
 instance boundedOrdInt :: BoundedOrd Int where
-instance boundedOrdChar :: BoundedOrd Char where
 
 -- | The `BooleanAlgebra` type class represents types that behave like boolean
 -- | values.
