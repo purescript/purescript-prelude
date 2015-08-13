@@ -836,6 +836,12 @@ _left-associative / precedence 4_
 
 Test whether one value is _non-strictly greater than_ another.
 
+#### `unsafeCompare`
+
+``` purescript
+unsafeCompare :: forall a. a -> a -> Ordering
+```
+
 #### `Bounded`
 
 ``` purescript
@@ -860,6 +866,7 @@ instance boundedBoolean :: Bounded Boolean
 instance boundedUnit :: Bounded Unit
 instance boundedOrdering :: Bounded Ordering
 instance boundedInt :: Bounded Int
+instance boundedChar :: Bounded Char
 instance boundedFn :: (Bounded b) => Bounded (a -> b)
 ```
 
@@ -881,6 +888,7 @@ instance boundedOrdBoolean :: BoundedOrd Boolean
 instance boundedOrdUnit :: BoundedOrd Unit
 instance boundedOrdOrdering :: BoundedOrd Ordering
 instance boundedOrdInt :: BoundedOrd Int
+instance boundedOrdChar :: BoundedOrd Char
 ```
 
 #### `BooleanAlgebra`
@@ -975,9 +983,4 @@ instance showArray :: (Show a) => Show (Array a)
 instance showOrdering :: Show Ordering
 ```
 
-#### `unsafeCompare`
 
-``` purescript
-unsafeCompare :: forall a. a -> a -> Ordering
-```
-The `unsafeCompare` function is mainly intended for module writers supporting native types via the FFI, and not for general comparisons.
