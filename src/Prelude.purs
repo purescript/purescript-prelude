@@ -734,8 +734,8 @@ instance boundedOrdering :: Bounded Ordering where
   bottom = LT
 
 instance boundedInt :: Bounded Int where
-  top = 2147483647
-  bottom = -2147483648
+  top = topInt
+  bottom = bottomInt
 
 -- | Characters fall within the Unicode range.
 instance boundedChar :: Bounded Char where
@@ -745,6 +745,9 @@ instance boundedChar :: Bounded Char where
 instance boundedFn :: (Bounded b) => Bounded (a -> b) where
   top _ = top
   bottom _ = bottom
+
+foreign import topInt :: Int
+foreign import bottomInt :: Int
 
 foreign import topChar :: Char
 foreign import bottomChar :: Char
