@@ -15,5 +15,6 @@
   "singleGroups": true,
   "undef": true,
   "unused": true,
-  "eqnull": true
+  "eqnull": true,
+  "predef": ["exports"]
 }
