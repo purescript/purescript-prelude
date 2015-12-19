@@ -1,31 +1,34 @@
 module Prelude
-  ( Unit(), unit
-  , ($), (#)
+  ( Unit, unit
   , flip
   , const
   , asTypeOf
   , otherwise
-  , Semigroupoid, compose, (<<<), (>>>)
-  , Category, id
-  , Functor, map, (<$>), (<#>), void
-  , Apply, apply, (<*>)
-  , Applicative, pure, liftA1
-  , Bind, bind, (>>=)
-  , Monad, return, liftM1, ap
-  , Semigroup, append, (<>), (++)
-  , Semiring, add, zero, mul, one, (+), (*)
-  , ModuloSemiring, div, mod, (/)
-  , Ring, sub, negate, (-)
-  , Num
-  , DivisionRing
-  , Eq, eq, (==), (/=)
-  , Ordering(..), Ord, compare, (<), (>), (<=), (>=)
+  , class Semigroupoid, compose, composeFlipped, (<<<), (>>>)
+  , class Category, id
+  , class Functor, map, mapFlipped, (<$>), (<#>), void
+  , class Apply, apply, (<*>)
+  , class Applicative, pure, liftA1
+  , class Bind, bind, bindFlipped, (>>=), (=<<)
+  , class Monad, return, liftM1, ap
+  , class Semigroup, append, (<>), (++)
+  , class Semiring, add, zero, mul, one, (+), (*)
+  , class ModuloSemiring, div, mod, (/)
+  , class Ring, sub, negate, (-)
+  , class Num
+  , class DivisionRing
+  , class Eq, eq, notEq, (==), (/=)
+  , Ordering(LT, EQ, GT)
+  , class Ord, compare, lessThan, greaterThan, lessThanOrEq, greaterThanOrEq, (<), (>), (<=), (>=)
   , unsafeCompare
-  , Bounded, top, bottom
-  , BoundedOrd
-  , BooleanAlgebra, conj, disj, not, (&&), (||)
-  , Show, show
+  , class Bounded, top, bottom
+  , class BoundedOrd
+  , class BooleanAlgebra, conj, disj, not, (&&), (||)
+  , class Show, show
+  , module Prelude.Internal
   ) where
+
+import Prelude.Internal (($), (#))
 
 -- | The `Unit` type has a single inhabitant, called `unit`. It represents
 -- | values with no computational content.
@@ -38,43 +41,6 @@ newtype Unit = Unit {}
 -- | `unit` is the sole inhabitant of the `Unit` type.
 unit :: Unit
 unit = Unit {}
-
-infixr 0 $
-infixl 1 #
-
--- | Applies a function to its argument.
--- |
--- | ```purescript
--- | length $ groupBy productCategory $ filter isInStock $ products
--- | ```
--- |
--- | is equivalent to:
--- |
--- | ```purescript
--- | length (groupBy productCategory (filter isInStock products))
--- | ```
--- |
--- | `($)` is different from [`(#)`](#-2) because it is right-infix instead of
--- | left: `a $ b $ c $ d x = a $ (b $ (c $ (d $ x))) = a (b (c (d x)))`
-($) :: forall a b. (a -> b) -> a -> b
-($) f x = f x
-
--- | Applies an argument to a function.
--- |
--- | ```purescript
--- | products # filter isInStock # groupBy productCategory # length
--- | ```
--- |
--- | is equivalent to:
--- |
--- | ```purescript
--- | length (groupBy productCategory (filter isInStock products))
--- | ```
--- |
--- | `(#)` is different from [`($)`](#-1) because it is left-infix instead of
--- | right: `x # a # b # c # d = (((x # a) # b) # c) # d = d (c (b (a x)))`
-(#) :: forall a b. a -> (a -> b) -> b
-(#) x f = f x
 
 -- | Flips the order of the arguments to a function of two arguments.
 -- |
@@ -128,16 +94,13 @@ class Semigroupoid a where
 instance semigroupoidFn :: Semigroupoid (->) where
   compose f g x = f (g x)
 
-infixr 9 >>>
-infixr 9 <<<
+infixr 9 compose as >>>
 
--- | `(<<<)` is an alias for `compose`.
-(<<<) :: forall a b c d. (Semigroupoid a) => a c d -> a b c -> a b d
-(<<<) = compose
+-- | Forwards composition, or `compose` with its arguments reversed.
+composeFlipped :: forall a b c d. Semigroupoid a => a b c -> a c d -> a b d
+composeFlipped = flip compose
 
--- | Forwards composition, or `(<<<)` with its arguments reversed.
-(>>>) :: forall a b c d. (Semigroupoid a) => a b c -> a c d -> a b d
-(>>>) = flip compose
+infixr 9 composeFlipped as <<<
 
 -- | `Category`s consist of objects and composable morphisms between them, and
 -- | as such are [`Semigroupoids`](#semigroupoid), but unlike `semigroupoids`
@@ -147,7 +110,7 @@ infixr 9 <<<
 -- | `Semigroupoid` law:
 -- |
 -- | - Identity: `id <<< p = p <<< id = p`
-class (Semigroupoid a) <= Category a where
+class Semigroupoid a <= Category a where
   id :: forall t. a t t
 
 instance categoryFn :: Category (->) where
@@ -167,6 +130,18 @@ instance categoryFn :: Category (->) where
 class Functor f where
   map :: forall a b. (a -> b) -> f a -> f b
 
+infixl 4 map as <$>
+
+-- | `mapFlipped` is `map` with its arguments reversed. For example:
+-- |
+-- | ```purescript
+-- | [1, 2, 3] <#> \n -> n * n
+-- | ```
+mapFlipped :: forall f a b. Functor f => f a -> (a -> b) -> f b
+mapFlipped fa f = f <$> fa
+
+infixl 1 mapFlipped as <#>
+
 instance functorFn :: Functor ((->) r) where
   map = compose
 
@@ -174,21 +149,6 @@ instance functorArray :: Functor Array where
   map = arrayMap
 
 foreign import arrayMap :: forall a b. (a -> b) -> Array a -> Array b
-
-infixl 4 <$>
-infixl 1 <#>
-
--- | `(<$>)` is an alias for `map`
-(<$>) :: forall f a b. (Functor f) => (a -> b) -> f a -> f b
-(<$>) = map
-
--- | `(<#>)` is `(<$>)` with its arguments reversed. For example:
--- |
--- | ```purescript
--- | [1, 2, 3] <#> \n -> n * n
--- | ```
-(<#>) :: forall f a b. (Functor f) => f a -> (a -> b) -> f b
-(<#>) fa f = f <$> fa
 
 -- | The `void` function is used to ignore the type wrapped by a
 -- | [`Functor`](#functor), replacing it with `Unit` and keeping only the type
@@ -202,7 +162,7 @@ infixl 1 <#>
 -- |   print n
 -- |   print (n * n)
 -- | ```
-void :: forall f a. (Functor f) => f a -> f Unit
+void :: forall f a. Functor f => f a -> f Unit
 void fa = const unit <$> fa
 
 -- | The `Apply` class provides the `(<*>)` which is used to apply a function
@@ -213,7 +173,7 @@ void fa = const unit <$> fa
 -- | in terms of the `lift2` function:
 -- |
 -- | ```purescript
--- | lift2 :: forall f a b c. (Apply f) => (a -> b -> c) -> f a -> f b -> f c
+-- | lift2 :: forall f a b c. Apply f => (a -> b -> c) -> f a -> f b -> f c
 -- | lift2 f a b = f <$> a <*> b
 -- | ```
 -- |
@@ -227,20 +187,16 @@ void fa = const unit <$> fa
 -- | - Associative composition: `(<<<) <$> f <*> g <*> h = f <*> (g <*> h)`
 -- |
 -- | Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
-class (Functor f) <= Apply f where
+class Functor f <= Apply f where
   apply :: forall a b. f (a -> b) -> f a -> f b
+
+infixl 4 apply as <*>
 
 instance applyFn :: Apply ((->) r) where
   apply f g x = f x (g x)
 
 instance applyArray :: Apply Array where
   apply = ap
-
-infixl 4 <*>
-
--- | `(<*>)` is an alias for `apply`.
-(<*>) :: forall f a b. (Apply f) => f (a -> b) -> f a -> f b
-(<*>) = apply
 
 -- | The `Applicative` type class extends the [`Apply`](#apply) type class
 -- | with a `pure` function, which can be used to create values of type `f a`
@@ -260,7 +216,7 @@ infixl 4 <*>
 -- | - Composition: `(pure <<<) <*> f <*> g <*> h = f <*> (g <*> h)`
 -- | - Homomorphism: `(pure f) <*> (pure x) = pure (f x)`
 -- | - Interchange: `u <*> (pure y) = (pure ($ y)) <*> u`
-class (Apply f) <= Applicative f where
+class Apply f <= Applicative f where
   pure :: forall a. a -> f a
 
 instance applicativeFn :: Applicative ((->) r) where
@@ -270,7 +226,7 @@ instance applicativeArray :: Applicative Array where
   pure x = [x]
 
 -- | `return` is an alias for `pure`.
-return :: forall m a. (Applicative m) => a -> m a
+return :: forall m a. Applicative m => a -> m a
 return = pure
 
 -- | `liftA1` provides a default implementation of `(<$>)` for any
@@ -285,7 +241,7 @@ return = pure
 -- | instance functorF :: Functor F where
 -- |   map = liftA1
 -- | ```
-liftA1 :: forall f a b. (Applicative f) => (a -> b) -> f a -> f b
+liftA1 :: forall f a b. Applicative f => (a -> b) -> f a -> f b
 liftA1 f a = pure f <*> a
 
 -- | The `Bind` type class extends the [`Apply`](#apply) type class with a
@@ -314,8 +270,20 @@ liftA1 f a = pure f <*> a
 -- |    y <- m2 x
 -- |    m3 x y
 -- | ```
-class (Apply m) <= Bind m where
+class Apply m <= Bind m where
   bind :: forall a b. m a -> (a -> m b) -> m b
+
+infixl 1 bind as >>=
+
+-- | `bindFlipped` is `bind` with its arguments reversed. For example:
+-- |
+-- | ```purescript
+-- | print =<< random
+-- | ```
+bindFlipped :: forall m a b. Bind m => (a -> m b) -> m a -> m b
+bindFlipped = flip bind
+
+infixl 1 bindFlipped as =<<
 
 instance bindFn :: Bind ((->) r) where
   bind m f x = f (m x) x
@@ -324,12 +292,6 @@ instance bindArray :: Bind Array where
   bind = arrayBind
 
 foreign import arrayBind :: forall a b. Array a -> (a -> Array b) -> Array b
-
-infixl 1 >>=
-
--- | `(>>=)` is an alias for `bind`.
-(>>=) :: forall m a b. (Bind m) => m a -> (a -> m b) -> m b
-(>>=) = bind
 
 -- | The `Monad` type class combines the operations of the `Bind` and
 -- | `Applicative` type classes. Therefore, `Monad` instances represent type
@@ -357,7 +319,7 @@ instance monadArray :: Monad Array
 -- | instance functorF :: Functor F where
 -- |   map = liftM1
 -- | ```
-liftM1 :: forall m a b. (Monad m) => (a -> b) -> m a -> m b
+liftM1 :: forall m a b. Monad m => (a -> b) -> m a -> m b
 liftM1 f a = do
   a' <- a
   return (f a')
@@ -373,7 +335,7 @@ liftM1 f a = do
 -- | instance applyF :: Apply F where
 -- |   apply = ap
 -- | ```
-ap :: forall m a b. (Monad m) => m (a -> b) -> m a -> m b
+ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
 ap f a = do
   f' <- f
   a' <- a
@@ -390,16 +352,8 @@ ap f a = do
 class Semigroup a where
   append :: a -> a -> a
 
-infixr 5 <>
-infixr 5 ++
-
--- | `(<>)` is an alias for `append`.
-(<>) :: forall s. (Semigroup s) => s -> s -> s
-(<>) = append
-
--- | `(++)` is an alternative alias for `append`.
-(++) :: forall s. (Semigroup s) => s -> s -> s
-(++) = append
+infixr 5 append as <>
+infixr 5 append as ++
 
 instance semigroupString :: Semigroup String where
   append = concatString
@@ -407,8 +361,8 @@ instance semigroupString :: Semigroup String where
 instance semigroupUnit :: Semigroup Unit where
   append _ _ = unit
 
-instance semigroupFn :: (Semigroup s') => Semigroup (s -> s') where
-  append f g = \x -> f x <> g x
+instance semigroupFn :: Semigroup s' => Semigroup (s -> s') where
+  append f g x = f x <> g x
 
 instance semigroupOrdering :: Semigroup Ordering where
   append LT _ = LT
@@ -443,6 +397,9 @@ class Semiring a where
   mul  :: a -> a -> a
   one  :: a
 
+infixl 6 add as +
+infixl 7 mul as *
+
 instance semiringInt :: Semiring Int where
   add = intAdd
   zero = 0
@@ -461,17 +418,6 @@ instance semiringUnit :: Semiring Unit where
   mul _ _ = unit
   one = unit
 
-infixl 6 +
-infixl 7 *
-
--- | `(+)` is an alias for `add`.
-(+) :: forall a. (Semiring a) => a -> a -> a
-(+) = add
-
--- | `(*)` is an alias for `mul`.
-(*) :: forall a. (Semiring a) => a -> a -> a
-(*) = mul
-
 foreign import intAdd :: Int -> Int -> Int
 foreign import intMul :: Int -> Int -> Int
 foreign import numAdd :: Number -> Number -> Number
@@ -484,8 +430,10 @@ foreign import numMul :: Number -> Number -> Number
 -- | laws:
 -- |
 -- | - Additive inverse: `a - a = (zero - a) + a = zero`
-class (Semiring a) <= Ring a where
+class Semiring a <= Ring a where
   sub :: a -> a -> a
+
+infixl 6 sub as -
 
 instance ringInt :: Ring Int where
   sub = intSub
@@ -496,14 +444,8 @@ instance ringNumber :: Ring Number where
 instance ringUnit :: Ring Unit where
   sub _ _ = unit
 
-infixl 6 -
-
--- | `(-)` is an alias for `sub`.
-(-) :: forall a. (Ring a) => a -> a -> a
-(-) = sub
-
 -- | `negate x` can be used as a shorthand for `zero - x`.
-negate :: forall a. (Ring a) => a -> a
+negate :: forall a. Ring a => a -> a
 negate a = zero - a
 
 foreign import intSub :: Int -> Int -> Int
@@ -516,9 +458,11 @@ foreign import numSub :: Number -> Number -> Number
 -- | laws:
 -- |
 -- | - Remainder: ``a / b * b + (a `mod` b) = a``
-class (Semiring a) <= ModuloSemiring a where
+class Semiring a <= ModuloSemiring a where
   div :: a -> a -> a
   mod :: a -> a -> a
+
+infixl 7 div as /
 
 instance moduloSemiringInt :: ModuloSemiring Int where
   div = intDiv
@@ -531,12 +475,6 @@ instance moduloSemiringNumber :: ModuloSemiring Number where
 instance moduloSemiringUnit :: ModuloSemiring Unit where
   div _ _ = unit
   mod _ _ = unit
-
-infixl 7 /
-
--- | `(/)` is an alias for `div`.
-(/) :: forall a. (ModuloSemiring a) => a -> a -> a
-(/) = div
 
 foreign import intDiv :: Int -> Int -> Int
 foreign import numDiv :: Number -> Number -> Number
@@ -562,7 +500,7 @@ instance divisionRingUnit :: DivisionRing Unit
 -- | `DivisionRing` laws:
 -- |
 -- | - Commutative multiplication: `a * b = b * a`
-class (DivisionRing a) <= Num a
+class DivisionRing a <= Num a
 
 instance numNumber :: Num Number
 instance numUnit :: Num Unit
@@ -577,17 +515,14 @@ instance numUnit :: Num Unit
 class Eq a where
   eq :: a -> a -> Boolean
 
-infix 4 ==
-infix 4 /=
+infix 4 eq as ==
 
--- | `(==)` is an alias for `eq`. Tests whether one value is equal to another.
-(==) :: forall a. (Eq a) => a -> a -> Boolean
-(==) = eq
+-- | `notEq` tests whether one value is _not equal_ to another. Shorthand for
+-- | `not (eq x y)`.
+notEq :: forall a. Eq a => a -> a -> Boolean
+notEq x y = not (x == y)
 
--- | `(/=)` tests whether one value is _not equal_ to another. Shorthand for
--- | `not (x == y)`.
-(/=) :: forall a. (Eq a) => a -> a -> Boolean
-(/=) x y = not (x == y)
+infix 4 notEq as /=
 
 instance eqBoolean :: Eq Boolean where
   eq = refEq
@@ -607,8 +542,8 @@ instance eqString :: Eq String where
 instance eqUnit :: Eq Unit where
   eq _ _ = true
 
-instance eqArray :: (Eq a) => Eq (Array a) where
-  eq = eqArrayImpl (==)
+instance eqArray :: Eq a => Eq (Array a) where
+  eq = eqArrayImpl eq
 
 instance eqOrdering :: Eq Ordering where
   eq LT LT = true
@@ -636,7 +571,7 @@ data Ordering = LT | GT | EQ
 -- | - Reflexivity: `a <= a`
 -- | - Antisymmetry: if `a <= b` and `b <= a` then `a = b`
 -- | - Transitivity: if `a <= b` and `b <= c` then `a <= c`
-class (Eq a) <= Ord a where
+class Eq a <= Ord a where
   compare :: a -> a -> Ordering
 
 instance ordBoolean :: Ord Boolean where
@@ -657,7 +592,7 @@ instance ordChar :: Ord Char where
 instance ordUnit :: Ord Unit where
   compare _ _ = EQ
 
-instance ordArray :: (Ord a) => Ord (Array a) where
+instance ordArray :: Ord a => Ord (Array a) where
   compare xs ys = compare 0 $ ordArrayImpl (\x y -> case compare x y of
                                                 EQ -> 0
                                                 LT -> 1
@@ -674,34 +609,34 @@ instance ordOrdering :: Ord Ordering where
   compare EQ GT = LT
   compare GT _  = GT
 
-infixl 4 <
-infixl 4 >
-infixl 4 <=
-infixl 4 >=
-
 -- | Test whether one value is _strictly less than_ another.
-(<) :: forall a. (Ord a) => a -> a -> Boolean
-(<) a1 a2 = case a1 `compare` a2 of
+lessThan :: forall a. Ord a => a -> a -> Boolean
+lessThan a1 a2 = case a1 `compare` a2 of
   LT -> true
   _ -> false
 
 -- | Test whether one value is _strictly greater than_ another.
-(>) :: forall a. (Ord a) => a -> a -> Boolean
-(>) a1 a2 = case a1 `compare` a2 of
+greaterThan :: forall a. Ord a => a -> a -> Boolean
+greaterThan a1 a2 = case a1 `compare` a2 of
   GT -> true
   _ -> false
 
 -- | Test whether one value is _non-strictly less than_ another.
-(<=) :: forall a. (Ord a) => a -> a -> Boolean
-(<=) a1 a2 = case a1 `compare` a2 of
+lessThanOrEq :: forall a. Ord a => a -> a -> Boolean
+lessThanOrEq a1 a2 = case a1 `compare` a2 of
   GT -> false
   _ -> true
 
 -- | Test whether one value is _non-strictly greater than_ another.
-(>=) :: forall a. (Ord a) => a -> a -> Boolean
-(>=) a1 a2 = case a1 `compare` a2 of
+greaterThanOrEq :: forall a. Ord a => a -> a -> Boolean
+greaterThanOrEq a1 a2 = case a1 `compare` a2 of
   LT -> false
   _ -> true
+
+infixl 4 lessThan as <
+infixl 4 greaterThan as >
+infixl 4 lessThanOrEq as <=
+infixl 4 greaterThanOrEq as >=
 
 unsafeCompare :: forall a. a -> a -> Ordering
 unsafeCompare = unsafeCompareImpl LT EQ GT
@@ -742,7 +677,7 @@ instance boundedChar :: Bounded Char where
   top = topChar
   bottom = bottomChar
 
-instance boundedFn :: (Bounded b) => Bounded (a -> b) where
+instance boundedFn :: Bounded b => Bounded (a -> b) where
   top _ = top
   bottom _ = bottom
 
@@ -794,10 +729,13 @@ instance boundedOrdChar :: BoundedOrd Char where
 -- | - Complementation:
 -- |   - `a && not a = bottom`
 -- |   - `a || not a = top`
-class (Bounded a) <= BooleanAlgebra a where
+class Bounded a <= BooleanAlgebra a where
   conj :: a -> a -> a
   disj :: a -> a -> a
   not :: a -> a
+
+infixr 3 conj as &&
+infixr 2 disj as ||
 
 instance booleanAlgebraBoolean :: BooleanAlgebra Boolean where
   conj = boolAnd
@@ -809,21 +747,10 @@ instance booleanAlgebraUnit :: BooleanAlgebra Unit where
   disj _ _ = unit
   not _ = unit
 
-instance booleanAlgebraFn :: (BooleanAlgebra b) => BooleanAlgebra (a -> b) where
+instance booleanAlgebraFn :: BooleanAlgebra b => BooleanAlgebra (a -> b) where
   conj fx fy a = fx a `conj` fy a
   disj fx fy a = fx a `disj` fy a
   not fx a = not (fx a)
-
-infixr 3 &&
-infixr 2 ||
-
--- | `(&&)` is an alias for `conj`.
-(&&) :: forall a. (BooleanAlgebra a) => a -> a -> a
-(&&) = conj
-
--- | `(||)` is an alias for `disj`.
-(||) :: forall a. (BooleanAlgebra a) => a -> a -> a
-(||) = disj
 
 foreign import boolOr :: Boolean -> Boolean -> Boolean
 foreign import boolAnd :: Boolean -> Boolean -> Boolean
@@ -857,7 +784,7 @@ instance showString :: Show String where
 instance showUnit :: Show Unit where
   show _ = "unit"
 
-instance showArray :: (Show a) => Show (Array a) where
+instance showArray :: Show a => Show (Array a) where
   show = showArrayImpl show
 
 instance showOrdering :: Show Ordering where

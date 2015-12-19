@@ -5,7 +5,7 @@
   "freeze": true,
   "funcscope": true,
   "futurehostile": true,
-  "globalstrict": true,
+  "strict": "global",
   "latedef": true,
   "maxparams": 1,
   "noarg": true,
