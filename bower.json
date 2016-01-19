@@ -17,7 +17,6 @@
     "output",
     "test",
     "bower.json",
-    "gulpfile.js",
     "package.json"
   ]
 }
