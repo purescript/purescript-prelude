@@ -3,6 +3,8 @@
 
 // module Prelude
 
+exports.unit = void 0;
+
 //- Functor --------------------------------------------------------------------
 
 exports.arrayMap = function (f) {
