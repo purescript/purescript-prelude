@@ -15,18 +15,18 @@ the _effects_ are important.
 
 ##### Instances
 ``` purescript
-instance semigroupUnit :: Semigroup Unit
-instance semiringUnit :: Semiring Unit
-instance ringUnit :: Ring Unit
-instance moduloSemiringUnit :: ModuloSemiring Unit
-instance divisionRingUnit :: DivisionRing Unit
-instance numUnit :: Num Unit
-instance eqUnit :: Eq Unit
-instance ordUnit :: Ord Unit
-instance boundedUnit :: Bounded Unit
-instance boundedOrdUnit :: BoundedOrd Unit
-instance booleanAlgebraUnit :: BooleanAlgebra Unit
-instance showUnit :: Show Unit
+Semigroup Unit
+Semiring Unit
+Ring Unit
+ModuloSemiring Unit
+DivisionRing Unit
+Num Unit
+Eq Unit
+Ord Unit
+Bounded Unit
+BoundedOrd Unit
+BooleanAlgebra Unit
+Show Unit
 ```
 
 #### `unit`
@@ -155,7 +155,7 @@ with `(<<<)` defined as function composition.
 
 ##### Instances
 ``` purescript
-instance semigroupoidFn :: Semigroupoid Function
+Semigroupoid Function
 ```
 
 #### `(<<<)`
@@ -196,7 +196,7 @@ Instances must satisfy the following law in addition to the
 
 ##### Instances
 ``` purescript
-instance categoryFn :: Category Function
+Category Function
 ```
 
 #### `Functor`
@@ -220,8 +220,8 @@ Instances must satisfy the following laws:
 
 ##### Instances
 ``` purescript
-instance functorFn :: Functor (Function r)
-instance functorArray :: Functor Array
+Functor (Function r)
+Functor Array
 ```
 
 #### `(<$>)`
@@ -299,8 +299,8 @@ Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
 
 ##### Instances
 ``` purescript
-instance applyFn :: Apply (Function r)
-instance applyArray :: Apply Array
+Apply (Function r)
+Apply Array
 ```
 
 #### `(<*>)`
@@ -341,8 +341,8 @@ laws:
 
 ##### Instances
 ``` purescript
-instance applicativeFn :: Applicative (Function r)
-instance applicativeArray :: Applicative Array
+Applicative (Function r)
+Applicative Array
 ```
 
 #### `return`
@@ -408,8 +408,8 @@ do x <- m1
 
 ##### Instances
 ``` purescript
-instance bindFn :: Bind (Function r)
-instance bindArray :: Bind Array
+Bind (Function r)
+Bind Array
 ```
 
 #### `(>>=)`
@@ -441,8 +441,8 @@ Instances must satisfy the following laws in addition to the
 
 ##### Instances
 ``` purescript
-instance monadFn :: Monad (Function r)
-instance monadArray :: Monad Array
+Monad (Function r)
+Monad Array
 ```
 
 #### `liftM1`
@@ -499,11 +499,11 @@ concatenation.
 
 ##### Instances
 ``` purescript
-instance semigroupString :: Semigroup String
-instance semigroupUnit :: Semigroup Unit
-instance semigroupFn :: (Semigroup s') => Semigroup (s -> s')
-instance semigroupOrdering :: Semigroup Ordering
-instance semigroupArray :: Semigroup (Array a)
+Semigroup String
+Semigroup Unit
+(Semigroup s') => Semigroup (s -> s')
+Semigroup Ordering
+Semigroup (Array a)
 ```
 
 #### `(<>)`
@@ -555,9 +555,9 @@ Instances must satisfy the following laws:
 
 ##### Instances
 ``` purescript
-instance semiringInt :: Semiring Int
-instance semiringNumber :: Semiring Number
-instance semiringUnit :: Semiring Unit
+Semiring Int
+Semiring Number
+Semiring Unit
 ```
 
 #### `(+)`
@@ -597,9 +597,9 @@ laws:
 
 ##### Instances
 ``` purescript
-instance ringInt :: Ring Int
-instance ringNumber :: Ring Number
-instance ringUnit :: Ring Unit
+Ring Int
+Ring Number
+Ring Unit
 ```
 
 #### `(-)`
@@ -638,9 +638,9 @@ laws:
 
 ##### Instances
 ``` purescript
-instance moduloSemiringInt :: ModuloSemiring Int
-instance moduloSemiringNumber :: ModuloSemiring Number
-instance moduloSemiringUnit :: ModuloSemiring Unit
+ModuloSemiring Int
+ModuloSemiring Number
+ModuloSemiring Unit
 ```
 
 #### `(/)`
@@ -671,8 +671,8 @@ will have a remainder.
 
 ##### Instances
 ``` purescript
-instance divisionRingNumber :: DivisionRing Number
-instance divisionRingUnit :: DivisionRing Unit
+DivisionRing Number
+DivisionRing Unit
 ```
 
 #### `Num`
@@ -690,8 +690,8 @@ Instances must satisfy the following law in addition to the
 
 ##### Instances
 ``` purescript
-instance numNumber :: Num Number
-instance numUnit :: Num Unit
+Num Number
+Num Unit
 ```
 
 #### `Eq`
@@ -711,14 +711,14 @@ The `Eq` type class represents types which support decidable equality.
 
 ##### Instances
 ``` purescript
-instance eqBoolean :: Eq Boolean
-instance eqInt :: Eq Int
-instance eqNumber :: Eq Number
-instance eqChar :: Eq Char
-instance eqString :: Eq String
-instance eqUnit :: Eq Unit
-instance eqArray :: (Eq a) => Eq (Array a)
-instance eqOrdering :: Eq Ordering
+Eq Boolean
+Eq Int
+Eq Number
+Eq Char
+Eq String
+Eq Unit
+(Eq a) => Eq (Array a)
+Eq Ordering
 ```
 
 #### `(==)`
@@ -760,12 +760,12 @@ comparing two values:
 
 ##### Instances
 ``` purescript
-instance semigroupOrdering :: Semigroup Ordering
-instance eqOrdering :: Eq Ordering
-instance ordOrdering :: Ord Ordering
-instance boundedOrdering :: Bounded Ordering
-instance boundedOrdOrdering :: BoundedOrd Ordering
-instance showOrdering :: Show Ordering
+Semigroup Ordering
+Eq Ordering
+Ord Ordering
+Bounded Ordering
+BoundedOrd Ordering
+Show Ordering
 ```
 
 #### `Ord`
@@ -786,14 +786,14 @@ _total order_.
 
 ##### Instances
 ``` purescript
-instance ordBoolean :: Ord Boolean
-instance ordInt :: Ord Int
-instance ordNumber :: Ord Number
-instance ordString :: Ord String
-instance ordChar :: Ord Char
-instance ordUnit :: Ord Unit
-instance ordArray :: (Ord a) => Ord (Array a)
-instance ordOrdering :: Ord Ordering
+Ord Boolean
+Ord Int
+Ord Number
+Ord String
+Ord Char
+Ord Unit
+(Ord a) => Ord (Array a)
+Ord Ordering
 ```
 
 #### `(<)`
@@ -862,12 +862,12 @@ algebras, etc.
 
 ##### Instances
 ``` purescript
-instance boundedBoolean :: Bounded Boolean
-instance boundedUnit :: Bounded Unit
-instance boundedOrdering :: Bounded Ordering
-instance boundedInt :: Bounded Int
-instance boundedChar :: Bounded Char
-instance boundedFn :: (Bounded b) => Bounded (a -> b)
+Bounded Boolean
+Bounded Unit
+Bounded Ordering
+Bounded Int
+Bounded Char
+(Bounded b) => Bounded (a -> b)
 ```
 
 #### `BoundedOrd`
@@ -884,11 +884,11 @@ Instances should satisfy the following law in addition to the `Ord` laws:
 
 ##### Instances
 ``` purescript
-instance boundedOrdBoolean :: BoundedOrd Boolean
-instance boundedOrdUnit :: BoundedOrd Unit
-instance boundedOrdOrdering :: BoundedOrd Ordering
-instance boundedOrdInt :: BoundedOrd Int
-instance boundedOrdChar :: BoundedOrd Char
+BoundedOrd Boolean
+BoundedOrd Unit
+BoundedOrd Ordering
+BoundedOrd Int
+BoundedOrd Char
 ```
 
 #### `BooleanAlgebra`
@@ -932,9 +932,9 @@ laws:
 
 ##### Instances
 ``` purescript
-instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
-instance booleanAlgebraUnit :: BooleanAlgebra Unit
-instance booleanAlgebraFn :: (BooleanAlgebra b) => BooleanAlgebra (a -> b)
+BooleanAlgebra Boolean
+BooleanAlgebra Unit
+(BooleanAlgebra b) => BooleanAlgebra (a -> b)
 ```
 
 #### `(&&)`
@@ -973,14 +973,14 @@ value as the expression `x`.
 
 ##### Instances
 ``` purescript
-instance showBoolean :: Show Boolean
-instance showInt :: Show Int
-instance showNumber :: Show Number
-instance showChar :: Show Char
-instance showString :: Show String
-instance showUnit :: Show Unit
-instance showArray :: (Show a) => Show (Array a)
-instance showOrdering :: Show Ordering
+Show Boolean
+Show Int
+Show Number
+Show Char
+Show String
+Show Unit
+(Show a) => Show (Array a)
+Show Ordering
 ```
 
 
