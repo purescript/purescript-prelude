@@ -55,7 +55,7 @@ infixl 1 #
 -- | ```
 -- |
 -- | `($)` is different from [`(#)`](#-2) because it is right-infix instead of
--- | left: `a $ b $ c $ d x = a $ (b $ (c $ (d $ x))) = a (b (c (d x)))`
+-- | left: `a $ b $ c $ d $ x = a $ (b $ (c $ (d $ x))) = a (b (c (d x)))`
 ($) :: forall a b. (a -> b) -> a -> b
 ($) f x = f x
 
