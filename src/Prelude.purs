@@ -33,11 +33,10 @@ module Prelude
 -- | `Unit` is often used, wrapped in a monadic type constructor, as the
 -- | return type of a computation where only
 -- | the _effects_ are important.
-newtype Unit = Unit {}
+foreign import data Unit :: *
 
 -- | `unit` is the sole inhabitant of the `Unit` type.
-unit :: Unit
-unit = Unit {}
+foreign import unit :: Unit
 
 infixr 0 $
 infixl 1 #
