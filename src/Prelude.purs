@@ -25,6 +25,8 @@ module Prelude
   , BoundedOrd
   , BooleanAlgebra, conj, disj, not, (&&), (||)
   , Show, show
+  , NaturalTransformation(..)
+  , Natural(..)
   ) where
 
 -- | The `Unit` type has a single inhabitant, called `unit`. It represents
@@ -870,3 +872,9 @@ foreign import showNumberImpl :: Number -> String
 foreign import showCharImpl :: Char -> String
 foreign import showStringImpl :: String -> String
 foreign import showArrayImpl :: forall a. (a -> String) -> Array a -> String
+
+-- | A natural transformation
+type NaturalTransformation f g = forall a. f a -> g a
+
+-- | Alias for `NaturalTransformation`
+type Natural f g = NaturalTransformation f g
