@@ -1,5 +1,5 @@
 module Prelude
-  ( Unit(), unit
+  ( Unit(..), unit
   , ($), (#)
   , flip
   , const
