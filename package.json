@@ -2,12 +2,13 @@
   "private": true,
   "scripts": {
     "postinstall": "pulp dep install",
-    "build": "jshint src && jscs src && pulp build && rimraf docs && pulp docs"
+    "clean": "rimraf output && rimraf .pulp-cache",
+    "build": "jshint src && jscs src && pulp build"
   },
   "devDependencies": {
-    "jscs": "^1.13.1",
-    "jshint": "^2.8.0",
-    "pulp": "^4.0.2",
-    "rimraf": "^2.4.1"
+    "jscs": "^2.8.0",
+    "jshint": "^2.9.1",
+    "pulp": "^8.0.0",
+    "rimraf": "^2.5.0"
   }
 }
