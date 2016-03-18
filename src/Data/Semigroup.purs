@@ -1,6 +1,7 @@
 module Data.Semigroup (class Semigroup, append, (<>)) where
 
 import Data.Unit (Unit, unit)
+import Data.Void (Void, absurd)
 
 -- | The `Semigroup` type class identifies an associative operation on a type.
 -- |
@@ -20,6 +21,9 @@ instance semigroupString :: Semigroup String where
 
 instance semigroupUnit :: Semigroup Unit where
   append _ _ = unit
+
+instance semigroupVoid :: Semigroup Void where
+  append _ = absurd
 
 instance semigroupFn :: Semigroup s' => Semigroup (s -> s') where
   append f g x = f x <> g x
