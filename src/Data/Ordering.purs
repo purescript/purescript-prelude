@@ -1,6 +1,5 @@
 module Data.Ordering (Ordering(..), invert) where
 
-import Data.Bounded (class Bounded)
 import Data.Eq (class Eq)
 import Data.Semigroup (class Semigroup)
 import Data.Show (class Show)
@@ -18,10 +17,6 @@ instance eqOrdering :: Eq Ordering where
   eq GT GT = true
   eq EQ EQ = true
   eq _  _  = false
-
-instance boundedOrdering :: Bounded Ordering where
-  top = GT
-  bottom = LT
 
 instance semigroupOrdering :: Semigroup Ordering where
   append LT _ = LT

@@ -1,6 +1,6 @@
 "use strict";
 
-// module Data.BooleanAlgebra
+// module Data.HeytingAlgebra
 
 exports.boolConj = function (b1) {
   return function (b2) {

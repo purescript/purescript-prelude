@@ -1,18 +1,20 @@
-module Data.Bounded (class Bounded, bottom, top) where
+module Data.Bounded
+  ( class Bounded
+  , bottom
+  , top
+  , module Data.Ord
+  ) where
 
+import Data.Ord (class Ord, Ordering(..), compare, (<), (<=), (>), (>=))
 import Data.Unit (Unit, unit)
 
--- | The `Bounded` type class represents types that have an upper and lower
--- | boundary.
+-- | The `Bounded` type class represents totally ordered types that have an
+-- | upper and lower boundary.
 -- |
--- | Although there are no "internal" laws for `Bounded`, every value of `a`
--- | should be considered less than or equal to `top` by some means, and greater
--- | than or equal to `bottom`.
+-- | Instances should satisfy the following law in addition to the `Ord` laws:
 -- |
--- | The lack of explicit `Ord` constraint allows flexibility in the use of
--- | `Bounded` so it can apply to total and partially ordered sets, boolean
--- | algebras, etc.
-class Bounded a where
+-- | - Bounded: `bottom <= a <= top`
+class Ord a <= Bounded a where
   top :: a
   bottom :: a
 
@@ -35,10 +37,10 @@ instance boundedChar :: Bounded Char where
 foreign import topChar :: Char
 foreign import bottomChar :: Char
 
+instance boundedOrdering :: Bounded Ordering where
+  top = GT
+  bottom = LT
+
 instance boundedUnit :: Bounded Unit where
   top = unit
   bottom = unit
-
-instance boundedFn :: Bounded b => Bounded (a -> b) where
-  top _ = top
-  bottom _ = bottom

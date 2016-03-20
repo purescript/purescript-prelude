@@ -1,6 +1,10 @@
 "use strict";
 
-// module Data.ModuloSemiring
+// module Data.EuclideanRing
+
+exports.intDegree = function (x) {
+  return Math.abs(x);
+};
 
 exports.intDiv = function (x) {
   return function (y) {

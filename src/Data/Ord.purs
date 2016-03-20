@@ -11,7 +11,6 @@ module Data.Ord
   , module Data.Ordering
   ) where
 
-import Data.Bounded (class Bounded)
 import Data.Eq (class Eq)
 import Data.Function (on)
 import Data.Ord.Unsafe (unsafeCompare)
@@ -20,6 +19,7 @@ import Data.Ring (negate)
 import Data.Semigroup (class Semigroup)
 import Data.Show (class Show)
 import Data.Unit (Unit)
+import Data.Void (Void)
 
 -- | The `Ord` type class represents types which support comparisons with a
 -- | _total order_.
@@ -48,6 +48,9 @@ instance ordChar :: Ord Char where
   compare = unsafeCompare
 
 instance ordUnit :: Ord Unit where
+  compare _ _ = EQ
+
+instance ordVoid :: Ord Void where
   compare _ _ = EQ
 
 instance ordArray :: Ord a => Ord (Array a) where

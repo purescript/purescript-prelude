@@ -1,11 +1,11 @@
-module Data.Void where
+module Data.Void (Void, absurd) where
 
 import Data.Show (class Show)
 
 newtype Void = Void Void
 
 instance showVoid :: Show Void where
-  show _ = "Void"
+  show = absurd
 
 absurd :: forall a. Void -> a
 absurd a = spin a

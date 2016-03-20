@@ -8,13 +8,13 @@ module Prelude
   , module Data.Boolean
   , module Data.BooleanAlgebra
   , module Data.Bounded
-  , module Data.BoundedOrd
-  , module Data.DivisionRing
+  , module Data.CommutativeRing
   , module Data.Eq
+  , module Data.EuclideanRing
+  , module Data.Field
   , module Data.Function
   , module Data.Functor
-  , module Data.ModuloSemiring
-  , module Data.Num
+  , module Data.HeytingAlgebra
   , module Data.Ord
   , module Data.Ordering
   , module Data.Ring
@@ -33,15 +33,15 @@ import Control.Monad (class Monad, ap, liftM1)
 import Control.Semigroupoid (class Semigroupoid, compose, (<<<), (>>>))
 
 import Data.Boolean (otherwise)
-import Data.BooleanAlgebra (class BooleanAlgebra, conj, disj, not, (&&), (||))
+import Data.BooleanAlgebra (class BooleanAlgebra)
 import Data.Bounded (class Bounded, bottom, top)
-import Data.BoundedOrd (class BoundedOrd)
-import Data.DivisionRing (class DivisionRing)
+import Data.CommutativeRing (class CommutativeRing)
 import Data.Eq (class Eq, eq, notEq, (/=), (==))
+import Data.EuclideanRing (class EuclideanRing, degree, div, mod, (/))
+import Data.Field (class Field)
 import Data.Function (const, flip, ($), (#))
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
-import Data.ModuloSemiring (class ModuloSemiring, div, mod, (/))
-import Data.Num (class Num)
+import Data.HeytingAlgebra (class HeytingAlgebra, conj, disj, not, (&&), (||))
 import Data.Ord (class Ord, compare, (<), (<=), (>), (>=), comparing, min, max, clamp, between)
 import Data.Ordering (Ordering(..))
 import Data.Ring (class Ring, negate, sub, (-))
@@ -49,4 +49,4 @@ import Data.Semigroup (class Semigroup, append, (<>))
 import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 import Data.Show (class Show, show)
 import Data.Unit (Unit, unit)
-import Data.Void (Void(..), absurd)
+import Data.Void (Void, absurd)
