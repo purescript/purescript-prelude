@@ -213,7 +213,7 @@ exports.showCharImpl = function (c) {
   var code = c.charCodeAt(0);
   if (code < 0x20 || code === 0x7F) {
     switch (c) {
-      case "\a": return "'\\a'";
+      case "\x07": return "'\\a'";
       case "\b": return "'\\b'";
       case "\f": return "'\\f'";
       case "\n": return "'\\n'";
@@ -235,7 +235,7 @@ exports.showStringImpl = function (s) {
         case "\"":
         case "\\":
           return "\\" + c;
-        case "\a": return "\\a";
+        case "\x07": return "\\a";
         case "\b": return "\\b";
         case "\f": return "\\f";
         case "\n": return "\\n";
