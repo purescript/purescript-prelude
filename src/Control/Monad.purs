@@ -8,7 +8,7 @@ module Control.Monad
   , module Control.Bind
   ) where
 
-import Control.Applicative (class Applicative, liftA1, pure, unless, when)
+import Control.Applicative (class Applicative, liftA1, pure, return, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
 import Control.Bind (class Bind, bind, ifM, join, (<=<), (=<<), (>=>), (>>=))
 
