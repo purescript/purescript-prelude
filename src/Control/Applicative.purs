@@ -1,5 +1,5 @@
 module Control.Applicative
-  ( class Applicative, pure
+  ( class Applicative, pure, return
   , liftA1
   , unless, when
   , module Control.Apply
@@ -31,6 +31,10 @@ import Data.Unit (Unit, unit)
 -- | - Interchange: `u <*> (pure y) = (pure ($ y)) <*> u`
 class Apply f <= Applicative f where
   pure :: forall a. a -> f a
+
+-- | Synonym for `pure`.
+return :: forall m a. Applicative m => a -> m a
+return = pure
 
 instance applicativeFn :: Applicative ((->) r) where
   pure x _ = x
