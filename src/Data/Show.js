@@ -7,8 +7,10 @@ exports.showIntImpl = function (n) {
 };
 
 exports.showNumberImpl = function (n) {
-  /* jshint bitwise: false */
-  return n === (n | 0) ? n + ".0" : n.toString();
+  var str = n.toString();
+  return str.indexOf("e") === -1 && str.indexOf(".") === -1 ?
+            str + ".0" :
+            str;
 };
 
 exports.showCharImpl = function (c) {
