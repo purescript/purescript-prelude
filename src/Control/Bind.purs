@@ -33,7 +33,7 @@ import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 -- | Instances must satisfy the following law in addition to the `Apply`
 -- | laws:
 -- |
--- | - Associativity: `(x >>= f) >>= g = x >>= (\k => f k >>= g)`
+-- | - Associativity: `(x >>= f) >>= g = x >>= (\k -> f k >>= g)`
 -- |
 -- | Associativity tells us that we can regroup operations which use `do`
 -- | notation so that we can unambiguously write, for example:
