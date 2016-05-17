@@ -8,9 +8,7 @@ exports.showIntImpl = function (n) {
 
 exports.showNumberImpl = function (n) {
   var str = n.toString();
-  return str.indexOf("e") === -1 && str.indexOf(".") === -1 ?
-            str + ".0" :
-            str;
+  return isNaN(str + ".0") ? str : str + ".0";
 };
 
 exports.showCharImpl = function (c) {
