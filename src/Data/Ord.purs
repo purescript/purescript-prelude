@@ -16,8 +16,6 @@ import Data.Function (on)
 import Data.Ord.Unsafe (unsafeCompare)
 import Data.Ordering (Ordering(..))
 import Data.Ring (negate)
-import Data.Semigroup (class Semigroup)
-import Data.Show (class Show)
 import Data.Unit (Unit)
 import Data.Void (Void)
 
