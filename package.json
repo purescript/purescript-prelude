@@ -2,13 +2,14 @@
   "private": true,
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
-    "build": "jshint src && jscs src && pulp build",
+    "build": "jshint src && jscs src && pulp build --censor-lib --strict",
     "test": "pulp test"
   },
   "devDependencies": {
     "jscs": "^2.8.0",
     "jshint": "^2.9.1",
     "pulp": "^8.2.0",
+    "purescript-psa": "^0.3.8",
     "rimraf": "^2.5.0"
   }
 }
