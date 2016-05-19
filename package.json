@@ -9,7 +9,7 @@
   "devDependencies": {
     "jscs": "^2.8.0",
     "jshint": "^2.9.1",
-    "pulp": "^8.0.0",
+    "pulp": "^8.2.0",
     "rimraf": "^2.5.0"
   }
 }
