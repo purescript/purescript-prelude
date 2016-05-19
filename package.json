@@ -1,7 +1,6 @@
 {
   "private": true,
   "scripts": {
-    "postinstall": "pulp dep install",
     "clean": "rimraf output && rimraf .pulp-cache",
     "build": "jshint src && jscs src && pulp build",
     "test": "pulp test"
