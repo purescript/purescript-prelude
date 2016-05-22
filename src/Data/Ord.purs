@@ -8,6 +8,8 @@ module Data.Ord
   , min, max
   , clamp
   , between
+  , abs
+  , signum
   , module Data.Ordering
   ) where
 
@@ -15,7 +17,7 @@ import Data.Eq (class Eq)
 import Data.Function (on)
 import Data.Ord.Unsafe (unsafeCompare)
 import Data.Ordering (Ordering(..))
-import Data.Ring (negate)
+import Data.Ring (class Ring, zero, one, negate)
 import Data.Unit (Unit)
 import Data.Void (Void)
 
@@ -149,3 +151,13 @@ between low hi x
   | x < low = false
   | x > hi = false
   | true = true
+
+-- | The absolute value function. `abs x` is defined as `if x >= zero then x
+-- | else negate x`.
+abs :: forall a. (Ord a, Ring a) => a -> a
+abs x = if x >= zero then x else negate x
+
+-- | The sign function; always evaluates to either `one` or `negate one`. For
+-- | any `x`, we should have `signum x * abs x == x`.
+signum :: forall a. (Ord a, Ring a) => a -> a
+signum x = if x >= zero then one else negate one
