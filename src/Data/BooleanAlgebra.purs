@@ -3,7 +3,7 @@ module Data.BooleanAlgebra
   , module Data.HeytingAlgebra
   ) where
 
-import Data.HeytingAlgebra (class HeytingAlgebra, ff, tt, implies, conj, disj, not)
+import Data.HeytingAlgebra (class HeytingAlgebra, ff, tt, implies, conj, disj, not, (&&), (||))
 import Data.Unit (Unit)
 
 -- | The `BooleanAlgebra` type class represents types that behave like boolean
