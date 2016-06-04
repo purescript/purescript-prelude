@@ -4,6 +4,7 @@ module Data.Functor
   , void
   , voidRight, (<$)
   , voidLeft, ($>)
+  , flip', (??)
   ) where
 
 import Data.Function (const, compose)
@@ -70,3 +71,25 @@ voidLeft :: forall f a b. Functor f => f a -> b -> f b
 voidLeft f x = const x <$> f
 
 infixl 4 voidLeft as $>
+
+-- | Apply a value in a computational context to a value in no context.
+-- |
+-- | Generalizes `flip`.
+-- |
+-- | ```purescript
+-- | longEnough :: String -> Bool
+-- | hasSymbol :: String -> Bool
+-- | hasDigit :: String -> Bool
+-- | password :: String
+-- |
+-- | validate :: String -> List Bool
+-- | validate = flip' [longEnough, hasSymbol, hasDigit]
+-- | ```
+-- |
+-- | ```purescript
+-- | flip' (-) 3 4 == 1
+-- | ```
+flip' :: forall f a b. Functor f => f (a -> b) -> a -> f b
+flip' ff x = map (\f -> f x) ff
+
+infixl 1 flip' as ??
