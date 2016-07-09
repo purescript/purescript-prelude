@@ -6,6 +6,7 @@
     "test": "psc \"src/**/*.purs\" \"bower_components/purescript-*/**/*.purs\" \"test/**/*.purs\" && psc-bundle \"output/**/*.js\" --module Test.Main --main Test.Main | node"
   },
   "devDependencies": {
+    "flow-bin": "^0.28.0",
     "jscs": "^2.8.0",
     "jshint": "^2.9.1",
     "purescript-psa": "^0.3.8",
