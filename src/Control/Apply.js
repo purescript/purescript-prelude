@@ -1,8 +1,9 @@
 "use strict";
+// @flow
 
 // module Control.Apply
 
-exports.arrayApply = function (fs) {
+exports.arrayApply = function /*::<A, B>*/(fs/*: Array<(x: A) => B>*/)/*: (xs: Array<A>) => Array<B>*/ {
   return function (xs) {
     var result = [];
     var n = 0;

@@ -1,8 +1,10 @@
 "use strict";
+// @flow
 
 // module Data.Ord
 
-exports.ordArrayImpl = function (f) {
+// jscs:disable maximumLineLength
+exports.ordArrayImpl = function /*:: <A>*/(f/*: (x: A) => (y: A) => number*/)/*: (xs: Array<A>) => (ys: Array<A>) => number*/ {
   return function (xs) {
     return function (ys) {
       var i = 0;

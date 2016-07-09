@@ -1,20 +1,22 @@
 "use strict";
+// @flow
 
 // module Data.Eq
 
-exports.refEq = function (r1) {
+exports.refEq = function /*:: <A>*/(r1/*: A*/)/*: (r2: A) => boolean*/ {
   return function (r2) {
     return r1 === r2;
   };
 };
 
-exports.refIneq = function (r1) {
+exports.refIneq = function /*:: <A>*/(r1/*: A*/)/*: (r2: A) => boolean*/ {
   return function (r2) {
     return r1 !== r2;
   };
 };
 
-exports.eqArrayImpl = function (f) {
+// jscs:disable maximumLineLength
+exports.eqArrayImpl = function /*:: <A>*/(f/*: (x: A) => (y: A) => boolean*/)/*: (xs: Array<A>) => (ys: Array<A>) => boolean*/ {
   return function (xs) {
     return function (ys) {
       if (xs.length !== ys.length) return false;

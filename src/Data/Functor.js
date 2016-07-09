@@ -1,8 +1,9 @@
 "use strict";
+// @flow
 
 // module Data.Functor
 
-exports.arrayMap = function (f) {
+exports.arrayMap = function /*:: <A, B>*/(f/*: (x: A) => B*/)/*: (arr: Array<A>) => Array<B>*/ {
   return function (arr) {
     var l = arr.length;
     var result = new Array(l);
