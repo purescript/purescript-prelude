@@ -15,12 +15,13 @@ interface UnsafeCompare<O> {
 };
 */
 
+// jshint singleGroups:false
 exports.unsafeCompareImpl = (function (lt) {
   return function (eq) {
     return function (gt) {
       return function (x) {
         return function (y) {
-          return (x < y) ? lt : (x > y) ? gt : eq;
+          return x < y ? lt : x > y ? gt : eq;
         };
       };
     };
