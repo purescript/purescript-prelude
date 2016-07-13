@@ -4,7 +4,7 @@ module Data.Functor
   , void
   , voidRight, (<$)
   , voidLeft, ($>)
-  , flip', (??)
+  , flap, (<@>)
   ) where
 
 import Data.Function (const, compose)
@@ -83,13 +83,13 @@ infixl 4 voidLeft as $>
 -- | password :: String
 -- |
 -- | validate :: String -> List Bool
--- | validate = flip' [longEnough, hasSymbol, hasDigit]
+-- | validate = flap [longEnough, hasSymbol, hasDigit]
 -- | ```
 -- |
 -- | ```purescript
--- | flip' (-) 3 4 == 1
+-- | flap (-) 3 4 == 1
 -- | ```
-flip' :: forall f a b. Functor f => f (a -> b) -> a -> f b
-flip' ff x = map (\f -> f x) ff
+flap :: forall f a b. Functor f => f (a -> b) -> a -> f b
+flap ff x = map (\f -> f x) ff
 
-infixl 1 flip' as ??
+infixl 1 flap as <@>
