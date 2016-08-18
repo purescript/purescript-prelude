@@ -17,7 +17,7 @@ import Data.Unit (Unit)
 -- | Instances must satisfy the following law in addition to the
 -- | `EuclideanRing` laws:
 -- |
--- | - Non-zero multiplicative inverse: ``a `mod` b = 0` for all `a` and `b`
+-- | - Non-zero multiplicative inverse: ``a `mod` b = 0` for all `a` and `b` ``
 class EuclideanRing a <= Field a
 
 instance fieldNumber :: Field Number
