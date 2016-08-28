@@ -88,8 +88,9 @@ infixl 4 voidLeft as $>
 -- |
 -- | ```purescript
 -- | flap (-) 3 4 == 1
+-- | threeve <$> Just 1 <@> 'a' <*> Just true == Just (threeve 1 'a' true)
 -- | ```
 flap :: forall f a b. Functor f => f (a -> b) -> a -> f b
 flap ff x = map (\f -> f x) ff
 
-infixl 1 flap as <@>
+infixl 4 flap as <@>
