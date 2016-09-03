@@ -7,7 +7,7 @@ exports.unsafeCompareImpl = function (lt) {
     return function (gt) {
       return function (x) {
         return function (y) {
-          return x < y ? lt : x > y ? gt : eq;
+          return x < y ? lt : x === y ? eq : gt;
         };
       };
     };
