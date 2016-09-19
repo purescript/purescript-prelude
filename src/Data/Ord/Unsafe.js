@@ -1,8 +1,22 @@
 "use strict";
+// @flow
 
 // module Data.Ord.Unsafe
 
-exports.unsafeCompareImpl = function (lt) {
+/*::
+interface UnsafeCompareImpl<O> {
+  (lt: O): (eq: O) => (gt: O) => UnsafeCompare<O>;
+};
+
+interface UnsafeCompare<O> {
+  (x: number): (y: number) => O;
+  (x: boolean): (y: boolean) => O;
+  (x: string): (y: string) => O;
+};
+*/
+
+// jshint singleGroups:false
+exports.unsafeCompareImpl = (function (lt) {
   return function (eq) {
     return function (gt) {
       return function (x) {
@@ -12,4 +26,4 @@ exports.unsafeCompareImpl = function (lt) {
       };
     };
   };
-};
+}/*: UnsafeCompareImpl<*> */);

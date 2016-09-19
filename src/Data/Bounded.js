@@ -1,4 +1,5 @@
 "use strict";
+// @flow
 
 // module Data.Bounded
 

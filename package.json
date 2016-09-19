@@ -3,9 +3,10 @@
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
     "build": "jshint src && jscs src && psa \"src/**/*.purs\" \"bower_components/purescript-*/**/*.purs\" --censor-lib --strict",
-    "test": "psc \"src/**/*.purs\" \"bower_components/purescript-*/**/*.purs\" \"test/**/*.purs\" && psc-bundle \"output/**/*.js\" --module Test.Main --main Test.Main | node"
+    "test": "(psc \"src/**/*.purs\" \"test/**/*.purs\" && psc-bundle \"output/**/*.js\" --module Test.Main --main Test.Main | node) & flow & wait"
   },
   "devDependencies": {
+    "flow-bin": "^0.28.0",
     "jscs": "^2.8.0",
     "jshint": "^2.9.1",
     "purescript-psa": "^0.3.8",

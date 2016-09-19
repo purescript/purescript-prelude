@@ -1,11 +1,16 @@
 "use strict";
+// @flow
 
 // module Test.Main
 
-exports.mainImpl = function(showNumber) {
+/*::
+type Case = [number, string];
+*/
+
+exports.mainImpl = function(showNumber/*: (n: number) => string*/) {
   return function() {
-    function testAll(cases) {
-      cases.forEach(function(c) {
+    function testAll(cases/*: Array<Case>*/)/*: void*/ {
+      cases.forEach(function(c/*: Case*/)/*: void*/ {
         var expected = c[1];
         var actual = showNumber(c[0]);
         if (expected !== actual) {
@@ -44,4 +49,3 @@ exports.mainImpl = function(showNumber) {
       ]);
   };
 };
-

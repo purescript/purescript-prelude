@@ -1,17 +1,18 @@
 "use strict";
+// @flow
 
 // module Data.Show
 
-exports.showIntImpl = function (n) {
+exports.showIntImpl = function (n/*: number*/)/*: string*/ {
   return n.toString();
 };
 
-exports.showNumberImpl = function (n) {
+exports.showNumberImpl = function (n/*: number*/)/*: string*/ {
   var str = n.toString();
   return isNaN(str + ".0") ? str : str + ".0";
 };
 
-exports.showCharImpl = function (c) {
+exports.showCharImpl = function (c/*: string*/)/*: string*/ {
   var code = c.charCodeAt(0);
   if (code < 0x20 || code === 0x7F) {
     switch (c) {
@@ -28,7 +29,7 @@ exports.showCharImpl = function (c) {
   return c === "'" || c === "\\" ? "'\\" + c + "'" : "'" + c + "'";
 };
 
-exports.showStringImpl = function (s) {
+exports.showStringImpl = function (s/*: string*/)/*: string*/ {
   var l = s.length;
   return "\"" + s.replace(
     /[\0-\x1F\x7F"\\]/g,
@@ -52,7 +53,7 @@ exports.showStringImpl = function (s) {
   ) + "\"";
 };
 
-exports.showArrayImpl = function (f) {
+exports.showArrayImpl = function /*:: <A>*/(f/*: (x: A) => string*/)/*: (xs: Array<A>) => string*/ {
   return function (xs) {
     var ss = [];
     for (var i = 0, l = xs.length; i < l; i++) {
