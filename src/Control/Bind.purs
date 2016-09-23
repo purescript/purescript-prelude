@@ -56,7 +56,7 @@ infixl 1 bind as >>=
 bindFlipped :: forall m a b. Bind m => (a -> m b) -> m a -> m b
 bindFlipped = flip bind
 
-infixl 1 bindFlipped as =<<
+infixr 1 bindFlipped as =<<
 
 instance bindFn :: Bind ((->) r) where
   bind m f x = f (m x) x
