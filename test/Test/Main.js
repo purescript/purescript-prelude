@@ -2,7 +2,7 @@
 
 // module Test.Main
 
-exports.mainImpl = function(showNumber) {
+exports.testNumberShow = function(showNumber) {
   return function() {
     function testAll(cases) {
       cases.forEach(function(c) {
@@ -45,3 +45,8 @@ exports.mainImpl = function(showNumber) {
   };
 };
 
+exports.throwErr = function(msg) {
+  return function() {
+    throw new Error(msg);
+  }
+}
