@@ -1,7 +1,5 @@
 "use strict";
 
-// module Data.Semiring
-
 exports.intAdd = function (x) {
   return function (y) {
     /* jshint bitwise: false */

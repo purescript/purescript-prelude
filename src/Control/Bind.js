@@ -1,7 +1,5 @@
 "use strict";
 
-// module Control.Bind
-
 exports.arrayBind = function (arr) {
   return function (f) {
     var result = [];

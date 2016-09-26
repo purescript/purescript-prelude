@@ -1,7 +1,5 @@
 "use strict";
 
-// module Control.Apply
-
 exports.arrayApply = function (fs) {
   return function (xs) {
     var result = [];

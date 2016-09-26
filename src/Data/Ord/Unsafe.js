@@ -1,7 +1,5 @@
 "use strict";
 
-// module Data.Ord.Unsafe
-
 exports.unsafeCompareImpl = function (lt) {
   return function (eq) {
     return function (gt) {
