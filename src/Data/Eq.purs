@@ -10,6 +10,11 @@ import Data.Void (Void)
 -- | - Reflexivity: `x == x = true`
 -- | - Symmetry: `x == y = y == x`
 -- | - Transitivity: if `x == y` and `y == z` then `x == z`
+-- |
+-- | **Note:** The `Number` type is not an entirely law abiding member of this
+-- | class due to the presence of `NaN`, since `NaN /= NaN`. Additionally,
+-- | computing with `Number` can result in a loss of precision, so sometimes
+-- | values that should be equivalent are not.
 class Eq a where
   eq :: a -> a -> Boolean
 
