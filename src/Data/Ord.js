@@ -1,7 +1,5 @@
 "use strict";
 
-// module Data.Ord
-
 exports.ordArrayImpl = function (f) {
   return function (xs) {
     return function (ys) {

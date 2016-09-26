@@ -1,7 +1,5 @@
 "use strict";
 
-// module Data.Functor
-
 exports.arrayMap = function (f) {
   return function (arr) {
     var l = arr.length;

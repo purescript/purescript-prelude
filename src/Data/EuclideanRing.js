@@ -1,7 +1,5 @@
 "use strict";
 
-// module Data.EuclideanRing
-
 exports.intDegree = function (x) {
   return Math.abs(x);
 };

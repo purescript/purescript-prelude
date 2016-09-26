@@ -1,7 +1,5 @@
 "use strict";
 
-// module Test.Main
-
 exports.testNumberShow = function(showNumber) {
   return function() {
     function testAll(cases) {

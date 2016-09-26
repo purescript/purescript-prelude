@@ -1,7 +1,5 @@
 "use strict";
 
-// module Data.Ring
-
 exports.intSub = function (x) {
   return function (y) {
     /* jshint bitwise: false */

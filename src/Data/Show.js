@@ -1,7 +1,5 @@
 "use strict";
 
-// module Data.Show
-
 exports.showIntImpl = function (n) {
   return n.toString();
 };
