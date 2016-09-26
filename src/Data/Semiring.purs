@@ -17,7 +17,12 @@ import Data.Unit (Unit, unit)
 -- | - Multiplication distributes over addition:
 -- |   - Left distributivity: `a * (b + c) = (a * b) + (a * c)`
 -- |   - Right distributivity: `(a + b) * c = (a * c) + (b * c)`
--- | - Annihiliation: `zero * a = a * zero = zero`
+-- | - Annihilation: `zero * a = a * zero = zero`
+-- |
+-- | **Note:** The `Number` and `Int` types are not fully law abiding
+-- | members of this class hierarchy due to the potential for arithmetic
+-- | overflows, and in the case of `Number`, the presence of `NaN` and
+-- | `Infinity` values. The behaviour is unspecified in these cases.
 class Semiring a where
   add  :: a -> a -> a
   zero :: a
