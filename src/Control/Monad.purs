@@ -2,6 +2,8 @@ module Control.Monad
   ( class Monad
   , liftM1
   , ap
+  , whenM
+  , unlessM
   , module Data.Functor
   , module Control.Apply
   , module Control.Applicative
@@ -13,6 +15,7 @@ import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
 import Control.Bind (class Bind, bind, ifM, join, (<=<), (=<<), (>=>), (>>=))
 
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
+import Data.Unit (Unit)
 
 -- | The `Monad` type class combines the operations of the `Bind` and
 -- | `Applicative` type classes. Therefore, `Monad` instances represent type
@@ -61,3 +64,17 @@ ap f a = do
   f' <- f
   a' <- a
   pure (f' a')
+
+-- | Perform a monadic action when a condition is true, where the conditional
+-- | value is also in a monadic context.
+whenM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
+whenM mb m = do
+  b <- mb
+  when b m
+
+-- | Perform a monadic action unless a condition is true, where the conditional
+-- | value is also in a monadic context.
+unlessM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
+unlessM mb m =  do
+  b <- mb
+  unless b m
