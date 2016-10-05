@@ -4,6 +4,8 @@ import Prelude
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, logShow)
 import Data.Generic.Rep as G
+import Data.Generic.Rep.Eq as GEq
+import Data.Generic.Rep.Ord as GOrd
 
 data List a = Nil | Cons a (List a)
 
@@ -17,10 +19,10 @@ instance genericList :: G.Generic (List a)
   from (Cons x xs) = G.Inr (G.Constructor (G.Product (G.Argument x) (G.Argument xs)))
 
 instance eqList :: Eq a => Eq (List a) where
-  eq x y = G.genericEq x y
+  eq x y = GEq.genericEq x y
 
 instance ordList :: Ord a => Ord (List a) where
-  compare x y = G.genericCompare x y
+  compare x y = GOrd.genericCompare x y
 
 main :: Eff (console :: CONSOLE) Unit
 main = do
