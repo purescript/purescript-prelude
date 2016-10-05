@@ -86,8 +86,8 @@ instance genericEqArgument :: Eq a => GenericEq (Argument a) where
 instance genericEqRec :: GenericEq a => GenericEq (Rec a) where
   genericEq' (Rec a1) (Rec a2) = genericEq' a1 a2
 
-instance genericEqField :: GenericEq a => GenericEq (Field name a) where
-  genericEq' (Field a1) (Field a2) = genericEq' a1 a2
+instance genericEqField :: Eq a => GenericEq (Field name a) where
+  genericEq' (Field a1) (Field a2) = a1 == a2
 
 -- | A `Generic` implementation of the `eq` member from the `Eq` type class.
 genericEq :: forall a rep. (Generic a rep, GenericEq rep) => a -> a -> Boolean
@@ -123,8 +123,8 @@ instance genericOrdArgument :: Ord a => GenericOrd (Argument a) where
 instance genericOrdRec :: GenericOrd a => GenericOrd (Rec a) where
   genericCompare' (Rec a1) (Rec a2) = genericCompare' a1 a2
 
-instance genericOrdField :: GenericOrd a => GenericOrd (Field name a) where
-  genericCompare' (Field a1) (Field a2) = genericCompare' a1 a2
+instance genericOrdField :: Ord a => GenericOrd (Field name a) where
+  genericCompare' (Field a1) (Field a2) = compare a1 a2
 
 -- | A `Generic` implementation of the `compare` member from the `Ord` type class.
 genericCompare :: forall a rep. (Generic a rep, GenericOrd rep) => a -> a -> Ordering
@@ -152,8 +152,8 @@ instance genericSemigroupArgument :: Semigroup a => GenericSemigroup (Argument a
 instance genericSemigroupRec :: GenericSemigroup a => GenericSemigroup (Rec a) where
   genericAppend' (Rec a1) (Rec a2) = Rec (genericAppend' a1 a2)
 
-instance genericSemigroupField :: GenericSemigroup a => GenericSemigroup (Field name a) where
-  genericAppend' (Field a1) (Field a2) = Field (genericAppend' a1 a2)
+instance genericSemigroupField :: Semigroup a => GenericSemigroup (Field name a) where
+  genericAppend' (Field a1) (Field a2) = Field (append a1 a2)
 
 -- | A `Generic` implementation of the `append` member from the `Semigroup` type class.
 genericAppend :: forall a rep. (Generic a rep, GenericSemigroup rep) => a -> a -> a
@@ -177,8 +177,8 @@ instance genericMonoidArgument :: Monoid a => GenericMonoid (Argument a) where
 instance genericMonoidRec :: GenericMonoid a => GenericMonoid (Rec a) where
   genericMempty' = Rec genericMempty'
 
-instance genericMonoidField :: GenericMonoid a => GenericMonoid (Field name a) where
-  genericMempty' = Field genericMempty'
+instance genericMonoidField :: Monoid a => GenericMonoid (Field name a) where
+  genericMempty' = Field mempty
 
 -- | A `Generic` implementation of the `mempty` member from the `Monoid` type class.
 genericMempty :: forall a rep. (Generic a rep, GenericMonoid rep) => a
