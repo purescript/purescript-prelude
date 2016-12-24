@@ -66,7 +66,7 @@ voidRight x = map (const x)
 
 infixl 4 voidRight as <$
 
--- | A version of `voidLast` with its arguments flipped.
+-- | A version of `voidRight` with its arguments flipped.
 voidLeft :: forall f a b. Functor f => f a -> b -> f b
 voidLeft f x = const x <$> f
 
