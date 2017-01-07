@@ -5,7 +5,7 @@ module Data.HeytingAlgebra
 
 import Data.Unit (Unit, unit)
 
--- | The `HeytingAlgebra` type class represents types are bounded lattices with
+-- | The `HeytingAlgebra` type class represents types that are bounded lattices with
 -- | an implication operator such that the following laws hold:
 -- |
 -- | - Associativity:
