@@ -25,3 +25,10 @@ exports.numMul = function (n1) {
     return n1 * n2;
   };
 };
+
+exports.boolXor = function (p) {
+  return function (q) {
+    /* jshint bitwise: false */
+    return !!(p ^ q);
+  };
+};

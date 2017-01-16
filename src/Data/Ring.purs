@@ -27,6 +27,9 @@ instance ringNumber :: Ring Number where
 instance ringUnit :: Ring Unit where
   sub _ _ = unit
 
+instance ringBoolean :: Ring Boolean where
+  sub = add
+
 -- | `negate x` can be used as a shorthand for `zero - x`.
 negate :: forall a. Ring a => a -> a
 negate a = zero - a

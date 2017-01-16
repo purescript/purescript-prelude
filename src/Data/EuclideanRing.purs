@@ -40,6 +40,15 @@ instance euclideanRingUnit :: EuclideanRing Unit where
   div _ _ = unit
   mod _ _ = unit
 
+instance euclideanRingBoolean :: EuclideanRing Boolean where
+  degree false = 0
+  degree true = 1
+
+  div x true = x
+  div _ _ = false -- undefined?
+
+  mod _ _ = false
+
 foreign import intDegree :: Int -> Int
 foreign import intDiv :: Int -> Int -> Int
 foreign import intMod :: Int -> Int -> Int

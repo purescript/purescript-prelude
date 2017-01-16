@@ -1,6 +1,7 @@
 module Data.Semiring (class Semiring, add, (+), zero, mul, (*), one) where
 
 import Data.Unit (Unit, unit)
+import Data.HeytingAlgebra ((&&))
 
 -- | The `Semiring` class is for types that support an addition and
 -- | multiplication operation.
@@ -50,7 +51,14 @@ instance semiringUnit :: Semiring Unit where
   mul _ _ = unit
   one = unit
 
+instance semiringBool :: Semiring Boolean where
+  add = boolXor
+  zero = false
+  mul = (&&)
+  one = true
+
 foreign import intAdd :: Int -> Int -> Int
 foreign import intMul :: Int -> Int -> Int
 foreign import numAdd :: Number -> Number -> Number
 foreign import numMul :: Number -> Number -> Number
+foreign import boolXor :: Boolean -> Boolean -> Boolean
