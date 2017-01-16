@@ -10,6 +10,8 @@ import Data.Ring (class Ring, sub, (-))
 import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 
 -- | The `EuclideanRing` class is for commutative rings that support division.
+-- | The mathematical structure this class is based on is also called
+-- | a *Euclidean domain*.
 -- |
 -- | Instances must satisfy the following law in addition to the `Ring`
 -- | laws:
