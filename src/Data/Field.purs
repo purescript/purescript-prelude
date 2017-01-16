@@ -22,3 +22,4 @@ class EuclideanRing a <= Field a
 
 instance fieldNumber :: Field Number
 instance fieldUnit :: Field Unit
+instance fieldBoolean :: Field Boolean
