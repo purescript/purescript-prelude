@@ -18,3 +18,4 @@ class HeytingAlgebra a <= BooleanAlgebra a
 
 instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
+instance booleanAlgebraFn :: BooleanAlgebra b => BooleanAlgebra (a -> b)

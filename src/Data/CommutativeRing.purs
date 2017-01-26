@@ -20,3 +20,4 @@ class Ring a <= CommutativeRing a
 instance commutativeRingInt :: CommutativeRing Int
 instance commutativeRingNumber :: CommutativeRing Number
 instance commutativeRingUnit :: CommutativeRing Unit
+instance commutativeRingFn :: CommutativeRing b => CommutativeRing (a -> b)

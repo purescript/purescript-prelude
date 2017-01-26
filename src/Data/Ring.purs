@@ -27,6 +27,9 @@ instance ringNumber :: Ring Number where
 instance ringUnit :: Ring Unit where
   sub _ _ = unit
 
+instance ringFn :: Ring b => Ring (a -> b) where
+  sub f g x = f x - g x
+
 -- | `negate x` can be used as a shorthand for `zero - x`.
 negate :: forall a. Ring a => a -> a
 negate a = zero - a

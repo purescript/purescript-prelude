@@ -44,6 +44,12 @@ instance semiringNumber :: Semiring Number where
   mul = numMul
   one = 1.0
 
+instance semiringFn :: Semiring b => Semiring (a -> b) where
+  add f g x = f x + g x
+  zero = \_ -> zero
+  mul f g x = f x * g x
+  one = \_ -> one
+
 instance semiringUnit :: Semiring Unit where
   add _ _ = unit
   zero = unit
