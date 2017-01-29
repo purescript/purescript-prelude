@@ -1,7 +1,7 @@
 module Control.Bind.Laws where
 
-import Control.Bind
-import Data.Eq
+import Control.Bind (class Bind, (>>=))
+import Data.Eq (class Eq, (==))
 
 -- | Checks the associativity law for a given triple of values:
 -- |
