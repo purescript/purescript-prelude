@@ -1,11 +1,15 @@
 module Data.EuclideanRing
   ( class EuclideanRing, degree, div, mod, (/)
+  , gcd
+  , lcm
   , module Data.CommutativeRing
   , module Data.Ring
   , module Data.Semiring
   ) where
 
+import Data.BooleanAlgebra ((||))
 import Data.CommutativeRing (class CommutativeRing)
+import Data.Eq (class Eq, (==))
 import Data.Ring (class Ring, sub, (-))
 import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 import Data.Unit (Unit, unit)
@@ -69,3 +73,17 @@ foreign import intDiv :: Int -> Int -> Int
 foreign import intMod :: Int -> Int -> Int
 
 foreign import numDiv :: Number -> Number -> Number
+
+-- | The *greatest common divisor* of two values.
+gcd :: forall a. (Eq a, EuclideanRing a) => a -> a -> a
+gcd a b =
+  if b == zero
+    then a
+    else gcd b (a `mod` b)
+
+-- | The *least common multiple* of two values.
+lcm :: forall a. (Eq a, EuclideanRing a) => a -> a -> a
+lcm a b =
+  if a == zero || b == zero
+    then zero
+    else a * b / gcd a b

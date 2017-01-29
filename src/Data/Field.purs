@@ -7,7 +7,7 @@ module Data.Field
   ) where
 
 import Data.CommutativeRing (class CommutativeRing)
-import Data.EuclideanRing (class EuclideanRing, degree, div, mod, (/))
+import Data.EuclideanRing (class EuclideanRing, degree, div, mod, (/), gcd, lcm)
 import Data.Ring (class Ring, negate, sub)
 import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 import Data.Unit (Unit)
