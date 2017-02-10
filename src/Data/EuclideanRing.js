@@ -1,7 +1,7 @@
 "use strict";
 
 exports.intDegree = function (x) {
-  return Math.abs(x);
+  return Math.abs(x) | 0;
 };
 
 exports.intDiv = function (x) {
