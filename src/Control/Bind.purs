@@ -74,10 +74,10 @@ foreign import arrayBind :: forall a b. Array a -> (a -> Array b) -> Array b
 -- | An example is the `Unit` type, since there is only one
 -- | possible value which can be returned.
 class Discard a where
-  discard :: forall f b. Apply f => f a -> (a -> f b) -> f b
+  discard :: forall f b. Bind f => f a -> (a -> f b) -> f b
 
 instance discardUnit :: Discard Unit where
-  discard u f = u *> f unit
+  discard = bind
 
 -- | Collapse two applications of a monadic type constructor into one.
 join :: forall a m. Bind m => m (m a) -> m a
