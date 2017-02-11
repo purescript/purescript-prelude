@@ -28,7 +28,7 @@ module Prelude
 
 import Control.Applicative (class Applicative, pure, liftA1, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
-import Control.Bind (class Bind, bind, ifM, join, (<=<), (=<<), (>=>), (>>=))
+import Control.Bind (class Bind, bind, class Discard, discard, ifM, join, (<=<), (=<<), (>=>), (>>=))
 import Control.Category (class Category, id)
 import Control.Monad (class Monad, ap, liftM1, unlessM, whenM)
 import Control.Semigroupoid (class Semigroupoid, compose, (<<<), (>>>))
