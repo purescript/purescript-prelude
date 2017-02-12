@@ -17,7 +17,7 @@ import Control.Category (id)
 
 import Data.Function (flip)
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
-import Data.Unit (Unit, unit)
+import Data.Unit (Unit)
 
 -- | The `Bind` type class extends the [`Apply`](#apply) type class with a
 -- | "bind" operation `(>>=)` which composes computations in sequence, using
