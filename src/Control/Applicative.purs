@@ -26,9 +26,9 @@ import Data.Unit (Unit, unit)
 -- | laws:
 -- |
 -- | - Identity: `(pure id) <*> v = v`
--- | - Composition: `(pure <<<) <*> f <*> g <*> h = f <*> (g <*> h)`
+-- | - Composition: `pure (<<<) <*> f <*> g <*> h = f <*> (g <*> h)`
 -- | - Homomorphism: `(pure f) <*> (pure x) = pure (f x)`
--- | - Interchange: `u <*> (pure y) = (pure ($ y)) <*> u`
+-- | - Interchange: `u <*> (pure y) = (pure (_ $ y)) <*> u`
 class Apply f <= Applicative f where
   pure :: forall a. a -> f a
 
