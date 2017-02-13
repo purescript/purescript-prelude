@@ -8,6 +8,7 @@ main :: AlmostEff
 main = do
     testNumberShow show
     testOrderings
+    testIntDegree
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 foreign import throwErr :: String -> AlmostEff
@@ -71,3 +72,10 @@ testOrderings = do
     testOrd [1, 1]  [1, 0] GT
     testOrd [1, -1] [1, 0] LT
 
+testIntDegree :: AlmostEff
+testIntDegree = do
+    let bot = bottom :: Int
+    assert "degree returns absolute integers" $ degree (-4) == 4
+    assert "degree returns absolute integers" $ degree 4 == 4
+    assert "degree returns absolute integers" $ degree bot >= 0
+    assert "degree does not return out-of-bounds integers" $ degree bot <= top
