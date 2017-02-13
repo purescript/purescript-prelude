@@ -1,6 +1,7 @@
 module Control.Bind
   ( class Bind, bind, (>>=)
   , bindFlipped, (=<<)
+  , class Discard, discard
   , join
   , composeKleisli, (>=>)
   , composeKleisliFlipped, (<=<)
@@ -16,6 +17,7 @@ import Control.Category (id)
 
 import Data.Function (flip)
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
+import Data.Unit (Unit)
 
 -- | The `Bind` type class extends the [`Apply`](#apply) type class with a
 -- | "bind" operation `(>>=)` which composes computations in sequence, using
@@ -65,6 +67,17 @@ instance bindArray :: Bind Array where
   bind = arrayBind
 
 foreign import arrayBind :: forall a b. Array a -> (a -> Array b) -> Array b
+
+-- | A class for types whose values can safely be discarded
+-- | in a `do` notation block.
+-- |
+-- | An example is the `Unit` type, since there is only one
+-- | possible value which can be returned.
+class Discard a where
+  discard :: forall f b. Bind f => f a -> (a -> f b) -> f b
+
+instance discardUnit :: Discard Unit where
+  discard = bind
 
 -- | Collapse two applications of a monadic type constructor into one.
 join :: forall a m. Bind m => m (m a) -> m a
