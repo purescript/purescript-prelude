@@ -1,4 +1,7 @@
-module Data.Eq (class Eq, eq, (==), notEq, (/=)) where
+module Data.Eq
+  ( class Eq, eq, (==), notEq, (/=)
+  , class Eq1, eq1, notEq1
+  ) where
 
 import Data.Unit (Unit)
 import Data.Void (Void)
@@ -54,3 +57,13 @@ instance eqArray :: Eq a => Eq (Array a) where
 foreign import refEq :: forall a. a -> a -> Boolean
 foreign import refIneq :: forall a. a -> a -> Boolean
 foreign import eqArrayImpl :: forall a. (a -> a -> Boolean) -> Array a -> Array a -> Boolean
+
+-- | The `Eq` type class represents type constructors with decidable equality.
+class Eq1 f where
+  eq1 :: forall a. Eq a => f a -> f a -> Boolean
+
+instance eq1Array :: Eq1 Array where
+  eq1 = eq
+
+notEq1 :: forall f a. (Eq1 f, Eq a) => f a -> f a -> Boolean
+notEq1 x y = (x `eq1` y) == false

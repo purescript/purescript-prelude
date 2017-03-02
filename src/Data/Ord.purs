@@ -1,5 +1,6 @@
 module Data.Ord
   ( class Ord, compare
+  , class Ord1, compare1
   , lessThan, (<)
   , lessThanOrEq, (<=)
   , greaterThan, (>)
@@ -13,7 +14,7 @@ module Data.Ord
   , module Data.Ordering
   ) where
 
-import Data.Eq (class Eq)
+import Data.Eq (class Eq, class Eq1)
 import Data.Function (on)
 import Data.Ord.Unsafe (unsafeCompare)
 import Data.Ordering (Ordering(..))
@@ -161,3 +162,10 @@ abs x = if x >= zero then x else negate x
 -- | any `x`, we should have `signum x * abs x == x`.
 signum :: forall a. (Ord a, Ring a) => a -> a
 signum x = if x >= zero then one else negate one
+
+-- | The `Ord1` type class represents totally ordered type constructors.
+class Eq1 f <= Ord1 f where
+  compare1 :: forall a. Ord a => f a -> f a -> Ordering
+
+instance ord1Array :: Ord1 Array where
+  compare1 = compare
