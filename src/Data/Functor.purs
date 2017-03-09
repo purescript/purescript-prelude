@@ -11,16 +11,16 @@ import Data.Function (const, compose)
 import Data.Unit (Unit, unit)
 
 -- | A `Functor` is a type constructor which supports a mapping operation
--- | `(<$>)`.
+-- | `map`.
 -- |
--- | `(<$>)` can be used to turn functions `a -> b` into functions
+-- | `map` can be used to turn functions `a -> b` into functions
 -- | `f a -> f b` whose argument and return types use the type constructor `f`
 -- | to represent some computational context.
 -- |
 -- | Instances must satisfy the following laws:
 -- |
--- | - Identity: `(<$>) id = id`
--- | - Composition: `(<$>) (f <<< g) = (f <$>) <<< (g <$>)`
+-- | - Identity: `map id = id`
+-- | - Composition: `map (f <<< g) = map f <<< map g`
 class Functor f where
   map :: forall a b. (a -> b) -> f a -> f b
 
