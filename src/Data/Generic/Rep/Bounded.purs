@@ -34,9 +34,9 @@ instance genericTopConstructor :: GenericTop a => GenericTop (Constructor name a
   genericTop' = Constructor genericTop'
 
 -- | A `Generic` implementation of the `bottom` member from the `Bounded` type class.
-genericBottom :: forall a rep. (Generic a rep, GenericBottom rep) => a
+genericBottom :: forall a rep. Generic a rep => GenericBottom rep => a
 genericBottom = to genericBottom'
 
 -- | A `Generic` implementation of the `top` member from the `Bounded` type class.
-genericTop :: forall a rep. (Generic a rep, GenericTop rep) => a
+genericTop :: forall a rep. Generic a rep => GenericTop rep => a
 genericTop = to genericTop'

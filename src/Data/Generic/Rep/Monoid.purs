@@ -29,5 +29,5 @@ instance genericMonoidField :: Monoid a => GenericMonoid (Field name a) where
   genericMempty' = Field mempty
 
 -- | A `Generic` implementation of the `mempty` member from the `Monoid` type class.
-genericMempty :: forall a rep. (Generic a rep, GenericMonoid rep) => a
+genericMempty :: forall a rep. Generic a rep => GenericMonoid rep => a
 genericMempty = to genericMempty'

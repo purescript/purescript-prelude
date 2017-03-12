@@ -66,5 +66,5 @@ instance genericShowFieldsField
     [reflectSymbol (SProxy :: SProxy name) <> ": " <> show a]
 
 -- | A `Generic` implementation of the `show` member from the `Show` type class.
-genericShow :: forall a rep. (Generic a rep, GenericShow rep) => a -> String
+genericShow :: forall a rep. Generic a rep => GenericShow rep => a -> String
 genericShow x = genericShow' (from x)

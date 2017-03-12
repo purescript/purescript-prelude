@@ -41,5 +41,5 @@ instance genericOrdField :: Ord a => GenericOrd (Field name a) where
   genericCompare' (Field a1) (Field a2) = compare a1 a2
 
 -- | A `Generic` implementation of the `compare` member from the `Ord` type class.
-genericCompare :: forall a rep. (Generic a rep, GenericOrd rep) => a -> a -> Ordering
+genericCompare :: forall a rep. Generic a rep => GenericOrd rep => a -> a -> Ordering
 genericCompare x y = genericCompare' (from x) (from y)

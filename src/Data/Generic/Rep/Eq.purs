@@ -37,5 +37,5 @@ instance genericEqField :: Eq a => GenericEq (Field name a) where
   genericEq' (Field a1) (Field a2) = a1 == a2
 
 -- | A `Generic` implementation of the `eq` member from the `Eq` type class.
-genericEq :: forall a rep. (Generic a rep, GenericEq rep) => a -> a -> Boolean
+genericEq :: forall a rep. Generic a rep => GenericEq rep => a -> a -> Boolean
 genericEq x y = genericEq' (from x) (from y)
