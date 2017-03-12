@@ -17,7 +17,7 @@ foreign import throwErr :: String -> AlmostEff
 assert :: String -> Boolean -> AlmostEff
 assert msg condition = if condition then const unit else throwErr msg
 
-testOrd :: forall a. (Ord a, Show a) => a -> a -> Ordering -> AlmostEff
+testOrd :: forall a. Ord a => Show a => a -> a -> Ordering -> AlmostEff
 testOrd x y ord =
     assert
         ("(compare " <> show x <> " " <> show y <> " ) is not equal to " <> show ord)

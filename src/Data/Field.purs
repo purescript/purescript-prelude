@@ -10,7 +10,6 @@ import Data.CommutativeRing (class CommutativeRing)
 import Data.EuclideanRing (class EuclideanRing, degree, div, mod, (/), gcd, lcm)
 import Data.Ring (class Ring, negate, sub)
 import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
-import Data.Unit (Unit)
 
 -- | The `Field` class is for types that are commutative fields.
 -- |
@@ -25,4 +24,3 @@ import Data.Unit (Unit)
 class EuclideanRing a <= Field a
 
 instance fieldNumber :: Field Number
-instance fieldUnit :: Field Unit

@@ -8,7 +8,7 @@ import Data.Show (class Show)
 -- | `Unit` is often used, wrapped in a monadic type constructor, as the
 -- | return type of a computation where only
 -- | the _effects_ are important.
-foreign import data Unit :: *
+foreign import data Unit :: Type
 
 -- | `unit` is the sole inhabitant of the `Unit` type.
 foreign import unit :: Unit

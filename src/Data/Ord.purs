@@ -155,12 +155,12 @@ between low hi x
 
 -- | The absolute value function. `abs x` is defined as `if x >= zero then x
 -- | else negate x`.
-abs :: forall a. (Ord a, Ring a) => a -> a
+abs :: forall a. Ord a => Ring a => a -> a
 abs x = if x >= zero then x else negate x
 
 -- | The sign function; always evaluates to either `one` or `negate one`. For
 -- | any `x`, we should have `signum x * abs x == x`.
-signum :: forall a. (Ord a, Ring a) => a -> a
+signum :: forall a. Ord a => Ring a => a -> a
 signum x = if x >= zero then one else negate one
 
 -- | The `Ord1` type class represents totally ordered type constructors.

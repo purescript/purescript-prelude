@@ -65,5 +65,5 @@ class Eq1 f where
 instance eq1Array :: Eq1 Array where
   eq1 = eq
 
-notEq1 :: forall f a. (Eq1 f, Eq a) => f a -> f a -> Boolean
+notEq1 :: forall f a. Eq1 f => Eq a => f a -> f a -> Boolean
 notEq1 x y = (x `eq1` y) == false

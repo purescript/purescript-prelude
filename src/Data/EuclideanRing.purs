@@ -12,7 +12,6 @@ import Data.CommutativeRing (class CommutativeRing)
 import Data.Eq (class Eq, (==))
 import Data.Ring (class Ring, sub, (-))
 import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
-import Data.Unit (Unit, unit)
 
 -- | The `EuclideanRing` class is for commutative rings that support division.
 -- | The mathematical structure this class is based on is sometimes also called
@@ -63,11 +62,6 @@ instance euclideanRingNumber :: EuclideanRing Number where
   div = numDiv
   mod _ _ = 0.0
 
-instance euclideanRingUnit :: EuclideanRing Unit where
-  degree _ = 1
-  div _ _ = unit
-  mod _ _ = unit
-
 foreign import intDegree :: Int -> Int
 foreign import intDiv :: Int -> Int -> Int
 foreign import intMod :: Int -> Int -> Int
@@ -75,14 +69,14 @@ foreign import intMod :: Int -> Int -> Int
 foreign import numDiv :: Number -> Number -> Number
 
 -- | The *greatest common divisor* of two values.
-gcd :: forall a. (Eq a, EuclideanRing a) => a -> a -> a
+gcd :: forall a. Eq a => EuclideanRing a => a -> a -> a
 gcd a b =
   if b == zero
     then a
     else gcd b (a `mod` b)
 
 -- | The *least common multiple* of two values.
-lcm :: forall a. (Eq a, EuclideanRing a) => a -> a -> a
+lcm :: forall a. Eq a => EuclideanRing a => a -> a -> a
 lcm a b =
   if a == zero || b == zero
     then zero
