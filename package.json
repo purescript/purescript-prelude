@@ -2,13 +2,13 @@
   "private": true,
   "scripts": {
     "clean": "rimraf output && rimraf .pulp-cache",
-    "build": "jshint src && jscs src && psa \"src/**/*.purs\" \"bower_components/purescript-*/**/*.purs\" --censor-lib --strict",
-    "test": "psc \"src/**/*.purs\" \"bower_components/purescript-*/**/*.purs\" \"test/**/*.purs\" && psc-bundle \"output/**/*.js\" --module Test.Main --main Test.Main | node"
+    "build": "eslint src && pulp build -- --censor-lib --strict",
+    "test": "pulp test"
   },
   "devDependencies": {
-    "jscs": "^2.8.0",
-    "jshint": "^2.9.1",
-    "purescript-psa": "^0.3.8",
-    "rimraf": "^2.5.0"
+    "eslint": "^3.17.1",
+    "purescript-psa": "^0.5.0-rc.1",
+    "pulp": "^10.0.4",
+    "rimraf": "^2.6.1"
   }
 }

@@ -29,8 +29,8 @@ exports.showCharImpl = function (c) {
 exports.showStringImpl = function (s) {
   var l = s.length;
   return "\"" + s.replace(
-    /[\0-\x1F\x7F"\\]/g,
-    function (c, i) { // jshint ignore:line
+    /[\0-\x1F\x7F"\\]/g, // eslint-disable-line no-control-regex
+    function (c, i) {
       switch (c) {
         case "\"":
         case "\\":
