@@ -8,6 +8,7 @@ main :: AlmostEff
 main = do
     testNumberShow show
     testOrderings
+    testOrdUtils
     testIntDegree
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
@@ -71,6 +72,15 @@ testOrderings = do
     testOrd [1]     [1, 0] LT
     testOrd [1, 1]  [1, 0] GT
     testOrd [1, -1] [1, 0] LT
+
+testOrdUtils :: AlmostEff
+testOrdUtils = do
+  assert "-5 clamped between 0 and 10 should be 0" $ clamp 0 10 (-5) == 0
+  assert "5 clamped between 0 and 10 should be 5" $ clamp 0 10 5 == 5
+  assert "15 clamped between 0 and 10 should be 10" $ clamp 0 10 15 == 10
+  assert "-5 should not be between 0 and 10" $ between 0 10 (-5) == false
+  assert "5 should be between 0 and 10" $ between 0 10 5 == true
+  assert "15 should not be between 0 10" $ between 0 10 15 == false
 
 testIntDegree :: AlmostEff
 testIntDegree = do
