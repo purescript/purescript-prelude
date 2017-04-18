@@ -26,7 +26,7 @@ module Prelude
   , module Data.Void
   ) where
 
-import Control.Applicative (class Applicative, pure, liftA1, unless, when)
+import Control.Applicative (class Applicative, pure, return, liftA1, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
 import Control.Bind (class Bind, bind, class Discard, discard, ifM, join, (<=<), (=<<), (>=>), (>>=))
 import Control.Category (class Category, id)
