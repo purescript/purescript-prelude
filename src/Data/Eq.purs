@@ -58,7 +58,7 @@ foreign import refEq :: forall a. a -> a -> Boolean
 foreign import refIneq :: forall a. a -> a -> Boolean
 foreign import eqArrayImpl :: forall a. (a -> a -> Boolean) -> Array a -> Array a -> Boolean
 
--- | The `Eq` type class represents type constructors with decidable equality.
+-- | The `Eq1` type class represents type constructors with decidable equality.
 class Eq1 f where
   eq1 :: forall a. Eq a => f a -> f a -> Boolean
 
