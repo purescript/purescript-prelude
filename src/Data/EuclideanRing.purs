@@ -41,10 +41,6 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- | for `degree` is simply `const 1`. In fact, unless there's a specific
 -- | reason not to, `Field` types should normally use this definition of
 -- | `degree`.
--- |
--- | The `Unit` instance is provided for backwards compatibility, but it is
--- | not law-abiding, because `Unit` fails to form an integral domain. This
--- | instance will be removed in a future release.
 class CommutativeRing a <= EuclideanRing a where
   degree :: a -> Int
   div :: a -> a -> a
