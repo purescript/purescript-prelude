@@ -17,10 +17,6 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- | `EuclideanRing` laws:
 -- |
 -- | - Non-zero multiplicative inverse: ``a `mod` b = zero`` for all `a` and `b`
--- |
--- | The `Unit` instance is provided for backwards compatibility, but it is
--- | not law-abiding, because `Unit` does not obey the `EuclideanRing` laws.
--- | This instance will be removed in a future release.
 class EuclideanRing a <= Field a
 
 instance fieldNumber :: Field Number
