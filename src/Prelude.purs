@@ -9,6 +9,7 @@ module Prelude
   , module Data.BooleanAlgebra
   , module Data.Bounded
   , module Data.CommutativeRing
+  , module Data.DivisionRing
   , module Data.Eq
   , module Data.EuclideanRing
   , module Data.Field
@@ -37,6 +38,7 @@ import Data.Boolean (otherwise)
 import Data.BooleanAlgebra (class BooleanAlgebra)
 import Data.Bounded (class Bounded, bottom, top)
 import Data.CommutativeRing (class CommutativeRing)
+import Data.DivisionRing (class DivisionRing, recip)
 import Data.Eq (class Eq, eq, notEq, (/=), (==))
 import Data.EuclideanRing (class EuclideanRing, degree, div, mod, (/), gcd, lcm)
 import Data.Field (class Field)
