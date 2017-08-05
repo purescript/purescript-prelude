@@ -9,11 +9,16 @@ module Data.Generic.Rep.Bounded
 
 import Data.Generic.Rep
 
+import Data.Bounded (class Bounded, bottom, top)
+
 class GenericBottom a where
   genericBottom' :: a
 
 instance genericBottomNoArguments :: GenericBottom NoArguments where
   genericBottom' = NoArguments
+
+instance genericBottomArgument :: Bounded a => GenericBottom (Argument a) where
+  genericBottom' = Argument bottom
 
 instance genericBottomSum :: GenericBottom a => GenericBottom (Sum a b) where
   genericBottom' = Inl genericBottom'
@@ -26,6 +31,9 @@ class GenericTop a where
 
 instance genericTopNoArguments :: GenericTop NoArguments where
   genericTop' = NoArguments
+
+instance genericTopArgument :: Bounded a => GenericTop (Argument a) where
+  genericTop' = Argument top
 
 instance genericTopSum :: GenericTop b => GenericTop (Sum a b) where
   genericTop' = Inr genericTop'
