@@ -53,3 +53,6 @@ rightDiv a b = a * recip b
 
 instance divisionringNumber :: DivisionRing Number where
   recip x = 1.0 / x
+
+instance divisionringFunction :: DivisionRing b => DivisionRing (a -> b) where
+  recip f x = recip (f x)
