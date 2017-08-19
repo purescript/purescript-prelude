@@ -1,8 +1,35 @@
 module Test.Main where
 
 import Prelude
+import Data.HeytingAlgebra (toBoolean)
 
 type AlmostEff = Unit -> Unit
+
+data TruthyFalsy = Truthy | Falsy
+
+tfToBoolean ∷ TruthyFalsy → Boolean
+tfToBoolean Truthy = true
+tfToBoolean Falsy = false
+
+conjunction ∷ TruthyFalsy → TruthyFalsy → TruthyFalsy
+conjunction Truthy Truthy = Truthy
+conjunction Falsy  Falsy  = Truthy
+conjunction _  _ = Falsy
+
+instance heytingAlgebraFoo ∷ HeytingAlgebra TruthyFalsy  where
+  tt = Truthy
+  ff = Falsy
+
+  not Truthy = Falsy
+  not Falsy  = Truthy
+
+  conj = conjunction
+  disj a b = not (conj (not a) (not b))
+  implies a b = not a || b
+
+instance eqTruthyFalsy ∷ Eq TruthyFalsy where
+  eq a = tfToBoolean <<< conjunction a
+
 
 main :: AlmostEff
 main = do
@@ -10,6 +37,7 @@ main = do
     testOrderings
     testOrdUtils
     testIntDegree
+    testHeytingAlgebraToBoolean
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 foreign import throwErr :: String -> AlmostEff
@@ -89,3 +117,8 @@ testIntDegree = do
     assert "degree returns absolute integers" $ degree 4 == 4
     assert "degree returns absolute integers" $ degree bot >= 0
     assert "degree does not return out-of-bounds integers" $ degree bot <= top
+
+testHeytingAlgebraToBoolean :: AlmostEff
+testHeytingAlgebraToBoolean = do
+    assert "toBoolean Truthy is true" $ (toBoolean Truthy) == true
+    assert "toBOolean Falsy is false" $ (toBoolean Falsy) == false
