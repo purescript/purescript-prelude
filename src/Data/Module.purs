@@ -1,6 +1,7 @@
 module Data.Module where
 
-import Data.Ring (class Ring)
+import Data.Ring (class Ring, zero, add, sub, mul)
+import Data.Unit (Unit, unit)
 
 -- | The `LeftModule` class is for types that support addition as well as
 -- | multiplication by a scalar on the left.
@@ -57,3 +58,39 @@ class (Ring s) <= RightModule m s | m -> s where
 infixl 6 mradd as +$
 infixl 6 mrsub as -$
 infixl 7 mrmul as *$
+
+instance leftModuleUnit :: (Ring s) => LeftModule Unit s where
+  mlzero = unit
+  mladd _ _ = unit
+  mlsub _ _ = unit
+  mlmul _ _ = unit
+
+instance rightModuleUnit :: (Ring s) => RightModule Unit s where
+  mrzero = unit
+  mradd _ _ = unit
+  mrsub _ _ = unit
+  mrmul _ _ = unit
+
+instance leftModuleInt :: LeftModule Int Int where
+  mlzero = zero
+  mladd = add
+  mlsub = sub
+  mlmul = mul
+
+instance rightModuleInt :: RightModule Int Int where
+  mrzero = zero
+  mradd = add
+  mrsub = sub
+  mrmul = mul
+
+instance leftModuleNumber :: LeftModule Number Number where
+  mlzero = zero
+  mladd = add
+  mlsub = sub
+  mlmul = mul
+
+instance rightModuleNumber :: RightModule Number Number where
+  mrzero = zero
+  mradd = add
+  mrsub = sub
+  mrmul = mul
