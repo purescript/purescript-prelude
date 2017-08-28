@@ -1,6 +1,6 @@
 module Data.HeytingAlgebra
-  ( class HeytingAlgebra, tt, ff, implies, conj, disj, not
-  , (&&), (||)
+  ( class HeytingAlgebra, tt, ff, implies, conj, disj, not, xor
+  , (&&), (||), (⊕)
   ) where
 
 import Data.Unit (Unit, unit)
@@ -68,3 +68,8 @@ instance heytingAlgebraFunction :: HeytingAlgebra b => HeytingAlgebra (a -> b) w
 foreign import boolConj :: Boolean -> Boolean -> Boolean
 foreign import boolDisj :: Boolean -> Boolean -> Boolean
 foreign import boolNot :: Boolean -> Boolean
+
+xor ∷ ∀ a. HeytingAlgebra a ⇒ a → a → a
+xor p q = (p `disj` q) `conj` (not (p `conj` q))
+
+infixr 2 xor as ⊕

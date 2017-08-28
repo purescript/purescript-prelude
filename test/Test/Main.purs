@@ -1,6 +1,7 @@
 module Test.Main where
 
 import Prelude
+import Data.HeytingAlgebra (xor)
 
 type AlmostEff = Unit -> Unit
 
@@ -10,6 +11,7 @@ main = do
     testOrderings
     testOrdUtils
     testIntDegree
+    testXor
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 foreign import throwErr :: String -> AlmostEff
@@ -89,3 +91,10 @@ testIntDegree = do
     assert "degree returns absolute integers" $ degree 4 == 4
     assert "degree returns absolute integers" $ degree bot >= 0
     assert "degree does not return out-of-bounds integers" $ degree bot <= top
+
+testXor ∷ AlmostEff
+testXor = do
+    assert "true  `xor` true  == false" $ true  `xor` true  == false
+    assert "true  `xor` false == true"  $ true  `xor` false == true
+    assert "false `xor` true  == true"  $ false `xor` true  == true
+    assert "false `xor` false == false" $ false `xor` false == false
