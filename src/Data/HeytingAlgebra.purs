@@ -1,9 +1,11 @@
 module Data.HeytingAlgebra
   ( class HeytingAlgebra, tt, ff, implies, conj, disj, not
   , (&&), (||)
+  , toBoolean
   ) where
 
 import Data.Unit (Unit, unit)
+import Data.Eq (class Eq, (==))
 
 -- | The `HeytingAlgebra` type class represents types that are bounded lattices with
 -- | an implication operator such that the following laws hold:
@@ -68,3 +70,7 @@ instance heytingAlgebraFunction :: HeytingAlgebra b => HeytingAlgebra (a -> b) w
 foreign import boolConj :: Boolean -> Boolean -> Boolean
 foreign import boolDisj :: Boolean -> Boolean -> Boolean
 foreign import boolNot :: Boolean -> Boolean
+
+-- | Converts a HeytingAlgebra to a Boolean value
+toBoolean :: forall a. Eq a => HeytingAlgebra a => a -> Boolean
+toBoolean a = if (a == tt) then true else false
