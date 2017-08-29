@@ -1,7 +1,7 @@
 module Test.Main where
 
 import Prelude
-import Data.HeytingAlgebra (xor)
+import Data.BooleanAlgebra (xor)
 
 type AlmostEff = Unit -> Unit
 

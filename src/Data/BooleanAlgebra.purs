@@ -1,6 +1,8 @@
 module Data.BooleanAlgebra
   ( class BooleanAlgebra
   , module Data.HeytingAlgebra
+  , xor
+  , (⊕)
   ) where
 
 import Data.HeytingAlgebra (class HeytingAlgebra, ff, tt, implies, conj, disj, not, (&&), (||))
@@ -19,3 +21,8 @@ class HeytingAlgebra a <= BooleanAlgebra a
 instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
 instance booleanAlgebraFn :: BooleanAlgebra b => BooleanAlgebra (a -> b)
+
+xor ∷ ∀ a. HeytingAlgebra a ⇒ a → a → a
+xor p q = (p `disj` q) `conj` (not (p `conj` q))
+
+infixr 2 xor as ⊕
