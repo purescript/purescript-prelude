@@ -3,7 +3,7 @@ module Data.Generic.Rep.Enum where
 import Prelude
 
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), cardinality, fromEnum, pred, succ, toEnum)
-import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), Sum(..), from, to)
+import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), Product(..), Sum(..), from, to)
 import Data.Generic.Rep.Bounded (class GenericBottom, class GenericTop, genericBottom', genericTop')
 import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
@@ -35,6 +35,15 @@ instance genericEnumSum :: (GenericEnum a, GenericTop a, GenericEnum b, GenericB
       Nothing -> Just (Inr genericBottom')
       Just a' -> Just (Inl a')
     Inr b -> Inr <$> genericSucc' b
+
+instance genericEnumProduct :: (GenericEnum a, GenericTop a, GenericBottom a, GenericEnum b, GenericTop b, GenericBottom b) => GenericEnum (Product a b) where
+  genericPred' (Product a b) = case genericPred' b of
+    Just p -> Just $ Product a p
+    Nothing -> flip Product genericTop' <$> genericPred' a
+  genericSucc' (Product a b) = case genericSucc' b of
+    Just s -> Just $ Product a s
+    Nothing -> flip Product genericBottom' <$> genericSucc' a
+
 
 -- | A `Generic` implementation of the `pred` member from the `Enum` type class.
 genericPred :: forall a rep. Generic a rep => GenericEnum rep => a -> Maybe a
@@ -78,6 +87,20 @@ instance genericBoundedEnumSum :: (GenericBoundedEnum a, GenericBoundedEnum b) =
   genericFromEnum' = case _ of
     Inl a -> genericFromEnum' a
     Inr b -> genericFromEnum' b + unwrap (genericCardinality' :: Cardinality a)
+
+
+instance genericBoundedEnumProduct :: (GenericBoundedEnum a, GenericBoundedEnum b) => GenericBoundedEnum (Product a b) where
+  genericCardinality' =
+    Cardinality
+      $ unwrap (genericCardinality' :: Cardinality a)
+      * unwrap (genericCardinality' :: Cardinality b)
+  genericToEnum' n = to genericCardinality'
+    where to :: Cardinality b -> Maybe (Product a b)
+          to (Cardinality cb) = Product <$> (genericToEnum' $ n `div` cb) <*> (genericToEnum' $ n `mod` cb)
+  genericFromEnum' = from genericCardinality'
+    where from :: Cardinality b -> (Product a b) -> Int
+          from (Cardinality cb) (Product a b) = genericFromEnum' a * cb + genericFromEnum' b
+
 
 -- | A `Generic` implementation of the `cardinality` member from the
 -- | `BoundedEnum` type class.
