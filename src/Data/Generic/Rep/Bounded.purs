@@ -23,6 +23,9 @@ instance genericBottomArgument :: Bounded a => GenericBottom (Argument a) where
 instance genericBottomSum :: GenericBottom a => GenericBottom (Sum a b) where
   genericBottom' = Inl genericBottom'
 
+instance genericBottomProduct :: (GenericBottom a, GenericBottom b) => GenericBottom (Product a b) where
+  genericBottom' = Product genericBottom' genericBottom'
+
 instance genericBottomConstructor :: GenericBottom a => GenericBottom (Constructor name a) where
   genericBottom' = Constructor genericBottom'
 
@@ -37,6 +40,9 @@ instance genericTopArgument :: Bounded a => GenericTop (Argument a) where
 
 instance genericTopSum :: GenericTop b => GenericTop (Sum a b) where
   genericTop' = Inr genericTop'
+
+instance genericTopProduct :: (GenericTop a, GenericTop b) => GenericTop (Product a b) where
+  genericTop' = Product genericTop' genericTop'
 
 instance genericTopConstructor :: GenericTop a => GenericTop (Constructor name a) where
   genericTop' = Constructor genericTop'
