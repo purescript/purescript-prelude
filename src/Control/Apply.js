@@ -2,11 +2,14 @@
 
 exports.arrayApply = function (fs) {
   return function (xs) {
-    var result = [];
+    var l = fs.length;
+    var k = xs.length;
+    var result = new Array(l*k);
     var n = 0;
-    for (var i = 0, l = fs.length; i < l; i++) {
-      for (var j = 0, k = xs.length; j < k; j++) {
-        result[n++] = fs[i](xs[j]);
+    for (var i = 0; i < l; i++) {
+      var f = fs[i];
+      for (var j = 0; j < k; j++) {
+        result[n++] = f(xs[j]);
       }
     }
     return result;
