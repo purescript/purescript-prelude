@@ -16,6 +16,7 @@ instance semigroupoidFn :: Semigroupoid (->) where
   compose f g x = f (g x)
 
 infixr 9 compose as <<<
+infixr 9 compose as ∘
 
 -- | Forwards composition, or `compose` with its arguments reversed.
 composeFlipped :: forall a b c d. Semigroupoid a => a b c -> a c d -> a b d
