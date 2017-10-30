@@ -55,7 +55,6 @@ instance eqArray :: Eq a => Eq (Array a) where
   eq = eqArrayImpl eq
 
 foreign import refEq :: forall a. a -> a -> Boolean
-foreign import refIneq :: forall a. a -> a -> Boolean
 foreign import eqArrayImpl :: forall a. (a -> a -> Boolean) -> Array a -> Array a -> Boolean
 
 -- | The `Eq1` type class represents type constructors with decidable equality.
