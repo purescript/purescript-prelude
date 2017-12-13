@@ -82,7 +82,7 @@ infixl 4 voidLeft as $>
 -- | hasDigit :: String -> Bool
 -- | password :: String
 -- |
--- | validate :: String -> List Bool
+-- | validate :: String -> Array Bool
 -- | validate = flap [longEnough, hasSymbol, hasDigit]
 -- | ```
 -- |
