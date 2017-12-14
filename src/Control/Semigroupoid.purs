@@ -13,7 +13,9 @@ class Semigroupoid a where
   compose :: forall b c d. a c d -> a b c -> a b d
 
 instance semigroupoidFn :: Semigroupoid (->) where
-  compose f g x = f (g x)
+  compose = functionCompose
+
+foreign import functionCompose :: forall b c d. (c -> d) -> (b -> c) -> (b -> d)
 
 infixr 9 compose as <<<
 

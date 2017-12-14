@@ -6,10 +6,20 @@ type AlmostEff = Unit -> Unit
 
 main :: AlmostEff
 main = do
+    functionComposition
     testNumberShow show
     testOrderings
     testOrdUtils
     testIntDegree
+
+functionComposition :: AlmostEff
+functionComposition =
+    assert
+        ("composition is stack safe")
+        (composeGo (_ + 1) id 0 0 == 100000)
+
+composeGo :: forall x a. Semigroupoid x => x a a -> x a a -> Int -> x a a
+composeGo f acc n = if n == 100000 then acc else composeGo f (compose acc f) (n + 1)
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 foreign import throwErr :: String -> AlmostEff
