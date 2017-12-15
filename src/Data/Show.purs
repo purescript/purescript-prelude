@@ -16,6 +16,9 @@ instance showBoolean :: Show Boolean where
 instance showInt :: Show Int where
   show = showIntImpl
 
+instance showUInt :: Show UInt where
+  show = showUIntImpl
+
 instance showNumber :: Show Number where
   show = showNumberImpl
 
@@ -29,6 +32,7 @@ instance showArray :: Show a => Show (Array a) where
   show = showArrayImpl show
 
 foreign import showIntImpl :: Int -> String
+foreign import showUIntImpl :: UInt -> String
 foreign import showNumberImpl :: Number -> String
 foreign import showCharImpl :: Char -> String
 foreign import showStringImpl :: String -> String

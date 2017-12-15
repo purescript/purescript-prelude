@@ -4,6 +4,10 @@ exports.showIntImpl = function (n) {
   return n.toString();
 };
 
+exports.showUIntImpl = function (n) {
+  return n.toString() + "u";
+}
+
 exports.showNumberImpl = function (n) {
   var str = n.toString();
   return isNaN(str + ".0") ? str : str + ".0";
