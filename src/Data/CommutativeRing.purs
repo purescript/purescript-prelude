@@ -18,7 +18,6 @@ import Data.Unit (Unit)
 class Ring a <= CommutativeRing a
 
 instance commutativeRingInt :: CommutativeRing Int
-instance commutativeRingUInt :: CommutativeRing UInt
 instance commutativeRingNumber :: CommutativeRing Number
 instance commutativeRingUnit :: CommutativeRing Unit
 instance commutativeRingFn :: CommutativeRing b => CommutativeRing (a -> b)
