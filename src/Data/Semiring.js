@@ -14,6 +14,20 @@ exports.intMul = function (x) {
   };
 };
 
+exports.uintAdd = function (x) {
+  return function (y) {
+    /* jshint bitwise: false */
+    return (x + y) >>> 0;
+  };
+};
+
+exports.uintMul = function (x) {
+  return function (y) {
+    /* jshint bitwise: false */
+    return (x * y) >>> 0;
+  };
+};
+
 exports.numAdd = function (n1) {
   return function (n2) {
     return n1 + n2;

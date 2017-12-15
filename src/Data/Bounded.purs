@@ -29,6 +29,13 @@ instance boundedInt :: Bounded Int where
 foreign import topInt :: Int
 foreign import bottomInt :: Int
 
+instance boundedUInt :: Bounded UInt where
+  top = topUInt
+  bottom = bottomUInt
+
+foreign import topUInt :: UInt
+foreign import bottomUInt :: UInt
+
 -- | Characters fall within the Unicode range.
 instance boundedChar :: Bounded Char where
   top = topChar

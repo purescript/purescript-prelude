@@ -53,6 +53,11 @@ instance euclideanRingInt :: EuclideanRing Int where
   div = intDiv
   mod = intMod
 
+instance euclideanRingUInt :: EuclideanRing UInt where
+  degree = uintDegree
+  div = uintDiv
+  mod = uintMod
+
 instance euclideanRingNumber :: EuclideanRing Number where
   degree _ = 1
   div = numDiv
