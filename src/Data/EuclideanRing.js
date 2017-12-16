@@ -24,7 +24,7 @@ exports.uintDegree = function (x) {
 exports.uintDiv = function (x) {
   return function (y) {
     /* jshint bitwise: false */
-    return (x / y) <<< 0;
+    return (x / y) >>> 0;
   };
 };
 

@@ -42,7 +42,7 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- | reason not to, `Field` types should normally use this definition of
 -- | `degree`.
 class CommutativeRing a <= EuclideanRing a where
-  degree :: a -> Int
+  degree :: a -> UInt
   div :: a -> a -> a
   mod :: a -> a -> a
 
@@ -59,13 +59,17 @@ instance euclideanRingUInt :: EuclideanRing UInt where
   mod = uintMod
 
 instance euclideanRingNumber :: EuclideanRing Number where
-  degree _ = 1
+  degree _ = 1u
   div = numDiv
   mod _ _ = 0.0
 
-foreign import intDegree :: Int -> Int
+foreign import intDegree :: Int -> UInt
 foreign import intDiv :: Int -> Int -> Int
 foreign import intMod :: Int -> Int -> Int
+
+foreign import uintDegree :: UInt -> UInt
+foreign import uintDiv :: UInt -> UInt -> UInt
+foreign import uintMod :: UInt -> UInt -> UInt
 
 foreign import numDiv :: Number -> Number -> Number
 
