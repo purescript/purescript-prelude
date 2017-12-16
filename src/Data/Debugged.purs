@@ -165,3 +165,6 @@ prettyPrint depth (DAssoc name xs) =
 
 print :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
 print = log <<< String.joinWith "\n" <<< prettyPrint top <<< debugged
+
+eval :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
+eval = print
