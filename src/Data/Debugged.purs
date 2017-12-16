@@ -159,8 +159,8 @@ prettyPrint depth (DAssoc name xs) =
       [name]
        <> (xs >>= \(Tuple key value) ->
             case prettyPrint (depth - 1) value of
-              [x] -> [indent (key <> ": " <> x)]
-              xs -> [key <> ":"] <> map indent xs
+              [v] -> [indent (key <> ": " <> v)]
+              vs -> [key <> ":"] <> map indent vs
             )
 
 print :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
