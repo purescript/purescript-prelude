@@ -150,6 +150,11 @@ instance debugList :: Debug a => Debug (List a) where
 instance debugLazyList :: Debug a => Debug (LazyList.List a) where
   debugged xs = DCollection "List.Lazy" (map debugged (LazyList.toUnfoldable xs))
 
+instance debugDebugged :: Debug Debugged where
+  debugged (DInt x) = DCtor "DInt" [debugged x]
+
+---- Pretty-printing
+
 indent :: String -> String
 indent = ("  " <> _)
 
@@ -289,7 +294,7 @@ prettyPrintOneLine =
         String.joinWith ", " (map printAssoc args) <>
         "}>"
   where
-  printAssoc (Tuple a b) = prettyPrintAtom a <> ":" <> prettyPrintOneLine b
+  printAssoc (Tuple a b) = prettyPrintAtom a <> ": " <> prettyPrintOneLine b
 
 -- Pretty print a value on one line, adding parentheses if necessary.
 prettyPrintAtom :: Debugged -> String
