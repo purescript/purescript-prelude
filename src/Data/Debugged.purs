@@ -2,7 +2,7 @@ module Data.Debugged where
 
 import Prelude
 import Data.Tuple (Tuple(..))
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Either (Either(..))
 import Data.Map (Map)
 import Data.Bifunctor (bimap)
@@ -137,6 +137,20 @@ isAtomic =
 
     DAssoc _ _ -> false
 
+mapAllButLast :: forall a. (a -> a) -> Array a -> Array a
+mapAllButLast f xs =
+  let
+    len = Array.length xs
+  in
+    Array.modifyAtIndices (Array.range 0 (len-2)) f xs
+
+withLast :: forall a. (a -> a) -> Array a -> Array a
+withLast f xs =
+  let
+    len = Array.length xs
+  in
+    fromMaybe xs (Array.modifyAt (len - 1) f xs)
+
 -- pretty print a `Debugged` value, given a maximum recursion depth. Returns
 -- an array of lines.
 prettyPrint :: Int -> Debugged -> Array String
@@ -186,40 +200,73 @@ prettyPrint depth (DAssoc name xs) =
     then
       [name <> " <...>"]
     else
-      [name]
+      let
+        go = prettyPrint (depth - 1)
+      in
+        [name]
+         <> (xs >>= \(Tuple key value) ->
+              case go key, go value of
+                [k], [v] -> [indent (k <> ": " <> v)]
+                [k], vs -> [k <> ":"] <> map indent vs
+                _, _ -> ["..."]
+            )
 
--- prettyPrintOneLine :: Debugged -> String
--- prettyPrintOneLine =
---   case _ of
---     DInt x ->
---       show x
---     DNumber x ->
---       show x
---     DBoolean x ->
---       show x
---     DAtom x ->
---       x
---     DArray xs ->
---       "[" <>
---         String.joinWith ", " (map prettyPrintOneLine xs) <>
---         "]"
---     DCtor name [] ->
---       "name"
---     DCtor name args ->
---       -- TODO: these parens will not always be necessary
---       "(" <> name <>
---         " " <> String.joinWith " " (map prettyPrintOneLine args) <>
---         ")"
---     DAssoc name args ->
---       "<" <> name <> " {" <>
---         String.joinWith ", " (map printAssoc args) <>
---         "}>"
---   where
---   printAssoc (Tuple a b) = prettyPrintOneLine a <> ":" <> prettyPrintOneLine b
+prettyPrintOneLine :: Debugged -> String
+prettyPrintOneLine =
+  case _ of
+    DInt x ->
+      show x
+    DNumber x ->
+      show x
+    DBoolean x ->
+      show x
+    DAtom x ->
+      x
+    DCtor name [] ->
+      name
+    DCtor name args ->
+      name <> " " <> String.joinWith " " (map prettyPrintAtom args)
+    DArray xs ->
+      "[" <>
+        String.joinWith ", " (map prettyPrintOneLine xs) <>
+        "]"
+    DRecord xs ->
+      "{" <>
+        String.joinWith ", " (map (\(Tuple k v) -> k <> ": " <> prettyPrintOneLine v) xs) <>
+        "}"
+    DCollection name args ->
+      "<" <> name <> " [" <>
+        String.joinWith ", " (map prettyPrintOneLine args) <>
+        "]>"
+    DAssoc name args ->
+      "<" <> name <> " {" <>
+        String.joinWith ", " (map printAssoc args) <>
+        "}>"
+  where
+  printAssoc (Tuple a b) = prettyPrintAtom a <> ":" <> prettyPrintOneLine b
 
+-- Pretty print a value on one line, adding parentheses if necessary.
+prettyPrintAtom :: Debugged -> String
+prettyPrintAtom =
+  case _ of
+    DInt x | x < 0 ->
+      "(" <> show x <> ")"
+    DNumber x | x < 0.0 ->
+      "(" <> show x <> ")"
+    DCtor name [] ->
+      name
+    DCtor name args ->
+      "(" <> name <>
+        " " <> String.joinWith " " (map prettyPrintAtom args) <>
+        ")"
+    other ->
+      prettyPrintOneLine other
 
 print :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
 print = log <<< String.joinWith "\n" <<< prettyPrint top <<< debugged
+
+print' :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
+print' = log <<< prettyPrintOneLine <<< debugged
 
 eval :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
 eval = print
