@@ -9,6 +9,8 @@ import Data.List as List
 import Data.List.Lazy as LazyList
 import Data.Map (Map)
 import Data.Map as Map
+import Data.Set (Set)
+import Data.Set as Set
 import Data.String as String
 import Data.Array as Array
 import Data.Bifunctor (bimap)
@@ -150,8 +152,19 @@ instance debugList :: Debug a => Debug (List a) where
 instance debugLazyList :: Debug a => Debug (LazyList.List a) where
   debugged xs = DCollection "List.Lazy" (map debugged (LazyList.toUnfoldable xs))
 
+instance debugSet :: Debug a => Debug (Set a) where
+  debugged s = DCollection "Set" (map debugged (Set.toUnfoldable s))
+
 instance debugDebugged :: Debug Debugged where
   debugged (DInt x) = DCtor "DInt" [debugged x]
+  debugged (DNumber x) = DCtor "DNumber" [debugged x]
+  debugged (DBoolean x) = DCtor "DBoolean" [debugged x]
+  debugged (DAtom x) = DCtor "DAtom" [debugged x]
+  debugged (DCtor name args) = DCtor "DCtor" [debugged name, debugged args]
+  debugged (DArray xs) = DCtor "DArray" [debugged xs]
+  debugged (DRecord xs) = DCtor "DRecord" [debugged xs]
+  debugged (DCollection name args) = DCtor "DCollection" [debugged name, debugged args]
+  debugged (DAssoc name args) = DCtor "DAssoc" [debugged name, debugged args]
 
 ---- Pretty-printing
 
