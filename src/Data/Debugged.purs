@@ -4,11 +4,14 @@ import Prelude
 import Data.Tuple (Tuple(..))
 import Data.Maybe (Maybe(..))
 import Data.Either (Either(..))
+import Data.Map (Map)
+import Data.Bifunctor (bimap)
 import Data.Foldable (all)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Console (CONSOLE, log)
 import Data.String as String
 import Data.Array as Array
+import Data.Map as Map
 
 -- Converts a data type to a debugging representation; from here, it can be
 -- e.g. printed in a REPL, or diffed with an expected representation for
@@ -22,9 +25,13 @@ data Debugged
   | DNumber Number
   | DBoolean Boolean
   | DAtom String
-  | DArray (Array Debugged)
   | DCtor String (Array Debugged)
-  | DAssoc String (Array (Tuple String Debugged))
+  | DArray (Array Debugged)
+  | DRecord (Array (Tuple String Debugged))
+
+  -- These two constructors are for representations of opaque data types
+  | DCollection String (Array Debugged)
+  | DAssoc String (Array (Tuple Debugged Debugged))
 
 derive instance eqDebugged :: Eq Debugged
 derive instance ordDebugged :: Ord Debugged
@@ -65,7 +72,7 @@ instance debugArray :: Debug a => Debug (Array a) where
 instance debugFunction :: Debug (a -> b) where
   debugged _ = DAtom "<function>"
 
--- TODO: Records
+-- TODO: Debug (Record a) instance
 
 -- Prelude
 instance debugOrdering :: Debug Ordering where
@@ -92,7 +99,10 @@ instance debugEither :: (Debug a, Debug b) => Debug (Either a b) where
 instance debugTuple :: (Debug a, Debug b) => Debug (Tuple a b) where
   debugged (Tuple x y) = DCtor "Tuple" [debugged x, debugged y]
 
--- TODO: Debug (Record a) instance
+instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
+  debugged m =
+    DAssoc "Map"
+      (map (bimap debugged debugged) (Map.toUnfoldable m))
 
 indent :: String -> String
 indent = ("  " <> _)
@@ -117,9 +127,13 @@ isAtomic =
     DArray [x] -> isAtomic x
     DArray _ -> false
 
+    DRecord _ -> false
+
     -- data constructors are only considered "atomic" if they have no arguments
     DCtor _ [] -> true
     DCtor _ _ -> false
+
+    DCollection _ _ -> false
 
     DAssoc _ _ -> false
 
@@ -137,6 +151,19 @@ prettyPrint depth (DArray xs) =
     else ["["]
           <> (xs >>= (map indent <<< (prettyPrint (depth - 1))))
           <> ["]"]
+prettyPrint _ (DRecord []) = ["{}"]
+prettyPrint depth (DRecord xs) =
+  if depth <= 0
+    then
+      ["{...}"]
+    else
+      ["{"]
+       <> (xs >>= \(Tuple key value) ->
+            case prettyPrint (depth - 1) value of
+              [v] -> [indent (key <> ": " <> v)]
+              vs -> [key <> ":"] <> map indent vs
+          )
+       <> ["}"]
 prettyPrint depth (DCtor name args) =
   if depth <= 0
     then
@@ -148,20 +175,48 @@ prettyPrint depth (DCtor name args) =
         args' :: Array String
         args' = args >>= prettyPrint (depth - 1)
       in
-        if Array.length args <= 3 && all isAtomic args
+        if all isAtomic args
           then [String.joinWith " " ([name] <> map String.trim args')]
           else [name] <> map indent args'
+prettyPrint depth (DCollection _ xs) =
+  -- TODO
+  prettyPrint depth (DArray xs)
 prettyPrint depth (DAssoc name xs) =
   if depth <= 0
     then
       [name <> " <...>"]
     else
       [name]
-       <> (xs >>= \(Tuple key value) ->
-            case prettyPrint (depth - 1) value of
-              [v] -> [indent (key <> ": " <> v)]
-              vs -> [key <> ":"] <> map indent vs
-            )
+
+-- prettyPrintOneLine :: Debugged -> String
+-- prettyPrintOneLine =
+--   case _ of
+--     DInt x ->
+--       show x
+--     DNumber x ->
+--       show x
+--     DBoolean x ->
+--       show x
+--     DAtom x ->
+--       x
+--     DArray xs ->
+--       "[" <>
+--         String.joinWith ", " (map prettyPrintOneLine xs) <>
+--         "]"
+--     DCtor name [] ->
+--       "name"
+--     DCtor name args ->
+--       -- TODO: these parens will not always be necessary
+--       "(" <> name <>
+--         " " <> String.joinWith " " (map prettyPrintOneLine args) <>
+--         ")"
+--     DAssoc name args ->
+--       "<" <> name <> " {" <>
+--         String.joinWith ", " (map printAssoc args) <>
+--         "}>"
+--   where
+--   printAssoc (Tuple a b) = prettyPrintOneLine a <> ":" <> prettyPrintOneLine b
+
 
 print :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
 print = log <<< String.joinWith "\n" <<< prettyPrint top <<< debugged
