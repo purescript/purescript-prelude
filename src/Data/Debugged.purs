@@ -4,14 +4,21 @@ import Prelude
 import Data.Tuple (Tuple(..))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Either (Either(..))
+import Data.List (List(..), (:))
+import Data.List as List
+import Data.List.Lazy as LazyList
 import Data.Map (Map)
-import Data.Bifunctor (bimap)
-import Data.Foldable (all)
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Data.Map as Map
 import Data.String as String
 import Data.Array as Array
-import Data.Map as Map
+import Data.Bifunctor (bimap)
+import Data.Foldable (all)
+import Data.Record (get, delete)
+import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Type.Prelude (class RowToList, class RowLacks)
+import Type.Row (kind RowList, Nil, Cons, RLProxy(..))
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (CONSOLE, log)
 
 -- Converts a data type to a debugging representation; from here, it can be
 -- e.g. printed in a REPL, or diffed with an expected representation for
@@ -29,7 +36,9 @@ data Debugged
   | DArray (Array Debugged)
   | DRecord (Array (Tuple String Debugged))
 
-  -- These two constructors are for representations of opaque data types
+  -- These two constructors are for representations of opaque data types, or
+  -- data types where this representation is more helpful than the 'obvious'
+  -- representation (e.g. List).
   | DCollection String (Array Debugged)
   | DAssoc String (Array (Tuple Debugged Debugged))
 
@@ -72,7 +81,35 @@ instance debugArray :: Debug a => Debug (Array a) where
 instance debugFunction :: Debug (a -> b) where
   debugged _ = DAtom "<function>"
 
--- TODO: Debug (Record a) instance
+class DebugRowList (list :: RowList) (row :: # Type) | list -> row where
+  debugRowList :: RLProxy list -> Record row -> List (Tuple String Debugged)
+
+instance debugRowListNil :: DebugRowList Nil () where
+  debugRowList _ _ = Nil
+
+instance debugRowListCons ::
+  ( Debug a
+  , DebugRowList listRest rowRest
+  , RowCons  key a rowRest rowFull
+  , RowLacks key rowRest
+  , RowToList rowFull (Cons key a listRest)
+  , IsSymbol key
+  ) => DebugRowList (Cons key a listRest) rowFull where
+  debugRowList _ rec =
+    Tuple (reflectSymbol key) (debugged val) : rest
+    where
+    key = SProxy :: SProxy key
+    val = get key rec
+    rest = debugRowList (RLProxy :: RLProxy listRest) (delete key rec)
+
+instance debugRecord ::
+  ( RowToList row list
+  , DebugRowList list row
+  ) => Debug (Record row) where
+  debugged r =
+    DRecord (Array.fromFoldable (debugRowList prx r))
+    where
+    prx = RLProxy :: RLProxy list
 
 -- Prelude
 instance debugOrdering :: Debug Ordering where
@@ -103,6 +140,15 @@ instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
   debugged m =
     DAssoc "Map"
       (map (bimap debugged debugged) (Map.toUnfoldable m))
+
+instance debugEff :: Debug (Eff eff a) where
+  debugged _ = DAtom "<Eff>"
+
+instance debugList :: Debug a => Debug (List a) where
+  debugged xs = DCollection "List" (map debugged (List.toUnfoldable xs))
+
+instance debugLazyList :: Debug a => Debug (LazyList.List a) where
+  debugged xs = DCollection "List.Lazy" (map debugged (LazyList.toUnfoldable xs))
 
 indent :: String -> String
 indent = ("  " <> _)
