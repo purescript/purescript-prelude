@@ -90,6 +90,7 @@ withLast f xs =
 --                 _, _ -> ["..."]
 --             )
 
+-- | Pretty-print a representation on a single line.
 prettyPrintOneLine :: Debugged -> String
 prettyPrintOneLine =
   case _ of
@@ -133,7 +134,9 @@ prettyPrintOneLine =
   printRecord (Tuple k v) = k <> ": " <> prettyPrintOneLine v
   printAssoc (Tuple a b) = prettyPrintAtom a <> ": " <> prettyPrintOneLine b
 
--- Pretty print a value on one line, adding parentheses if necessary.
+-- | Check whether a representation needs to be wrapped in parens when being
+-- | displayed in a context which would require them (e.g. as an argument to
+-- | a data constructor).
 needsParens :: Debugged -> Boolean
 needsParens =
   case _ of
@@ -143,6 +146,7 @@ needsParens =
     DExpr _ _  -> true
     _          -> false
 
+-- | Pretty-print a representation, adding parens if necessary.
 prettyPrintAtom :: Debugged -> String
 prettyPrintAtom d =
   if needsParens d
