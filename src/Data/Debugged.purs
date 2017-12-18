@@ -25,22 +25,21 @@ import Control.Monad.Eff.Console (CONSOLE, log)
 -- Converts a data type to a debugging representation; from here, it can be
 -- e.g. printed in a REPL, or diffed with an expected representation for
 -- display in a failing test.
-
--- The "DAtom" constructor is intended only for the simplest values. It's also
--- the preferred option for when types cannot provide any information about
--- themselves (e.g. Ref or (->)).
 data Debugged
+  -- Constructors which can be 'uneval'ed
   = DInt Int
   | DNumber Number
   | DBoolean Boolean
-  | DAtom String
-  | DCtor String (Array Debugged)
+  | DChar Char
+  | DString String
+  | DExpr String (Array Debugged)
   | DArray (Array Debugged)
   | DRecord (Array (Tuple String Debugged))
 
-  -- These two constructors are for representations of opaque data types, or
-  -- data types where this representation is more helpful than the 'obvious'
+  -- These constructors are for representations of opaque data types, or data
+  -- types where this representation is more helpful than the 'obvious'
   -- representation (e.g. List).
+  | DOpaque String (Array (Tuple String Debugged))
   | DCollection String (Array Debugged)
   | DAssoc String (Array (Tuple Debugged Debugged))
 
@@ -72,16 +71,16 @@ instance debugBoolean :: Debug Boolean where
   debugged = DBoolean
 
 instance debugString :: Debug String where
-  debugged = DAtom <<< show
+  debugged = DString
 
 instance debugChar :: Debug Char where
-  debugged = DAtom <<< show
+  debugged = DChar
 
 instance debugArray :: Debug a => Debug (Array a) where
   debugged = DArray <<< map debugged
 
 instance debugFunction :: Debug (a -> b) where
-  debugged _ = DAtom "<function>"
+  debugged _ = DOpaque "function" []
 
 class DebugRowList (list :: RowList) (row :: # Type) | list -> row where
   debugRowList :: RLProxy list -> Record row -> List (Tuple String Debugged)
@@ -115,12 +114,12 @@ instance debugRecord ::
 
 -- Prelude
 instance debugOrdering :: Debug Ordering where
-  debugged LT = DCtor "LT" []
-  debugged EQ = DCtor "EQ" []
-  debugged GT = DCtor "GT" []
+  debugged LT = DExpr "LT" []
+  debugged EQ = DExpr "EQ" []
+  debugged GT = DExpr "GT" []
 
 instance debugUnit :: Debug Unit where
-  debugged _ = DAtom "unit"
+  debugged _ = DExpr "unit" []
 
 instance debugVoid :: Debug Void where
   debugged = absurd
@@ -128,15 +127,15 @@ instance debugVoid :: Debug Void where
 -- Other
 
 instance debugMaybe :: Debug a => Debug (Maybe a) where
-  debugged (Just x) = DCtor "Just" [debugged x]
-  debugged Nothing = DCtor "Nothing" []
+  debugged (Just x) = DExpr "Just" [debugged x]
+  debugged Nothing = DExpr "Nothing" []
 
 instance debugEither :: (Debug a, Debug b) => Debug (Either a b) where
-  debugged (Right x) = DCtor "Right" [debugged x]
-  debugged (Left x) = DCtor "Left" [debugged x]
+  debugged (Right x) = DExpr "Right" [debugged x]
+  debugged (Left x) = DExpr "Left" [debugged x]
 
 instance debugTuple :: (Debug a, Debug b) => Debug (Tuple a b) where
-  debugged (Tuple x y) = DCtor "Tuple" [debugged x, debugged y]
+  debugged (Tuple x y) = DExpr "Tuple" [debugged x, debugged y]
 
 instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
   debugged m =
@@ -144,7 +143,7 @@ instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
       (map (bimap debugged debugged) (Map.toUnfoldable m))
 
 instance debugEff :: Debug (Eff eff a) where
-  debugged _ = DAtom "<Eff>"
+  debugged _ = DOpaque "Eff" []
 
 instance debugList :: Debug a => Debug (List a) where
   debugged xs = DCollection "List" (map debugged (List.toUnfoldable xs))
@@ -156,50 +155,22 @@ instance debugSet :: Debug a => Debug (Set a) where
   debugged s = DCollection "Set" (map debugged (Set.toUnfoldable s))
 
 instance debugDebugged :: Debug Debugged where
-  debugged (DInt x) = DCtor "DInt" [debugged x]
-  debugged (DNumber x) = DCtor "DNumber" [debugged x]
-  debugged (DBoolean x) = DCtor "DBoolean" [debugged x]
-  debugged (DAtom x) = DCtor "DAtom" [debugged x]
-  debugged (DCtor name args) = DCtor "DCtor" [debugged name, debugged args]
-  debugged (DArray xs) = DCtor "DArray" [debugged xs]
-  debugged (DRecord xs) = DCtor "DRecord" [debugged xs]
-  debugged (DCollection name args) = DCtor "DCollection" [debugged name, debugged args]
-  debugged (DAssoc name args) = DCtor "DAssoc" [debugged name, debugged args]
+  debugged (DInt x) = DExpr "DInt" [debugged x]
+  debugged (DNumber x) = DExpr "DNumber" [debugged x]
+  debugged (DBoolean x) = DExpr "DBoolean" [debugged x]
+  debugged (DChar x) = DExpr "DChar" [debugged x]
+  debugged (DString x) = DExpr "DString" [debugged x]
+  debugged (DExpr name args) = DExpr "DExpr" [debugged name, debugged args]
+  debugged (DArray xs) = DExpr "DArray" [debugged xs]
+  debugged (DRecord xs) = DExpr "DRecord" [debugged xs]
+  debugged (DOpaque name xs) = DExpr "DOpaque" [debugged name, debugged xs]
+  debugged (DCollection name args) = DExpr "DCollection" [debugged name, debugged args]
+  debugged (DAssoc name args) = DExpr "DAssoc" [debugged name, debugged args]
 
 ---- Pretty-printing
 
 indent :: String -> String
 indent = ("  " <> _)
-
--- To be considered "atomic" in this context, a piece of data must satisfy two
--- conditions:
--- * It must be sufficiently simple that it makes sense to condense it
---   onto a line together with some other pieces of atomic data.
--- * It must be able to be placed next to other pieces of atomic data without
---   needing parentheses. For example, data constructors with one or more
---   argument fail this criterion because e.g. condensing Just (Just (Just 3))
---   onto one line would yield "Just Just Just 3", which is not what we want.
-isAtomic :: Debugged -> Boolean
-isAtomic =
-  case _ of
-    DInt _ -> true
-    DNumber _ -> true
-    DBoolean _ -> true
-    DAtom _ -> true
-
-    DArray [] -> true
-    DArray [x] -> isAtomic x
-    DArray _ -> false
-
-    DRecord _ -> false
-
-    -- data constructors are only considered "atomic" if they have no arguments
-    DCtor _ [] -> true
-    DCtor _ _ -> false
-
-    DCollection _ _ -> false
-
-    DAssoc _ _ -> false
 
 mapAllButLast :: forall a. (a -> a) -> Array a -> Array a
 mapAllButLast f xs =
@@ -217,63 +188,63 @@ withLast f xs =
 
 -- pretty print a `Debugged` value, given a maximum recursion depth. Returns
 -- an array of lines.
-prettyPrint :: Int -> Debugged -> Array String
-prettyPrint _ (DInt x) = [show x]
-prettyPrint _ (DNumber x) = [show x]
-prettyPrint _ (DBoolean x) = [show x]
-prettyPrint _ (DAtom x) = [x]
-prettyPrint _ (DArray []) = ["[]"]
-prettyPrint depth (DArray xs) =
-  if depth <= 0
-    then ["[...]"]
-    else ["["]
-          <> (xs >>= (map indent <<< (prettyPrint (depth - 1))))
-          <> ["]"]
-prettyPrint _ (DRecord []) = ["{}"]
-prettyPrint depth (DRecord xs) =
-  if depth <= 0
-    then
-      ["{...}"]
-    else
-      ["{"]
-       <> (xs >>= \(Tuple key value) ->
-            case prettyPrint (depth - 1) value of
-              [v] -> [indent (key <> ": " <> v)]
-              vs -> [key <> ":"] <> map indent vs
-          )
-       <> ["}"]
-prettyPrint depth (DCtor name args) =
-  if depth <= 0
-    then
-      if Array.length args >= 1
-        then [name <> " <...>"]
-        else [name]
-    else
-      let
-        args' :: Array String
-        args' = args >>= prettyPrint (depth - 1)
-      in
-        if all isAtomic args
-          then [String.joinWith " " ([name] <> map String.trim args')]
-          else [name] <> map indent args'
-prettyPrint depth (DCollection _ xs) =
-  -- TODO
-  prettyPrint depth (DArray xs)
-prettyPrint depth (DAssoc name xs) =
-  if depth <= 0
-    then
-      [name <> " <...>"]
-    else
-      let
-        go = prettyPrint (depth - 1)
-      in
-        [name]
-         <> (xs >>= \(Tuple key value) ->
-              case go key, go value of
-                [k], [v] -> [indent (k <> ": " <> v)]
-                [k], vs -> [k <> ":"] <> map indent vs
-                _, _ -> ["..."]
-            )
+-- prettyPrint :: Int -> Debugged -> Array String
+-- prettyPrint _ (DInt x) = [show x]
+-- prettyPrint _ (DNumber x) = [show x]
+-- prettyPrint _ (DBoolean x) = [show x]
+-- prettyPrint _ (DAtom x) = [x]
+-- prettyPrint _ (DArray []) = ["[]"]
+-- prettyPrint depth (DArray xs) =
+--   if depth <= 0
+--     then ["[...]"]
+--     else ["["]
+--           <> (xs >>= (map indent <<< (prettyPrint (depth - 1))))
+--           <> ["]"]
+-- prettyPrint _ (DRecord []) = ["{}"]
+-- prettyPrint depth (DRecord xs) =
+--   if depth <= 0
+--     then
+--       ["{...}"]
+--     else
+--       ["{"]
+--        <> (xs >>= \(Tuple key value) ->
+--             case prettyPrint (depth - 1) value of
+--               [v] -> [indent (key <> ": " <> v)]
+--               vs -> [key <> ":"] <> map indent vs
+--           )
+--        <> ["}"]
+-- prettyPrint depth (DCtor name args) =
+--   if depth <= 0
+--     then
+--       if Array.length args >= 1
+--         then [name <> " <...>"]
+--         else [name]
+--     else
+--       let
+--         args' :: Array String
+--         args' = args >>= prettyPrint (depth - 1)
+--       in
+--         if all isAtomic args
+--           then [String.joinWith " " ([name] <> map String.trim args')]
+--           else [name] <> map indent args'
+-- prettyPrint depth (DCollection _ xs) =
+--   -- TODO
+--   prettyPrint depth (DArray xs)
+-- prettyPrint depth (DAssoc name xs) =
+--   if depth <= 0
+--     then
+--       [name <> " <...>"]
+--     else
+--       let
+--         go = prettyPrint (depth - 1)
+--       in
+--         [name]
+--          <> (xs >>= \(Tuple key value) ->
+--               case go key, go value of
+--                 [k], [v] -> [indent (k <> ": " <> v)]
+--                 [k], vs -> [k <> ":"] <> map indent vs
+--                 _, _ -> ["..."]
+--             )
 
 prettyPrintOneLine :: Debugged -> String
 prettyPrintOneLine =
@@ -284,11 +255,13 @@ prettyPrintOneLine =
       show x
     DBoolean x ->
       show x
-    DAtom x ->
-      x
-    DCtor name [] ->
+    DChar x ->
+      show x
+    DString x ->
+      show x
+    DExpr name [] ->
       name
-    DCtor name args ->
+    DExpr name args ->
       name <> " " <> String.joinWith " " (map prettyPrintAtom args)
     DArray xs ->
       "[" <>
@@ -296,8 +269,14 @@ prettyPrintOneLine =
         "]"
     DRecord xs ->
       "{" <>
-        String.joinWith ", " (map (\(Tuple k v) -> k <> ": " <> prettyPrintOneLine v) xs) <>
+        String.joinWith ", " (map printRecord xs) <>
         "}"
+    DOpaque name [] ->
+      "<" <> name <> ">"
+    DOpaque name xs ->
+      "<" <> name <> " " <>
+        String.joinWith ", " (map printRecord xs)
+        <> ">"
     DCollection name args ->
       "<" <> name <> " [" <>
         String.joinWith ", " (map prettyPrintOneLine args) <>
@@ -307,30 +286,30 @@ prettyPrintOneLine =
         String.joinWith ", " (map printAssoc args) <>
         "}>"
   where
+  printRecord (Tuple k v) = k <> ": " <> prettyPrintOneLine v
   printAssoc (Tuple a b) = prettyPrintAtom a <> ": " <> prettyPrintOneLine b
 
 -- Pretty print a value on one line, adding parentheses if necessary.
-prettyPrintAtom :: Debugged -> String
-prettyPrintAtom =
+needsParens :: Debugged -> Boolean
+needsParens =
   case _ of
-    DInt x | x < 0 ->
-      "(" <> show x <> ")"
-    DNumber x | x < 0.0 ->
-      "(" <> show x <> ")"
-    DCtor name [] ->
-      name
-    DCtor name args ->
-      "(" <> name <>
-        " " <> String.joinWith " " (map prettyPrintAtom args) <>
-        ")"
-    other ->
-      prettyPrintOneLine other
+    DInt x     -> x < 0
+    DNumber x  -> x < 0.0 -- TODO: negative zero?
+    DExpr _ [] -> false
+    DExpr _ _  -> true
+    _          -> false
 
-print :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
-print = log <<< String.joinWith "\n" <<< prettyPrint top <<< debugged
+prettyPrintAtom :: Debugged -> String
+prettyPrintAtom d =
+  if needsParens d
+    then "(" <> prettyPrintOneLine d <> ")"
+    else prettyPrintOneLine d
+
+-- print :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
+-- print = log <<< String.joinWith "\n" <<< prettyPrint top <<< debugged
 
 print' :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
 print' = log <<< prettyPrintOneLine <<< debugged
 
 eval :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
-eval = print
+eval = print'
