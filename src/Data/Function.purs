@@ -3,11 +3,15 @@ module Data.Function
   , const
   , apply, ($)
   , applyFlipped, (#)
+  , applyN
   , on
   , module Control.Category
   ) where
 
 import Control.Category (id, compose, (<<<), (>>>))
+import Data.Boolean (otherwise)
+import Data.Ord ((<=))
+import Data.Ring ((-))
 
 -- | Flips the order of the arguments to a function of two arguments.
 -- |
@@ -76,6 +80,20 @@ applyFlipped x f = f x
 -- | products # filter isInStock >>> groupBy productCategory >>> length
 -- | ```
 infixl 1 applyFlipped as #
+
+-- | `applyN f n` applies the function `f` to its argument `n` times.
+-- |
+-- | If n is less than or equal to 0, the function is not applied.
+-- |
+-- | ```purescript
+-- | applyN (_ + 1) 10 0 == 10
+-- | ```
+applyN :: forall a. (a -> a) -> Int -> a -> a
+applyN f = go
+  where
+  go n acc
+    | n <= 0   = acc
+    | otherwise = go (n - 1) (f acc)
 
 -- | The `on` function is used to change the domain of a binary operator.
 -- |
