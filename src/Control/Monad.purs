@@ -27,6 +27,7 @@ import Data.Unit (Unit)
 -- |
 -- | - Left Identity: `pure x >>= f = f x`
 -- | - Right Identity: `x >>= pure = x`
+-- | - Applicative Superclass: `apply = ap`
 class (Applicative m, Bind m) <= Monad m
 
 instance monadFn :: Monad ((->) r)
