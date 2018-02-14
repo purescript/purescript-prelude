@@ -58,6 +58,7 @@ testOrderings = do
     assert "NaN > 1 should be false" $ (nan > 1.0) == false
     assert "NaN < 1 should be false" $ (nan < 1.0) == false
     assert "NaN == 1 should be false" $ nan /= 1.0
+    testOrd 1u 3u LT
     testOrd intNan 2147483647 GT
     testOrd 'a' 'b' LT
     testOrd 'b' 'A' GT
@@ -85,7 +86,7 @@ testOrdUtils = do
 testIntDegree :: AlmostEff
 testIntDegree = do
     let bot = bottom :: Int
-    assert "degree returns absolute integers" $ degree (-4) == 4
-    assert "degree returns absolute integers" $ degree 4 == 4
-    assert "degree returns absolute integers" $ degree bot >= 0
+    assert "degree returns absolute integers" $ degree (-4) == 4u
+    assert "degree returns absolute integers" $ degree 4 == 4u
+    assert "degree returns absolute integers" $ degree bot >= 0u
     assert "degree does not return out-of-bounds integers" $ degree bot <= top

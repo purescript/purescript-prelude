@@ -39,6 +39,9 @@ instance ordBoolean :: Ord Boolean where
 instance ordInt :: Ord Int where
   compare = unsafeCompare
 
+instance ordUInt :: Ord UInt where
+  compare = unsafeCompare
+
 instance ordNumber :: Ord Number where
   compare = unsafeCompare
 

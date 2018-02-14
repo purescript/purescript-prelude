@@ -21,6 +21,9 @@ infixl 6 sub as -
 instance ringInt :: Ring Int where
   sub = intSub
 
+instance ringUInt :: Ring UInt where
+  sub = uintSub
+
 instance ringNumber :: Ring Number where
   sub = numSub
 
@@ -35,4 +38,5 @@ negate :: forall a. Ring a => a -> a
 negate a = zero - a
 
 foreign import intSub :: Int -> Int -> Int
+foreign import uintSub :: UInt -> UInt -> UInt
 foreign import numSub :: Number -> Number -> Number

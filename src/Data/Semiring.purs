@@ -38,6 +38,12 @@ instance semiringInt :: Semiring Int where
   mul = intMul
   one = 1
 
+instance semiringUInt :: Semiring UInt where
+  add = uintAdd
+  zero = 0u
+  mul = uintMul
+  one = 1u
+
 instance semiringNumber :: Semiring Number where
   add = numAdd
   zero = 0.0
@@ -58,5 +64,7 @@ instance semiringUnit :: Semiring Unit where
 
 foreign import intAdd :: Int -> Int -> Int
 foreign import intMul :: Int -> Int -> Int
+foreign import uintAdd :: UInt -> UInt -> UInt
+foreign import uintMul :: UInt -> UInt -> UInt
 foreign import numAdd :: Number -> Number -> Number
 foreign import numMul :: Number -> Number -> Number

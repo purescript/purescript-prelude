@@ -36,6 +36,9 @@ instance eqBoolean :: Eq Boolean where
 instance eqInt :: Eq Int where
   eq = refEq
 
+instance eqUInt :: Eq UInt where
+  eq = refEq
+
 instance eqNumber :: Eq Number where
   eq = refEq
 
