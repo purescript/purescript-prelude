@@ -44,3 +44,10 @@ instance boundedOrdering :: Bounded Ordering where
 instance boundedUnit :: Bounded Unit where
   top = unit
   bottom = unit
+
+foreign import topNumber :: Number
+foreign import bottomNumber :: Number
+
+instance boundedNumber :: Bounded Number where
+  top = topNumber
+  bottom = bottomNumber
