@@ -22,12 +22,6 @@ instance genericMonoidConstructor :: GenericMonoid a => GenericMonoid (Construct
 instance genericMonoidArgument :: Monoid a => GenericMonoid (Argument a) where
   genericMempty' = Argument mempty
 
-instance genericMonoidRec :: GenericMonoid a => GenericMonoid (Rec a) where
-  genericMempty' = Rec genericMempty'
-
-instance genericMonoidField :: Monoid a => GenericMonoid (Field name a) where
-  genericMempty' = Field mempty
-
 -- | A `Generic` implementation of the `mempty` member from the `Monoid` type class.
 genericMempty :: forall a rep. Generic a rep => GenericMonoid rep => a
 genericMempty = to genericMempty'

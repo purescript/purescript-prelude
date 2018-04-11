@@ -26,12 +26,6 @@ instance genericSemigroupConstructor :: GenericSemigroup a => GenericSemigroup (
 instance genericSemigroupArgument :: Semigroup a => GenericSemigroup (Argument a) where
   genericAppend' (Argument a1) (Argument a2) = Argument (append a1 a2)
 
-instance genericSemigroupRec :: GenericSemigroup a => GenericSemigroup (Rec a) where
-  genericAppend' (Rec a1) (Rec a2) = Rec (genericAppend' a1 a2)
-
-instance genericSemigroupField :: Semigroup a => GenericSemigroup (Field name a) where
-  genericAppend' (Field a1) (Field a2) = Field (append a1 a2)
-
 -- | A `Generic` implementation of the `append` member from the `Semigroup` type class.
 genericAppend :: forall a rep. Generic a rep => GenericSemigroup rep => a -> a -> a
 genericAppend x y = to (genericAppend' (from x) (from y))

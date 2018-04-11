@@ -8,8 +8,6 @@ module Data.Generic.Rep
   , Product(..)
   , Constructor(..)
   , Argument(..)
-  , Rec(..)
-  , Field(..)
   ) where
 
 import Data.Maybe (Maybe(..))
@@ -32,13 +30,6 @@ newtype Constructor (name :: Symbol) a = Constructor a
 
 -- | A representation for an argument in a data constructor.
 newtype Argument a = Argument a
-
--- | A representation for records.
-newtype Rec fields = Rec fields
-
--- | A representation for a record field which includes the field name
--- | as a type-level string.
-newtype Field (field :: Symbol) a = Field a
 
 -- | The `Generic` class asserts the existence of a type function from types
 -- | to their representations using the type constructors defined in this module.
