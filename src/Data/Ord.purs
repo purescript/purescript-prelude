@@ -15,7 +15,6 @@ module Data.Ord
   ) where
 
 import Data.Eq (class Eq, class Eq1)
-import Data.Function (on)
 import Data.Ord.Unsafe (unsafeCompare)
 import Data.Ordering (Ordering(..))
 import Data.Ring (class Ring, zero, one, negate)
@@ -105,7 +104,7 @@ infixl 4 greaterThanOrEq as >=
 
 -- | Compares two values by mapping them to a type with an `Ord` instance.
 comparing :: forall a b. Ord b => (a -> b) -> (a -> a -> Ordering)
-comparing f = compare `on` f
+comparing f x y = compare (f x) (f y)
 
 -- | Take the minimum of two values. If they are considered equal, the first
 -- | argument is chosen.
