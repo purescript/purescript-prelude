@@ -13,7 +13,7 @@ module Control.Bind
 
 import Control.Applicative (class Applicative, liftA1, pure, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
-import Control.Category (id)
+import Control.Category (identity)
 
 import Data.Function (flip)
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
@@ -81,7 +81,7 @@ instance discardUnit :: Discard Unit where
 
 -- | Collapse two applications of a monadic type constructor into one.
 join :: forall a m. Bind m => m (m a) -> m a
-join m = m >>= id
+join m = m >>= identity
 
 -- | Forwards Kleisli composition.
 -- |

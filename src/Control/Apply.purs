@@ -8,7 +8,7 @@ module Control.Apply
 
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Function (const)
-import Control.Category (id)
+import Control.Category (identity)
 
 -- | The `Apply` class provides the `(<*>)` which is used to apply a function
 -- | to an argument under a type constructor.
@@ -53,7 +53,7 @@ infixl 4 applyFirst as <*
 
 -- | Combine two effectful actions, keeping only the result of the second.
 applySecond :: forall a b f. Apply f => f a -> f b -> f b
-applySecond a b = const id <$> a <*> b
+applySecond a b = const identity <$> a <*> b
 
 infixl 4 applySecond as *>
 

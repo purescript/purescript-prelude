@@ -8,7 +8,7 @@ module Data.Function
   , module Control.Category
   ) where
 
-import Control.Category (id, compose, (<<<), (>>>))
+import Control.Category (identity, compose, (<<<), (>>>))
 import Data.Boolean (otherwise)
 import Data.Ord ((<=))
 import Data.Ring ((-))
