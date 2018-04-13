@@ -16,6 +16,7 @@ module Prelude
   , module Data.Function
   , module Data.Functor
   , module Data.HeytingAlgebra
+  , module Data.Monoid
   , module Data.NaturalTransformation
   , module Data.Ord
   , module Data.Ordering
@@ -45,6 +46,7 @@ import Data.Field (class Field)
 import Data.Function (const, flip, ($), (#))
 import Data.Functor (class Functor, flap, map, void, ($>), (<#>), (<$), (<$>), (<@>))
 import Data.HeytingAlgebra (class HeytingAlgebra, conj, disj, not, (&&), (||))
+import Data.Monoid (class Monoid, mempty)
 import Data.NaturalTransformation (type (~>))
 import Data.Ord (class Ord, compare, (<), (<=), (>), (>=), comparing, min, max, clamp, between)
 import Data.Ordering (Ordering(..))
