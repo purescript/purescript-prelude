@@ -6,7 +6,7 @@ module Data.Eq
 import Data.Unit (Unit)
 import Data.Void (Void)
 
--- | The `Eq` type class represents types with an equivalence relation.
+-- | The `Eq` type class represents types that support decidable equality.
 -- |
 -- | `Eq` instances should satisfy the following laws:
 -- |
@@ -19,8 +19,9 @@ import Data.Void (Void)
 -- | computing with `Number` can result in a loss of precision, so sometimes
 -- | values that should be equivalent are not.
 -- |
--- | It is generally recommended to declare `Eq` instances where
--- | `x == y && f x == f y` but not a strict requirement.
+-- | An `Eq a` instance should ideally be consistent with the `Eq` instances of
+-- | everything that can be injected into and projected out of `a`, should
+-- | those instances exist.
 class Eq a where
   eq :: a -> a -> Boolean
 
