@@ -1,7 +1,7 @@
 module Control.Semigroupoid where
 
 -- | A `Semigroupoid` is similar to a [`Category`](#category) but does not
--- | require an identity element `id`, just composable morphisms.
+-- | require an identity element `identity`, just composable morphisms.
 -- |
 -- | `Semigroupoid`s must satisfy the following law:
 -- |

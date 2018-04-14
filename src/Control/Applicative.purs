@@ -25,7 +25,7 @@ import Data.Unit (Unit, unit)
 -- | Instances must satisfy the following laws in addition to the `Apply`
 -- | laws:
 -- |
--- | - Identity: `(pure id) <*> v = v`
+-- | - Identity: `(pure identity) <*> v = v`
 -- | - Composition: `pure (<<<) <*> f <*> g <*> h = f <*> (g <*> h)`
 -- | - Homomorphism: `(pure f) <*> (pure x) = pure (f x)`
 -- | - Interchange: `u <*> (pure y) = (pure (_ $ y)) <*> u`

@@ -9,7 +9,7 @@ import Prelude
 -- |
 -- | ``` purescript
 -- | Endo f <> Endo g == Endo (f <<< g)
--- | mempty :: Endo _ == Endo id
+-- | mempty :: Endo _ == Endo identity
 -- | ```
 newtype Endo c a = Endo (c a a)
 
@@ -26,4 +26,4 @@ instance semigroupEndo :: Semigroupoid c => Semigroup (Endo c a) where
   append (Endo a) (Endo b) = Endo (a <<< b)
 
 instance monoidEndo :: Category c => Monoid (Endo c a) where
-  mempty = Endo id
+  mempty = Endo identity

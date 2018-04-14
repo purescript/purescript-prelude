@@ -1,5 +1,5 @@
 module Control.Category
-  ( class Category, id
+  ( class Category, identity
   , module Control.Semigroupoid
   ) where
 
@@ -12,9 +12,9 @@ import Control.Semigroupoid (class Semigroupoid, compose, (<<<), (>>>))
 -- | Instances must satisfy the following law in addition to the
 -- | `Semigroupoid` law:
 -- |
--- | - Identity: `id <<< p = p <<< id = p`
+-- | - Identity: `identity <<< p = p <<< identity = p`
 class Semigroupoid a <= Category a where
-  id :: forall t. a t t
+  identity :: forall t. a t t
 
 instance categoryFn :: Category (->) where
-  id x = x
+  identity x = x
