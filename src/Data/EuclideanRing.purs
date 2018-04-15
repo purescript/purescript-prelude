@@ -59,7 +59,7 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- | negative infinity if the divisor is positive, and towards positive infinity
 -- | if the divisor is negative. Note that all three definitions are identical if
 -- | we restrict our attention to nonnegative dividends and divisors.
-
+-- |
 -- | In versions 1.x, 2.x, and 3.x of the Prelude, the `EuclideanRing Int`
 -- | instance used truncating division. As of 4.x, the `EuclideanRing Int`
 -- | instance uses Euclidean division. Additional functions `quot` and `rem` are
