@@ -8,7 +8,7 @@ exports.intDegree = function (x) {
 // https://en.m.wikipedia.org/wiki/Modulo_operation.
 exports.intDiv = function (x) {
   return function (y) {
-    return Math.sign(y) * Math.floor(x / Math.abs(y));
+    return y > 0 ? Math.floor(x / y) : -Math.floor(x / -y);
   };
 };
 
