@@ -21,7 +21,7 @@ exports.quot = function (x) {
 
 exports.intMod = function (x) {
   return function (y) {
-    var yy = Math.abs(y)
+    var yy = Math.abs(y);
     return ((x % yy) + yy) % yy;
   };
 };
