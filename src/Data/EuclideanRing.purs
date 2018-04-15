@@ -2,9 +2,13 @@ module Data.EuclideanRing
   ( class EuclideanRing, degree, div, mod, (/)
   , gcd
   , lcm
+  , quot
+  , rem
   , module Data.CommutativeRing
   , module Data.Ring
   , module Data.Semiring
+  , intDiv
+  , intMod
   ) where
 
 import Data.BooleanAlgebra ((||))
@@ -41,6 +45,25 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- | for `degree` is simply `const 1`. In fact, unless there's a specific
 -- | reason not to, `Field` types should normally use this definition of
 -- | `degree`.
+-- |
+-- | The `EuclideanRing Int` instance is one of the most commonly used
+-- | `EuclideanRing` instances and deserves a little more discussion. In
+-- | particular, there are a few different sensible law-abiding implementations
+-- | to choose from, with slightly different behaviour in the presence of
+-- | negative dividends or divisors. The most common definitions are "truncating"
+-- | division, where the result of `a / b` is rounded towards 0, and "Knuthian"
+-- | or "flooring" division, where the result of `a / b` is rounded towards
+-- | negative infinity. A slightly less common, but arguably more useful, option
+-- | is "Euclidean" division, which is defined so as to ensure that ``a `mod` b``
+-- | is always nonnegative. With Euclidean division, `a / b` rounds towards
+-- | negative infinity if the divisor is positive, and towards positive infinity
+-- | if the divisor is negative. Note that all three definitions are identical if
+-- | we restrict our attention to nonnegative dividends and divisors.
+
+-- | In versions 1.x, 2.x, and 3.x of the Prelude, the `EuclideanRing Int`
+-- | instance used truncating division. As of 4.x, the `EuclideanRing Int`
+-- | instance uses Euclidean division. Additional functions `quot` and `rem` are
+-- | supplied if truncating division is desired.
 class CommutativeRing a <= EuclideanRing a where
   degree :: a -> Int
   div :: a -> a -> a
@@ -77,3 +100,38 @@ lcm a b =
   if a == zero || b == zero
     then zero
     else a * b / gcd a b
+
+-- | The `quot` function provides _truncating_ integer division (see the
+-- | documentation for the `EuclideanRing` class). It is identical to `div` in
+-- | the `EuclideanRing Int` instance if the dividend is positive, but will be
+-- | slightly different if the dividend is negative. For example:
+-- |
+-- | ```purescript
+-- | div 2 3 == 0
+-- | quot 2 3 == 0
+-- |
+-- | div (-2) 3 == (-1)
+-- | quot (-2) 3 == 0
+-- |
+-- | div 2 (-3) == 0
+-- | quot 2 (-3) == 0
+-- | ```
+foreign import quot :: Int -> Int -> Int
+
+-- | The `rem` function provides the remainder after _truncating_ integer
+-- | division (see the documentation for the `EuclideanRing` class). It is
+-- | identical to `mod` in the `EuclideanRing Int` instance if the dividend is
+-- | positive, but will be slightly different if the dividend is negative. For
+-- | example:
+-- |
+-- | ```purescript
+-- | mod 2 3 == 2
+-- | rem 2 3 == 2
+-- |
+-- | mod (-2) 3 == 1
+-- | rem (-2) 3 == (-2)
+-- |
+-- | mod 2 (-3) == 2
+-- | rem 2 (-3) == 2
+-- | ```
+foreign import rem :: Int -> Int -> Int

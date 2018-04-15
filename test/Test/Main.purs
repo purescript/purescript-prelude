@@ -1,6 +1,8 @@
 module Test.Main where
 
 import Prelude
+import Data.EuclideanRing (intDiv, intMod)
+import Data.Ord (abs)
 
 type AlmostEff = Unit -> Unit
 
@@ -9,6 +11,8 @@ main = do
     testNumberShow show
     testOrderings
     testOrdUtils
+    testIntDivMod
+    testIntQuotRem
     testIntDegree
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
@@ -81,6 +85,56 @@ testOrdUtils = do
   assert "-5 should not be between 0 and 10" $ between 0 10 (-5) == false
   assert "5 should be between 0 and 10" $ between 0 10 5 == true
   assert "15 should not be between 0 10" $ between 0 10 15 == false
+
+testIntDivMod :: AlmostEff
+testIntDivMod = do
+  -- Check when dividend goes into divisor exactly
+  go 8 2
+  go (-8) 2
+  go 8 (-2)
+  go (-8) (-2)
+
+  -- Check when dividend does not go into divisor exactly
+  go 2 3
+  go (-2) 3
+  go 2 (-3)
+  go (-2) (-3)
+
+  where
+  go a b =
+    let
+      q = intDiv a b
+      r = intMod a b
+      msg = show a <> " / " <> show b <> ": "
+    in do
+      assert (msg <> "Quotient/remainder law") $
+        q * b + r == a
+      assert (msg <> "Remainder should be between 0 and `abs b`, got: " <> show r) $
+        0 <= r && r < abs b
+
+testIntQuotRem :: AlmostEff
+testIntQuotRem = do
+  -- Check when dividend goes into divisor exactly
+  go 8 2
+  go (-8) 2
+  go 8 (-2)
+  go (-8) (-2)
+
+  -- Check when dividend does not go into divisor exactly
+  go 2 3
+  go (-2) 3
+  go 2 (-3)
+  go (-2) (-3)
+
+  where
+  go a b =
+    let
+      q = quot a b
+      r = rem a b
+      msg = show a <> " / " <> show b <> ": "
+    in do
+      assert (msg <> "Quotient/remainder law") $
+        q * b + r == a
 
 testIntDegree :: AlmostEff
 testIntDegree = do
