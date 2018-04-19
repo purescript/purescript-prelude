@@ -2,8 +2,8 @@ module Test.Main where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log, logShow)
+import Effect (Effect)
+import Effect.Console (log, logShow)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), cardinality, fromEnum, pred, succ, toEnum, enumFromTo)
 import Data.Generic.Rep as G
 import Data.Generic.Rep.Bounded as GBounded
@@ -12,7 +12,7 @@ import Data.Generic.Rep.Eq as GEq
 import Data.Generic.Rep.Ord as GOrd
 import Data.Generic.Rep.Show as GShow
 import Data.Maybe (Maybe(..))
-import Test.Assert (ASSERT, assert)
+import Test.Assert (assert)
 
 data List a = Nil | Cons { head :: a, tail :: List a }
 
@@ -105,9 +105,8 @@ instance boundedEnumPair :: (BoundedEnum a, BoundedEnum b) => BoundedEnum (Pair 
   cardinality = GEnum.genericCardinality
   toEnum = GEnum.genericToEnum
   fromEnum = GEnum.genericFromEnum
-  
 
-main :: Eff (console :: CONSOLE, assert :: ASSERT) Unit
+main :: Effect Unit
 main = do
   logShow (cons 1 (cons 2 Nil))
 
