@@ -198,4 +198,4 @@ main = do
 
   log "Checking product toEnum/fromEnum roundtrip"
   assert $ let allPairs = enumFromTo bottom top :: Array (Pair Bit SimpleBounded)
-           in toEnum <<< fromEnum <$> allPairs == Just <$> allPairs
+           in (toEnum <<< fromEnum <$> allPairs) == (Just <$> allPairs)
