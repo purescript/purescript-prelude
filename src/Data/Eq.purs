@@ -1,10 +1,19 @@
 module Data.Eq
   ( class Eq, eq, (==), notEq, (/=)
   , class Eq1, eq1, notEq1
+
+  , class EqRecord
+  , eqRecordImpl
   ) where
 
+import Data.HeytingAlgebra ((&&))
+import Data.Internal.Record (unsafeGet)
+import Data.RowList (RLProxy(..))
+import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit)
 import Data.Void (Void)
+import Prim.Row as Row
+import Prim.RowList as RL
 
 -- | The `Eq` type class represents types which support decidable equality.
 -- |
@@ -66,3 +75,29 @@ instance eq1Array :: Eq1 Array where
 
 notEq1 :: forall f a. Eq1 f => Eq a => f a -> f a -> Boolean
 notEq1 x y = (x `eq1` y) == false
+
+class EqRecord rowlist row focus | rowlist -> focus where
+  eqRecordImpl :: RLProxy rowlist -> Record row -> Record row -> Boolean
+
+instance eqRecordNil :: EqRecord RL.Nil row focus where
+  eqRecordImpl _ _ _ = true
+
+instance eqRecordCons
+    :: ( EqRecord rowlistTail row subfocus
+       , Row.Cons key focus rowTail row
+       , IsSymbol key
+       , Eq focus
+       )
+    => EqRecord (RL.Cons key a rowlistTail) row a where
+  eqRecordImpl _ ra rb
+    = unsafeGet' key ra == unsafeGet key rb
+        && eqRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb
+    where key = reflectSymbol (SProxy :: SProxy key)
+          unsafeGet' = unsafeGet :: String -> Record row -> focus
+
+instance eqRecord
+    :: ( RL.RowToList row list
+       , EqRecord list row focus
+       )
+    => Eq (Record row) where
+  eq = eqRecordImpl (RLProxy :: RLProxy list)

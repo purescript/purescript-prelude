@@ -14,12 +14,17 @@ module Data.Ord
   , module Data.Ordering
   ) where
 
-import Data.Eq (class Eq, class Eq1)
+import Data.Eq (class Eq, class Eq1, class EqRecord, (/=))
+import Data.Internal.Record (unsafeGet)
 import Data.Ord.Unsafe (unsafeCompare)
 import Data.Ordering (Ordering(..))
 import Data.Ring (class Ring, zero, one, negate)
+import Data.RowList (RLProxy(..))
+import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit)
 import Data.Void (Void)
+import Prim.Row as Row
+import Prim.RowList as RL
 
 -- | The `Ord` type class represents types which support comparisons with a
 -- | _total order_.
@@ -168,3 +173,32 @@ class Eq1 f <= Ord1 f where
 
 instance ord1Array :: Ord1 Array where
   compare1 = compare
+
+class EqRecord rowlist row focus <= OrdRecord rowlist row focus | rowlist -> focus where
+  compareImpl :: RLProxy rowlist -> Record row -> Record row -> Ordering
+
+instance ordRecordNil :: OrdRecord RL.Nil row focus where
+  compareImpl _ _ _ = EQ
+
+instance ordRecordCons
+    :: ( OrdRecord rowlistTail row subfocus
+       , Row.Cons key focus rowTail row
+       , IsSymbol key
+       , Ord focus
+       )
+    => OrdRecord (RL.Cons key focus rowlistTail) row focus where
+  compareImpl _ ra rb
+    = if left /= EQ
+        then left
+        else compareImpl (RLProxy :: RLProxy rowlistTail) ra rb
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      unsafeGet' = unsafeGet :: String -> Record row -> focus
+      left = unsafeGet' key ra `compare` unsafeGet' key rb
+
+instance ordRecord
+    :: ( RL.RowToList row list
+       , OrdRecord list row focus
+       )
+    => Ord (Record row) where
+  compare = compareImpl (RLProxy :: RLProxy list)
