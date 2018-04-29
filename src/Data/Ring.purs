@@ -1,6 +1,9 @@
 module Data.Ring
   ( class Ring, sub, negate, (-)
   , module Data.Semiring
+
+  , class RingRecord
+  , subRecordImpl
   ) where
 
 import Data.Internal.Record (unsafeGet, unsafeInsert)

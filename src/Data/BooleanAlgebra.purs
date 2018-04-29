@@ -3,8 +3,9 @@ module Data.BooleanAlgebra
   , module Data.HeytingAlgebra
   ) where
 
-import Data.HeytingAlgebra (class HeytingAlgebra, ff, tt, implies, conj, disj, not, (&&), (||))
+import Data.HeytingAlgebra (class HeytingAlgebra, class HeytingAlgebraRecord, ff, tt, implies, conj, disj, not, (&&), (||))
 import Data.Unit (Unit)
+import Prim.RowList as RL
 
 -- | The `BooleanAlgebra` type class represents types that behave like boolean
 -- | values.
@@ -19,3 +20,9 @@ class HeytingAlgebra a <= BooleanAlgebra a
 instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
 instance booleanAlgebraFn :: BooleanAlgebra b => BooleanAlgebra (a -> b)
+
+instance booleanAlgebraRecord
+  :: ( RL.RowToList row list
+     , HeytingAlgebraRecord list row row focus
+     )
+  => BooleanAlgebra (Record row)

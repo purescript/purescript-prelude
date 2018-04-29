@@ -4,9 +4,10 @@ module Data.CommutativeRing
   , module Data.Semiring
   ) where
 
-import Data.Ring (class Ring)
-import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
+import Data.Ring (class Ring, class RingRecord)
+import Data.Semiring (class Semiring, class SemiringRecord, add, mul, one, zero, (*), (+))
 import Data.Unit (Unit)
+import Prim.RowList as RL
 
 -- | The `CommutativeRing` class is for rings where multiplication is
 -- | commutative.
@@ -21,3 +22,10 @@ instance commutativeRingInt :: CommutativeRing Int
 instance commutativeRingNumber :: CommutativeRing Number
 instance commutativeRingUnit :: CommutativeRing Unit
 instance commutativeRingFn :: CommutativeRing b => CommutativeRing (a -> b)
+
+instance commutativeRingRecord
+  :: ( RL.RowToList row list
+     , SemiringRecord list row row focus
+     , RingRecord list row row focus
+     )
+  => CommutativeRing (Record row)
