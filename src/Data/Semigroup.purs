@@ -1,4 +1,11 @@
-module Data.Semigroup (class Semigroup, append, (<>)) where
+module Data.Semigroup
+  ( class Semigroup
+  , append
+  , (<>)
+
+  , class SemigroupRecord
+  , semigroupRecordImpl
+  ) where
 
 import Data.Internal.Record (unsafeGet, unsafeInsert)
 import Data.RowList (RLProxy(..))

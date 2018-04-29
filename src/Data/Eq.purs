@@ -88,7 +88,7 @@ instance eqRecordCons
        , IsSymbol key
        , Eq focus
        )
-    => EqRecord (RL.Cons key a rowlistTail) row a where
+    => EqRecord (RL.Cons key focus rowlistTail) row focus where
   eqRecordImpl _ ra rb
     = unsafeGet' key ra == unsafeGet key rb
         && eqRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb
