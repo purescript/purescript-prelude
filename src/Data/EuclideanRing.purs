@@ -2,13 +2,9 @@ module Data.EuclideanRing
   ( class EuclideanRing, degree, div, mod, (/)
   , gcd
   , lcm
-  , quot
-  , rem
   , module Data.CommutativeRing
   , module Data.Ring
   , module Data.Semiring
-  , intDiv
-  , intMod
   ) where
 
 import Data.BooleanAlgebra ((||))
@@ -84,7 +80,6 @@ instance euclideanRingNumber :: EuclideanRing Number where
 foreign import intDegree :: Int -> Int
 foreign import intDiv :: Int -> Int -> Int
 foreign import intMod :: Int -> Int -> Int
-
 foreign import numDiv :: Number -> Number -> Number
 
 -- | The *greatest common divisor* of two values.
@@ -100,38 +95,3 @@ lcm a b =
   if a == zero || b == zero
     then zero
     else a * b / gcd a b
-
--- | The `quot` function provides _truncating_ integer division (see the
--- | documentation for the `EuclideanRing` class). It is identical to `div` in
--- | the `EuclideanRing Int` instance if the dividend is positive, but will be
--- | slightly different if the dividend is negative. For example:
--- |
--- | ```purescript
--- | div 2 3 == 0
--- | quot 2 3 == 0
--- |
--- | div (-2) 3 == (-1)
--- | quot (-2) 3 == 0
--- |
--- | div 2 (-3) == 0
--- | quot 2 (-3) == 0
--- | ```
-foreign import quot :: Int -> Int -> Int
-
--- | The `rem` function provides the remainder after _truncating_ integer
--- | division (see the documentation for the `EuclideanRing` class). It is
--- | identical to `mod` in the `EuclideanRing Int` instance if the dividend is
--- | positive, but will be slightly different if the dividend is negative. For
--- | example:
--- |
--- | ```purescript
--- | mod 2 3 == 2
--- | rem 2 3 == 2
--- |
--- | mod (-2) 3 == 1
--- | rem (-2) 3 == (-2)
--- |
--- | mod 2 (-3) == 2
--- | rem 2 (-3) == 2
--- | ```
-foreign import rem :: Int -> Int -> Int
