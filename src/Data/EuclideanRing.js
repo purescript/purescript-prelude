@@ -12,23 +12,10 @@ exports.intDiv = function (x) {
   };
 };
 
-exports.quot = function (x) {
-  return function (y) {
-    /* jshint bitwise: false */
-    return x / y | 0;
-  };
-};
-
 exports.intMod = function (x) {
   return function (y) {
     var yy = Math.abs(y);
     return ((x % yy) + yy) % yy;
-  };
-};
-
-exports.rem = function (x) {
-  return function (y) {
-    return x % y;
   };
 };
 
