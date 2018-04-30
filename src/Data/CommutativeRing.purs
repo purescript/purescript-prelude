@@ -4,8 +4,8 @@ module Data.CommutativeRing
   , module Data.Semiring
   ) where
 
-import Data.Ring (class Ring, class RingRecord)
-import Data.Semiring (class Semiring, class SemiringRecord, add, mul, one, zero, (*), (+))
+import Data.Ring (class Ring, class RingRow)
+import Data.Semiring (class Semiring, class SemiringRow, add, mul, one, zero, (*), (+))
 import Data.Unit (Unit)
 import Prim.RowList as RL
 
@@ -25,7 +25,7 @@ instance commutativeRingFn :: CommutativeRing b => CommutativeRing (a -> b)
 
 instance commutativeRingRecord
   :: ( RL.RowToList row list
-     , SemiringRecord list row row focus
-     , RingRecord list row row focus
+     , SemiringRow list row row focus
+     , RingRow list row row focus
      )
   => CommutativeRing (Record row)

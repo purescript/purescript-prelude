@@ -1,7 +1,13 @@
-module Data.Show (class Show, show) where
+module Data.Show
+  ( class Show
+  , show
+
+  , class ShowRowFields
+  , showRecordFieldsImpl
+  ) where
 
 import Data.Internal.Record (unsafeGet)
-import Data.RowList (RLProxy(..))
+import Type.Data.RowList (RLProxy(..))
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Prim.RowList as RL
 
@@ -33,33 +39,29 @@ instance showString :: Show String where
 instance showArray :: Show a => Show (Array a) where
   show = showArrayImpl show
 
-class ShowRecordFields
-    (rowlist :: RL.RowList)
-    (row :: # Type)
-    focus
-    | rowlist -> focus where
-  showRecordFieldsImpl :: (RLProxy rowlist) -> Record row -> Array String
+class ShowRowFields rowlist row focus | rowlist -> focus where
+  showRecordFieldsImpl :: RLProxy rowlist -> Record row -> Array String
 
-instance showRecordFieldsNil
-    :: ShowRecordFields RL.Nil row focus where
+instance showRowFieldsNil
+    :: ShowRowFields RL.Nil row focus where
   showRecordFieldsImpl _ _ = []
 
-instance showRecordFieldsCons
+instance showRowFieldsCons
     :: ( IsSymbol key
-       , ShowRecordFields rowlistTail row subfocus
+       , ShowRowFields rowlistTail row subfocus
        , Show focus
        )
-    => ShowRecordFields (RL.Cons key focus rowlistTail) row focus where
-  showRecordFieldsImpl _ record = cons
-    (join ": " [ key, show (unsafeGet' key record) ])
-    (showRecordFieldsImpl (RLProxy :: RLProxy rowlistTail) record)
+    => ShowRowFields (RL.Cons key focus rowlistTail) row focus where
+  showRecordFieldsImpl _ record
+    = cons (join ": " [ key, show focus ]) tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
-      unsafeGet' = unsafeGet :: String -> Record row -> focus
+      focus = unsafeGet key record :: focus
+      tail = showRecordFieldsImpl (RLProxy :: RLProxy rowlistTail) record
 
 instance showRecord
     :: ( RL.RowToList rs ls
-       , ShowRecordFields ls rs focus
+       , ShowRowFields ls rs focus
        )
     => Show (Record rs) where
   show record = case showRecordFieldsImpl (RLProxy :: RLProxy ls) record of

@@ -1,4 +1,4 @@
-module Data.RowList where
+module Type.Data.RowList where
 
 import Prim.RowList (kind RowList)
 

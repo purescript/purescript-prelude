@@ -2,13 +2,13 @@ module Data.Ring
   ( class Ring, sub, negate, (-)
   , module Data.Semiring
 
-  , class RingRecord
+  , class RingRow
   , subRecordImpl
   ) where
 
 import Data.Internal.Record (unsafeGet, unsafeInsert)
-import Data.RowList (RLProxy(..))
-import Data.Semiring (class Semiring, class SemiringRecord, add, mul, one, zero, (*), (+))
+import Type.Data.RowList (RLProxy(..))
+import Data.Semiring (class Semiring, class SemiringRow, add, mul, one, zero, (*), (+))
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
@@ -45,30 +45,30 @@ negate a = zero - a
 foreign import intSub :: Int -> Int -> Int
 foreign import numSub :: Number -> Number -> Number
 
-class RingRecord rowlist row subrow focus | rowlist -> subrow focus where
+class RingRow rowlist row subrow focus | rowlist -> subrow focus where
   subRecordImpl  :: RLProxy rowlist -> Record row -> Record row -> Record subrow
 
-instance ringRecordNil :: RingRecord RL.Nil row () focus where
+instance ringRowNil :: RingRow RL.Nil row () focus where
   subRecordImpl  _ _ _ = {}
 
-instance ringRecordCons
+instance ringRowCons
     :: ( IsSymbol key
        , Row.Cons key focus subrowTail subrow
-       , RingRecord rowlistTail row subrowTail subfocus
+       , RingRow rowlistTail row subrowTail subfocus
        , Ring focus
        )
-    => RingRecord (RL.Cons key focus rowlistTail) row subrow focus where
-  subRecordImpl _ ra rb
-    = unsafeInsert key
-        (unsafeGet' key ra - unsafeGet' key rb)
-        (subRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb)
-    where key = reflectSymbol (SProxy :: SProxy key)
-          unsafeGet' = unsafeGet :: String -> Record row -> focus
+    => RingRow (RL.Cons key focus rowlistTail) row subrow focus where
+  subRecordImpl _ ra rb = insert (get ra - get rb) tail
+    where
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      key = reflectSymbol (SProxy :: SProxy key)
+      get = unsafeGet key :: Record row -> focus
+      tail = subRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb
 
 instance ringRecord
     :: ( RL.RowToList row list
-       , SemiringRecord list row row focus
-       , RingRecord list row row focus
+       , SemiringRow list row row focus
+       , RingRow list row row focus
        )
     => Ring (Record row) where
   sub = subRecordImpl (RLProxy :: RLProxy list)

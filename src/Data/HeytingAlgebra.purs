@@ -10,7 +10,7 @@ module Data.HeytingAlgebra
   , (&&)
   , (||)
 
-  , class HeytingAlgebraRecord
+  , class HeytingAlgebraRow
   , ffRecordImpl
   , ttRecordImpl
   , impliesRecordImpl
@@ -20,12 +20,12 @@ module Data.HeytingAlgebra
   ) where
 
 import Data.Internal.Record (unsafeGet, unsafeInsert)
-import Data.RowList (RLProxy(..))
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Type.Data.Row (RProxy(..))
+import Type.Data.RowList (RLProxy(..))
 
 -- | The `HeytingAlgebra` type class represents types that are bounded lattices with
 -- | an implication operator such that the following laws hold:
@@ -91,7 +91,7 @@ foreign import boolConj :: Boolean -> Boolean -> Boolean
 foreign import boolDisj :: Boolean -> Boolean -> Boolean
 foreign import boolNot :: Boolean -> Boolean
 
-class HeytingAlgebraRecord rowlist row subrow focus | rowlist -> subrow focus where
+class HeytingAlgebraRow rowlist row subrow focus | rowlist -> subrow focus where
   ffRecordImpl :: RLProxy rowlist -> RProxy row -> Record subrow
   ttRecordImpl :: RLProxy rowlist -> RProxy row -> Record subrow
   impliesRecordImpl :: RLProxy rowlist -> Record row -> Record row -> Record subrow
@@ -99,7 +99,7 @@ class HeytingAlgebraRecord rowlist row subrow focus | rowlist -> subrow focus wh
   conjRecordImpl :: RLProxy rowlist -> Record row -> Record row -> Record subrow
   notRecordImpl :: RLProxy rowlist -> Record row -> Record subrow
 
-instance heytingAlgebraRecordNil :: HeytingAlgebraRecord RL.Nil row () focus where
+instance heytingAlgebraRowNil :: HeytingAlgebraRow RL.Nil row () focus where
   conjRecordImpl _ _ _ = {}
   disjRecordImpl _ _ _ = {}
   ffRecordImpl _ _ = {}
@@ -107,65 +107,57 @@ instance heytingAlgebraRecordNil :: HeytingAlgebraRecord RL.Nil row () focus whe
   notRecordImpl _ _ = {}
   ttRecordImpl _ _ = {}
 
-instance heytingAlgebraRecordCons
+instance heytingAlgebraRowCons
     :: ( IsSymbol key
        , Row.Cons key focus subrowTail subrow
-       , HeytingAlgebraRecord rowlistTail row subrowTail subfocus
+       , HeytingAlgebraRow rowlistTail row subrowTail subfocus
        , HeytingAlgebra focus
        )
-    => HeytingAlgebraRecord (RL.Cons key focus rowlistTail) row subrow focus where
-  conjRecordImpl _ ra rb
-    = unsafeInsert key
-        (conj (unsafeGet' key ra) (unsafeGet' key rb))
-        (conjRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb)
-    where key = reflectSymbol (SProxy :: SProxy key)
-          unsafeGet' = unsafeGet :: String -> Record row -> focus
-
-  disjRecordImpl _ ra rb
-    = unsafeInsert key
-        (disj (unsafeGet' key ra) (unsafeGet' key rb))
-        (disjRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb)
-    where key = reflectSymbol (SProxy :: SProxy key)
-          unsafeGet' = unsafeGet :: String -> Record row -> focus
-
-  impliesRecordImpl _ ra rb
-    = unsafeInsert key
-        (implies (unsafeGet' key ra) (unsafeGet' key rb))
-        (impliesRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb)
+    => HeytingAlgebraRow (RL.Cons key focus rowlistTail) row subrow focus where
+  conjRecordImpl _ ra rb = insert (conj (get ra) (get rb)) tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
-      unsafeGet' = unsafeGet :: String -> Record row -> focus
+      get = unsafeGet key :: Record row -> focus
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      tail = conjRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb
 
-  ffRecordImpl _ _
-    = unsafeInsert key (ff :: focus)
-        ( ffRecordImpl
-            (RLProxy :: RLProxy rowlistTail)
-            (RProxy :: RProxy row)
-        )
+  disjRecordImpl _ ra rb = insert (disj (get ra) (get rb)) tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
-      unsafeGet' = unsafeGet :: String -> Record row -> focus
+      get = unsafeGet key :: Record row -> focus
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      tail = disjRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb
+
+  impliesRecordImpl _ ra rb = insert (implies (get ra) (get rb)) tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      get = unsafeGet key :: Record row -> focus
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      tail = impliesRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb
+
+  ffRecordImpl _ row = insert ff tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      tail = ffRecordImpl (RLProxy :: RLProxy rowlistTail) row
 
   notRecordImpl _ row
-    = unsafeInsert key (not (unsafeGet' key row))
-        (notRecordImpl (RLProxy :: RLProxy rowlistTail) row)
+    = insert (not (get row)) tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
-      unsafeGet' = unsafeGet :: String -> Record row -> focus
+      get = unsafeGet key :: Record row -> focus
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      tail = notRecordImpl (RLProxy :: RLProxy rowlistTail) row
 
-  ttRecordImpl _ _
-    = unsafeInsert key (tt :: focus)
-        ( ttRecordImpl
-            (RLProxy :: RLProxy rowlistTail)
-            (RProxy :: RProxy row)
-        )
+  ttRecordImpl _ row = insert tt tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
-      unsafeGet' = unsafeGet :: String -> Record row -> focus
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      tail = ttRecordImpl (RLProxy :: RLProxy rowlistTail) row
 
 instance heytingAlgebraRecord
     :: ( RL.RowToList row list
-       , HeytingAlgebraRecord list row row focus
+       , HeytingAlgebraRow list row row focus
        )
     => HeytingAlgebra (Record row) where
   ff = ffRecordImpl  (RLProxy :: RLProxy list) (RProxy :: RProxy row)

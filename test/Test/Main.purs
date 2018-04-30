@@ -2,6 +2,7 @@ module Test.Main where
 
 import Prelude
 import Data.EuclideanRing (intDiv, intMod)
+import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
 
 type AlmostEff = Unit -> Unit
@@ -14,6 +15,7 @@ main = do
     testIntDivMod
     testIntQuotRem
     testIntDegree
+    testRecordInstances
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 foreign import throwErr :: String -> AlmostEff
@@ -143,3 +145,31 @@ testIntDegree = do
     assert "degree returns absolute integers" $ degree 4 == 4
     assert "degree returns absolute integers" $ degree bot >= 0
     assert "degree does not return out-of-bounds integers" $ degree bot <= top
+
+testRecordInstances :: AlmostEff
+testRecordInstances = do
+  assert "Record equality" $ { a: 1 } == { a: 1 }
+  assert "Record inequality" $ { a: 2 } == { a: 1 }
+  assert "Record show" $ show { a: 1 } == "{ a: 1 }"
+  assert "Record +" $ ({ a: 1, b: 2.0 } + { a: 0, b: (-2.0) }) == { a: 1, b: 0.0 }
+  assert "Record *" $ ({ a: 1, b: 2.0 } * { a: 0, b: (-2.0) }) == { a: 0, b: -4.0 }
+  assert "Record one" $ one == { a: 1, b: 1.0 }
+  assert "Record zero" $ zero == { a: 0, b: 0.0 }
+  assert "Record sub" $ { a: 2, b: 2.0 } - { a: 1, b: 1.0 } == { a: 1, b: 1.0 }
+  assert "Record append" $ { a: [], b: "T" } <> { a: [1], b: "OM" } == { a: [1], b: "TOM" }
+  assert "Record mempty" $ mempty == { a: [] :: Array Int, b: "" }
+  assert "Record ff" $ ff == { a: false, b: false }
+  assert "Record tt" $ tt == { a: true, b: true }
+  assert "Record not" $ not { a: true, b: false } == { a: false, b: true }
+  assert "Record conj" $ conj
+    { a: true, b: false, c: true, d: false }
+    { a: true, b: true, c: false, d: false }
+    == ff { a: true, b: false, c: false, d: false }
+  assert "Record disj" $ disj
+    { a: true, b: false, c: true, d: false }
+    { a: true, b: true, c: false, d: false }
+    == ff { a: true, b: true, c: true, d: false }
+  assert "Record implies" $ implies
+    { a: true, b: false, c: true, d: false }
+    { a: true, b: true, c: false, d: false }
+    == ff { a: true, b: true, c: false, d: false }

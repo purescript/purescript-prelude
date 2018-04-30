@@ -3,12 +3,12 @@ module Data.Semigroup
   , append
   , (<>)
 
-  , class SemigroupRecord
-  , semigroupRecordImpl
+  , class SemigroupRow
+  , appendRecordImpl
   ) where
 
 import Data.Internal.Record (unsafeGet, unsafeInsert)
-import Data.RowList (RLProxy(..))
+import Type.Data.RowList (RLProxy(..))
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit, unit)
 import Data.Void (Void, absurd)
@@ -46,29 +46,29 @@ instance semigroupArray :: Semigroup (Array a) where
 foreign import concatString :: String -> String -> String
 foreign import concatArray :: forall a. Array a -> Array a -> Array a
 
-class SemigroupRecord rowlist row subrow focus | rowlist -> subrow focus where
-  semigroupRecordImpl :: RLProxy rowlist -> Record row -> Record row -> Record subrow
+class SemigroupRow rowlist row subrow focus | rowlist -> subrow focus where
+  appendRecordImpl :: RLProxy rowlist -> Record row -> Record row -> Record subrow
 
-instance semigroupRecordNil :: SemigroupRecord RL.Nil row () focus where
-  semigroupRecordImpl _ _ _ = {}
+instance semigroupRowNil :: SemigroupRow RL.Nil row () focus where
+  appendRecordImpl _ _ _ = {}
 
 instance semigroupRecordCons
     :: ( IsSymbol key
        , Row.Cons key focus subrowTail subrow
-       , SemigroupRecord rowlistTail row subrowTail subfocus
+       , SemigroupRow rowlistTail row subrowTail subfocus
        , Semigroup focus
        )
-    => SemigroupRecord (RL.Cons key focus rowlistTail) row subrow focus where
-  semigroupRecordImpl _ ra rb
-    = unsafeInsert key
-        (unsafeGet' key ra <> unsafeGet' key rb)
-        (semigroupRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb)
-    where key = reflectSymbol (SProxy :: SProxy key)
-          unsafeGet' = unsafeGet :: String -> Record row -> focus
+    => SemigroupRow (RL.Cons key focus rowlistTail) row subrow focus where
+  appendRecordImpl _ ra rb = insert (get ra <> get rb) tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      get = unsafeGet key :: Record row -> focus
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      tail = appendRecordImpl (RLProxy :: RLProxy rowlistTail) ra rb
 
-instance semigroupRecord
+instance semigroupRow
     :: ( RL.RowToList row list
-       , SemigroupRecord list row row focus
+       , SemigroupRow list row row focus
        )
     => Semigroup (Record row) where
-  append = semigroupRecordImpl (RLProxy :: RLProxy list)
+  append = appendRecordImpl (RLProxy :: RLProxy list)

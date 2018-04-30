@@ -3,7 +3,7 @@ module Data.BooleanAlgebra
   , module Data.HeytingAlgebra
   ) where
 
-import Data.HeytingAlgebra (class HeytingAlgebra, class HeytingAlgebraRecord, ff, tt, implies, conj, disj, not, (&&), (||))
+import Data.HeytingAlgebra (class HeytingAlgebra, class HeytingAlgebraRow, ff, tt, implies, conj, disj, not, (&&), (||))
 import Data.Unit (Unit)
 import Prim.RowList as RL
 
@@ -23,6 +23,6 @@ instance booleanAlgebraFn :: BooleanAlgebra b => BooleanAlgebra (a -> b)
 
 instance booleanAlgebraRecord
   :: ( RL.RowToList row list
-     , HeytingAlgebraRecord list row row focus
+     , HeytingAlgebraRow list row row focus
      )
   => BooleanAlgebra (Record row)

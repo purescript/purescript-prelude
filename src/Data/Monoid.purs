@@ -3,6 +3,9 @@ module Data.Monoid
   , power
   , guard
   , module Data.Semigroup
+
+  , class MonoidRow
+  , memptyRecordImpl
   ) where
 
 import Data.Boolean (otherwise)
@@ -11,10 +14,11 @@ import Data.EuclideanRing (mod, (/))
 import Data.Internal.Record (unsafeInsert)
 import Data.Ord ((<=))
 import Data.Ordering (Ordering(..))
-import Data.RowList (RLProxy(..))
-import Data.Semigroup (class Semigroup, class SemigroupRecord, (<>))
+import Type.Data.RowList (RLProxy(..))
+import Data.Semigroup (class Semigroup, class SemigroupRow, (<>))
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit, unit)
+import Prim.Row as Row
 import Prim.RowList as RL
 
 -- | A `Monoid` is a `Semigroup` with a value `mempty`, which is both a
@@ -45,33 +49,33 @@ instance monoidString :: Monoid String where
 instance monoidArray :: Monoid (Array a) where
   mempty = []
 
-class MonoidRecord rowlist row focus | rowlist -> row focus where
-  monoidRecordImpl :: RLProxy rowlist -> Record row
+class MonoidRow rowlist subrow focus | rowlist -> subrow focus where
+  memptyRecordImpl :: RLProxy rowlist -> Record subrow
 
-instance monoidRecordNil :: MonoidRecord RL.Nil () focus where
-  monoidRecordImpl _ = {}
+instance monoidRowNil :: MonoidRow RL.Nil () focus where
+  memptyRecordImpl _ = {}
 
-instance monoidRecordCons
+instance monoidRowCons
     :: ( IsSymbol key
        , Monoid focus
-       , MonoidRecord rowlistTail row subfocus
+       , Row.Cons key focus subrowTail subrow
+       , MonoidRow rowlistTail subrowTail subfocus
        )
-    => MonoidRecord (RL.Cons key focus rowlistTail) row focus where
-  monoidRecordImpl _
-    = unsafeInsert key
-        (mempty :: focus)
-        (monoidRecordImpl (RLProxy :: RLProxy rowlistTail))
+    => MonoidRow (RL.Cons key focus rowlistTail) subrow focus where
+  memptyRecordImpl _
+    = insert mempty tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
+      insert = unsafeInsert key :: focus -> Record subrowTail -> Record subrow
+      tail = memptyRecordImpl (RLProxy :: RLProxy rowlistTail)
 
 instance monoidRecord
     :: ( RL.RowToList row list
-       , SemigroupRecord list row row focus
-       , MonoidRecord list row focus
+       , SemigroupRow list row row focus
+       , MonoidRow list row focus
        )
     => Monoid (Record row) where
-  mempty = monoidRecordImpl (RLProxy :: RLProxy list)
-
+  mempty = memptyRecordImpl (RLProxy :: RLProxy list)
 
 -- | Append a value to itself a certain number of times. For the
 -- | `Multiplicative` type, and for a non-negative power, this is the same as
