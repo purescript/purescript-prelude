@@ -29,10 +29,6 @@ testOrd x y ord =
 nan :: Number
 nan = 0.0/0.0
 
--- Unfortunately, NaN inhabits our Int
-intNan :: Int
-intNan = mod 1 0
-
 plusInfinity :: Number
 plusInfinity = 1.0/0.0
 
@@ -60,7 +56,8 @@ testOrderings = do
     assert "NaN > 1 should be false" $ (nan > 1.0) == false
     assert "NaN < 1 should be false" $ (nan < 1.0) == false
     assert "NaN == 1 should be false" $ nan /= 1.0
-    testOrd intNan 2147483647 GT
+    testOrd (1 / 0) 0 EQ
+    testOrd (mod 1 0) 0 EQ
     testOrd 'a' 'b' LT
     testOrd 'b' 'A' GT
     testOrd "10" "0" GT
