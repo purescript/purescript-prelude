@@ -15,14 +15,9 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 
 -- | The `Field` class is for types that are (commutative) fields.
 -- |
--- | Instances must satisfy the following law in addition to the
--- | `EuclideanRing` laws:
--- |
--- | - Non-zero multiplicative inverse: ``a `mod` b = zero`` for all `a` and `b`
--- |
--- | If a type has a `Field` instance, it should also have a `DivisionRing`
--- | instance. In a future release, `DivisionRing` may become a superclass of
--- | `Field`.
-class EuclideanRing a <= Field a
+-- | `Field`s are exactly `EuclideanRing` + `CommutativeRing` so this class
+-- | exists as a convenience, so a single constraint can be used when field-like
+-- | behaviour is expected.
+class (EuclideanRing a, CommutativeRing a) <= Field a
 
-instance fieldNumber :: Field Number
+instance fieldNumber :: (EuclideanRing a, CommutativeRing a) => Field a
