@@ -163,6 +163,6 @@ instance heytingAlgebraRecord
   ff = ffRecordImpl  (RLProxy :: RLProxy list) (RProxy :: RProxy row)
   tt = ttRecordImpl  (RLProxy :: RLProxy list) (RProxy :: RProxy row)
   conj = conjRecordImpl  (RLProxy :: RLProxy list)
-  disj = conjRecordImpl  (RLProxy :: RLProxy list)
-  implies = conjRecordImpl  (RLProxy :: RLProxy list)
+  disj = disjRecordImpl  (RLProxy :: RLProxy list)
+  implies = impliesRecordImpl  (RLProxy :: RLProxy list)
   not = notRecordImpl  (RLProxy :: RLProxy list)

@@ -149,7 +149,7 @@ testIntDegree = do
 testRecordInstances :: AlmostEff
 testRecordInstances = do
   assert "Record equality" $ { a: 1 } == { a: 1 }
-  assert "Record inequality" $ { a: 2 } == { a: 1 }
+  assert "Record inequality" $ { a: 2 } /= { a: 1 }
   assert "Record show" $ show { a: 1 } == "{ a: 1 }"
   assert "Record +" $ ({ a: 1, b: 2.0 } + { a: 0, b: (-2.0) }) == { a: 1, b: 0.0 }
   assert "Record *" $ ({ a: 1, b: 2.0 } * { a: 0, b: (-2.0) }) == { a: 0, b: -4.0 }
@@ -164,12 +164,12 @@ testRecordInstances = do
   assert "Record conj" $ conj
     { a: true, b: false, c: true, d: false }
     { a: true, b: true, c: false, d: false }
-    == ff { a: true, b: false, c: false, d: false }
+    == { a: true, b: false, c: false, d: false }
   assert "Record disj" $ disj
     { a: true, b: false, c: true, d: false }
     { a: true, b: true, c: false, d: false }
-    == ff { a: true, b: true, c: true, d: false }
+    == { a: true, b: true, c: true, d: false }
   assert "Record implies" $ implies
     { a: true, b: false, c: true, d: false }
     { a: true, b: true, c: false, d: false }
-    == ff { a: true, b: true, c: false, d: false }
+    == { a: true, b: true, c: false, d: true }
