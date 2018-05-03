@@ -168,3 +168,37 @@ class Eq1 f <= Ord1 f where
 
 instance ord1Array :: Ord1 Array where
   compare1 = compare
+
+-- Ordering for records is currently unimplemented as there are outstanding
+-- questions around whether this implementation be useful. This is because it
+-- prioritises the keys alphabetically, and this behaviour isn't overridable.
+-- For now, we leave this unavailable, but the implementation is as follows:
+
+-- class EqRecord rowlist row focus <= OrdRecord rowlist row focus | rowlist -> focus where
+--   compareImpl :: RLProxy rowlist -> Record row -> Record row -> Ordering
+-- 
+-- instance ordRecordNil :: OrdRecord RL.Nil row focus where
+--   compareImpl _ _ _ = EQ
+-- 
+-- instance ordRecordCons
+--     :: ( OrdRecord rowlistTail row subfocus
+--        , Row.Cons key focus rowTail row
+--        , IsSymbol key
+--        , Ord focus
+--        )
+--     => OrdRecord (RL.Cons key focus rowlistTail) row focus where
+--   compareImpl _ ra rb
+--     = if left /= EQ
+--         then left
+--         else compareImpl (RLProxy :: RLProxy rowlistTail) ra rb
+--     where
+--       key = reflectSymbol (SProxy :: SProxy key)
+--       unsafeGet' = unsafeGet :: String -> Record row -> focus
+--       left = unsafeGet' key ra `compare` unsafeGet' key rb
+-- 
+-- instance ordRecord
+--     :: ( RL.RowToList row list
+--        , OrdRecord list row focus
+--        )
+--     => Ord (Record row) where
+--   compare = compareImpl (RLProxy :: RLProxy list)

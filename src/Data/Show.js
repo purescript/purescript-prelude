@@ -59,3 +59,15 @@ exports.showArrayImpl = function (f) {
     return "[" + ss.join(",") + "]";
   };
 };
+
+exports.cons = function (head) {
+  return function (tail) {
+    return [head].concat(tail);
+  };
+};
+
+exports.join = function (separator) {
+  return function (xs) {
+    return xs.join(separator);
+  };
+};

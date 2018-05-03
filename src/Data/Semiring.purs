@@ -1,6 +1,15 @@
-module Data.Semiring (class Semiring, add, (+), zero, mul, (*), one) where
+module Data.Semiring
+  ( class Semiring, add, (+), zero, mul, (*), one
+  , class SemiringRecord, addRecord, mulRecord, oneRecord, zeroRecord
+  ) where
 
+import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit, unit)
+import Prim.Row as Row
+import Prim.RowList as RL
+import Record.Unsafe (unsafeGet, unsafeSet)
+import Type.Data.Row (RProxy(..))
+import Type.Data.RowList (RLProxy(..))
 
 -- | The `Semiring` class is for types that support an addition and
 -- | multiplication operation.
@@ -56,7 +65,60 @@ instance semiringUnit :: Semiring Unit where
   mul _ _ = unit
   one = unit
 
+instance semiringRecord :: (RL.RowToList row list, SemiringRecord list row row) => Semiring (Record row) where
+  add = addRecord (RLProxy :: RLProxy list)
+  mul = mulRecord (RLProxy :: RLProxy list)
+  one = oneRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
+  zero = zeroRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
+
 foreign import intAdd :: Int -> Int -> Int
 foreign import intMul :: Int -> Int -> Int
 foreign import numAdd :: Number -> Number -> Number
 foreign import numMul :: Number -> Number -> Number
+
+-- | A class for records where all fields have `Semiring` instances, used to
+-- | implement the `Semiring` instance for records.
+class SemiringRecord rowlist row subrow | rowlist -> subrow where
+  addRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
+  mulRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
+  oneRecord :: RLProxy rowlist -> RProxy row -> Record subrow
+  zeroRecord :: RLProxy rowlist -> RProxy row -> Record subrow
+
+instance semiringRecordNil :: SemiringRecord RL.Nil row () where
+  addRecord  _ _ _ = {}
+  mulRecord  _ _ _ = {}
+  oneRecord  _ _ = {}
+  zeroRecord _ _ = {}
+
+instance semiringRecordCons
+    :: ( IsSymbol key
+       , Row.Cons key focus subrowTail subrow
+       , SemiringRecord rowlistTail row subrowTail
+       , Semiring focus
+       )
+    => SemiringRecord (RL.Cons key focus rowlistTail) row subrow where
+  addRecord _ ra rb = insert (get ra + get rb) tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      get = unsafeGet key :: Record row -> focus
+      tail = addRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+
+  mulRecord _ ra rb = insert (get ra * get rb) tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      get = unsafeGet key :: Record row -> focus
+      tail = mulRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+
+  oneRecord _ _ = insert one tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      tail = oneRecord (RLProxy :: RLProxy rowlistTail) (RProxy :: RProxy row)
+      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+
+  zeroRecord _ _ = insert zero tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      tail = zeroRecord (RLProxy :: RLProxy rowlistTail) (RProxy :: RProxy row)
+      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
