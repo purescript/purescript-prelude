@@ -1,7 +1,6 @@
 module Test.Main where
 
 import Prelude
-import Data.EuclideanRing (intDiv, intMod)
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
 
@@ -13,7 +12,6 @@ main = do
     testOrderings
     testOrdUtils
     testIntDivMod
-    testIntQuotRem
     testIntDegree
     testRecordInstances
 
@@ -32,10 +30,6 @@ testOrd x y ord =
 
 nan :: Number
 nan = 0.0/0.0
-
--- Unfortunately, NaN inhabits our Int
-intNan :: Int
-intNan = mod 1 0
 
 plusInfinity :: Number
 plusInfinity = 1.0/0.0
@@ -64,7 +58,8 @@ testOrderings = do
     assert "NaN > 1 should be false" $ (nan > 1.0) == false
     assert "NaN < 1 should be false" $ (nan < 1.0) == false
     assert "NaN == 1 should be false" $ nan /= 1.0
-    testOrd intNan 2147483647 GT
+    testOrd (1 / 0) 0 EQ
+    testOrd (mod 1 0) 0 EQ
     testOrd 'a' 'b' LT
     testOrd 'b' 'A' GT
     testOrd "10" "0" GT
@@ -105,38 +100,14 @@ testIntDivMod = do
   where
   go a b =
     let
-      q = intDiv a b
-      r = intMod a b
+      q = a / b
+      r = a `mod` b
       msg = show a <> " / " <> show b <> ": "
     in do
       assert (msg <> "Quotient/remainder law") $
         q * b + r == a
       assert (msg <> "Remainder should be between 0 and `abs b`, got: " <> show r) $
         0 <= r && r < abs b
-
-testIntQuotRem :: AlmostEff
-testIntQuotRem = do
-  -- Check when dividend goes into divisor exactly
-  go 8 2
-  go (-8) 2
-  go 8 (-2)
-  go (-8) (-2)
-
-  -- Check when dividend does not go into divisor exactly
-  go 2 3
-  go (-2) 3
-  go 2 (-3)
-  go (-2) (-3)
-
-  where
-  go a b =
-    let
-      q = quot a b
-      r = rem a b
-      msg = show a <> " / " <> show b <> ": "
-    in do
-      assert (msg <> "Quotient/remainder law") $
-        q * b + r == a
 
 testIntDegree :: AlmostEff
 testIntDegree = do
