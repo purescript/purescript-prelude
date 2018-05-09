@@ -22,9 +22,9 @@ instance boundedBoolean :: Bounded Boolean where
   top = true
   bottom = false
 
--- | The Bounded Int instance has top :: Int equal to 2^31 - 1,
--- |   and bottom :: Int equal to -2^31, since these are the largest and smallest
--- |   integers representable by twos-complement 32-bit integers respectively.
+-- | The `Bounded` `Int` instance has `top :: Int` equal to 2^31 - 1,
+-- | and `bottom :: Int` equal to -2^31, since these are the largest and smallest
+-- | integers representable by twos-complement 32-bit integers, respectively.
 instance boundedInt :: Bounded Int where
   top = topInt
   bottom = bottomInt
