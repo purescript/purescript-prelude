@@ -16,6 +16,7 @@ module Prelude
   , module Data.Function
   , module Data.Functor
   , module Data.HeytingAlgebra
+  , module Data.Monoid
   , module Data.NaturalTransformation
   , module Data.Ord
   , module Data.Ordering
@@ -30,7 +31,7 @@ module Prelude
 import Control.Applicative (class Applicative, pure, liftA1, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
 import Control.Bind (class Bind, bind, class Discard, discard, ifM, join, (<=<), (=<<), (>=>), (>>=))
-import Control.Category (class Category, id)
+import Control.Category (class Category, identity)
 import Control.Monad (class Monad, ap, liftM1, unlessM, whenM)
 import Control.Semigroupoid (class Semigroupoid, compose, (<<<), (>>>))
 
@@ -45,6 +46,7 @@ import Data.Field (class Field)
 import Data.Function (const, flip, ($), (#))
 import Data.Functor (class Functor, flap, map, void, ($>), (<#>), (<$), (<$>), (<@>))
 import Data.HeytingAlgebra (class HeytingAlgebra, conj, disj, not, (&&), (||))
+import Data.Monoid (class Monoid, mempty)
 import Data.NaturalTransformation (type (~>))
 import Data.Ord (class Ord, compare, (<), (<=), (>), (>=), comparing, min, max, clamp, between)
 import Data.Ordering (Ordering(..))

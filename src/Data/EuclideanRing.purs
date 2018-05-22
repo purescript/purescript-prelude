@@ -41,6 +41,25 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- | for `degree` is simply `const 1`. In fact, unless there's a specific
 -- | reason not to, `Field` types should normally use this definition of
 -- | `degree`.
+-- |
+-- | The `EuclideanRing Int` instance is one of the most commonly used
+-- | `EuclideanRing` instances and deserves a little more discussion. In
+-- | particular, there are a few different sensible law-abiding implementations
+-- | to choose from, with slightly different behaviour in the presence of
+-- | negative dividends or divisors. The most common definitions are "truncating"
+-- | division, where the result of `a / b` is rounded towards 0, and "Knuthian"
+-- | or "flooring" division, where the result of `a / b` is rounded towards
+-- | negative infinity. A slightly less common, but arguably more useful, option
+-- | is "Euclidean" division, which is defined so as to ensure that ``a `mod` b``
+-- | is always nonnegative. With Euclidean division, `a / b` rounds towards
+-- | negative infinity if the divisor is positive, and towards positive infinity
+-- | if the divisor is negative. Note that all three definitions are identical if
+-- | we restrict our attention to nonnegative dividends and divisors.
+-- |
+-- | In versions 1.x, 2.x, and 3.x of the Prelude, the `EuclideanRing Int`
+-- | instance used truncating division. As of 4.x, the `EuclideanRing Int`
+-- | instance uses Euclidean division. Additional functions `quot` and `rem` are
+-- | supplied if truncating division is desired.
 class CommutativeRing a <= EuclideanRing a where
   degree :: a -> Int
   div :: a -> a -> a

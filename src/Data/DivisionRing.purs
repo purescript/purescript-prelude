@@ -7,9 +7,9 @@ module Data.DivisionRing
   , module Data.Semiring
   ) where
 
+import Data.EuclideanRing ((/))
 import Data.Ring (class Ring, negate, sub)
 import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
-import Data.EuclideanRing ((/))
 
 -- | The `DivisionRing` class is for non-zero rings in which every non-zero
 -- | element has a multiplicative inverse. Division rings are sometimes also
