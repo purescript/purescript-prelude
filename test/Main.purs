@@ -24,9 +24,6 @@ derive instance genericList :: G.Generic (List a) _
 instance eqList :: Eq a => Eq (List a) where
   eq x y = GEq.genericEq x y
 
-instance ordList :: Ord a => Ord (List a) where
-  compare x y = GOrd.genericCompare x y
-
 instance showList :: Show a => Show (List a) where
   show x = GShow.genericShow x
 
@@ -117,13 +114,13 @@ main = do
   assert $ cons 1 (cons 2 Nil) /= cons 1 Nil
 
   log "Checking comparison EQ"
-  assert $ (cons 1 (cons 2 Nil) `compare` cons 1 (cons 2 Nil)) == EQ
+  assert $ (Pair Zero (Some One) `compare` Pair Zero (Some One)) == EQ
 
   log "Checking comparison GT"
-  assert $ (cons 1 (cons 2 Nil) `compare` cons 1 Nil) == GT
+  assert $ (Pair (Some One) Zero `compare` Pair (Some Zero) Zero) == GT
 
   log "Checking comparison LT"
-  assert $ (cons 1 Nil `compare` cons 1 (cons 2 Nil)) == LT
+  assert $ (Pair Zero One `compare` Pair One One) == LT
 
   log "Checking simple bottom"
   assert $ bottom == A
