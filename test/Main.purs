@@ -2,8 +2,8 @@ module Test.Main where
 
 import Prelude
 
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log, logShow)
+import Effect (Effect)
+import Effect.Console (log, logShow)
 import Data.Enum (class BoundedEnum, class Enum, Cardinality(..), cardinality, fromEnum, pred, succ, toEnum, enumFromTo)
 import Data.Generic.Rep as G
 import Data.Generic.Rep.Bounded as GBounded
@@ -12,7 +12,7 @@ import Data.Generic.Rep.Eq as GEq
 import Data.Generic.Rep.Ord as GOrd
 import Data.Generic.Rep.Show as GShow
 import Data.Maybe (Maybe(..))
-import Test.Assert (ASSERT, assert)
+import Test.Assert (assert)
 
 data List a = Nil | Cons { head :: a, tail :: List a }
 
@@ -23,9 +23,6 @@ derive instance genericList :: G.Generic (List a) _
 
 instance eqList :: Eq a => Eq (List a) where
   eq x y = GEq.genericEq x y
-
-instance ordList :: Ord a => Ord (List a) where
-  compare x y = GOrd.genericCompare x y
 
 instance showList :: Show a => Show (List a) where
   show x = GShow.genericShow x
@@ -105,9 +102,8 @@ instance boundedEnumPair :: (BoundedEnum a, BoundedEnum b) => BoundedEnum (Pair 
   cardinality = GEnum.genericCardinality
   toEnum = GEnum.genericToEnum
   fromEnum = GEnum.genericFromEnum
-  
 
-main :: Eff (console :: CONSOLE, assert :: ASSERT) Unit
+main :: Effect Unit
 main = do
   logShow (cons 1 (cons 2 Nil))
 
@@ -118,13 +114,13 @@ main = do
   assert $ cons 1 (cons 2 Nil) /= cons 1 Nil
 
   log "Checking comparison EQ"
-  assert $ (cons 1 (cons 2 Nil) `compare` cons 1 (cons 2 Nil)) == EQ
+  assert $ (Pair Zero (Some One) `compare` Pair Zero (Some One)) == EQ
 
   log "Checking comparison GT"
-  assert $ (cons 1 (cons 2 Nil) `compare` cons 1 Nil) == GT
+  assert $ (Pair (Some One) Zero `compare` Pair (Some Zero) Zero) == GT
 
   log "Checking comparison LT"
-  assert $ (cons 1 Nil `compare` cons 1 (cons 2 Nil)) == LT
+  assert $ (Pair Zero One `compare` Pair One One) == LT
 
   log "Checking simple bottom"
   assert $ bottom == A
@@ -199,4 +195,4 @@ main = do
 
   log "Checking product toEnum/fromEnum roundtrip"
   assert $ let allPairs = enumFromTo bottom top :: Array (Pair Bit SimpleBounded)
-           in toEnum <<< fromEnum <$> allPairs == Just <$> allPairs
+           in (toEnum <<< fromEnum <$> allPairs) == (Just <$> allPairs)
