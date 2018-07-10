@@ -6,7 +6,7 @@ import Data.Eq (class Eq1)
 import Data.HeytingAlgebra (ff, tt)
 import Data.Ord (class Ord1)
 
--- | Monoid and semigroup for disjuntion.
+-- | Monoid and semigroup for disjunction.
 -- |
 -- | ``` purescript
 -- | Disj x <> Disj y == Disj (x || y)
