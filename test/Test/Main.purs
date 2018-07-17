@@ -144,3 +144,9 @@ testRecordInstances = do
     { a: true, b: false, c: true, d: false }
     { a: true, b: true, c: false, d: false }
     == { a: true, b: true, c: false, d: true }
+  testOrd { a: 0, b: "hello" } { a: 42, b: "hello" } LT
+  testOrd { a: 42, b: "hello" } { a: 0, b: "hello" } GT
+  testOrd { a: 42, b: "hello" } { a: 42, b: "hello" } EQ
+  testOrd { a: 42, b: "hell" } { a: 42, b: "hello" } LT
+  testOrd { a: 42, b: "hello" } { a: 42, b: "hell" } GT
+
