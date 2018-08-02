@@ -17,7 +17,6 @@ module Data.Ord
 
 import Data.Eq (class Eq, class Eq1, class EqRecord, (/=))
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
-import Data.Ord.Unsafe (unsafeCompare)
 import Data.Ordering (Ordering(..))
 import Data.Ring (class Ring, zero, one, negate)
 import Data.Unit (Unit)
@@ -39,19 +38,19 @@ class Eq a <= Ord a where
   compare :: a -> a -> Ordering
 
 instance ordBoolean :: Ord Boolean where
-  compare = unsafeCompare
+  compare = ordBooleanImpl LT EQ GT
 
 instance ordInt :: Ord Int where
-  compare = unsafeCompare
+  compare = ordIntImpl LT EQ GT
 
 instance ordNumber :: Ord Number where
-  compare = unsafeCompare
+  compare = ordNumberImpl LT EQ GT
 
 instance ordString :: Ord String where
-  compare = unsafeCompare
+  compare = ordStringImpl LT EQ GT
 
 instance ordChar :: Ord Char where
-  compare = unsafeCompare
+  compare = ordCharImpl LT EQ GT
 
 instance ordUnit :: Ord Unit where
   compare _ _ = EQ
@@ -67,6 +66,46 @@ instance ordArray :: Ord a => Ord (Array a) where
         EQ -> 0
         LT -> 1
         GT -> -1
+
+foreign import ordBooleanImpl
+  :: Ordering
+  -> Ordering
+  -> Ordering
+  -> Boolean
+  -> Boolean
+  -> Ordering
+
+foreign import ordIntImpl
+  :: Ordering
+  -> Ordering
+  -> Ordering
+  -> Int
+  -> Int
+  -> Ordering
+
+foreign import ordNumberImpl
+  :: Ordering
+  -> Ordering
+  -> Ordering
+  -> Number
+  -> Number
+  -> Ordering
+
+foreign import ordStringImpl
+  :: Ordering
+  -> Ordering
+  -> Ordering
+  -> String
+  -> String
+  -> Ordering
+
+foreign import ordCharImpl
+  :: Ordering
+  -> Ordering
+  -> Ordering
+  -> Char
+  -> Char
+  -> Ordering
 
 foreign import ordArrayImpl :: forall a. (a -> a -> Int) -> Array a -> Array a -> Int
 
