@@ -8,7 +8,7 @@ import Data.Ord (class Ord1)
 -- | Semigroup where `append` always takes the second option.
 -- |
 -- | ``` purescript
--- | Last x <> Last y == Last x
+-- | Last x <> Last y == Last y
 -- | ```
 newtype Last a = Last a
 
