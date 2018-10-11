@@ -3,6 +3,7 @@ module Test.Main where
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
+import Data.Hashable (hash)
 
 type AlmostEff = Unit -> Unit
 
@@ -120,6 +121,7 @@ testIntDegree = do
 testRecordInstances :: AlmostEff
 testRecordInstances = do
   assert "Record equality" $ { a: 1 } == { a: 1 }
+  assert "Record hash" $ hash { a: 1 } == hash { a: 1 }
   assert "Record inequality" $ { a: 2 } /= { a: 1 }
   assert "Record show" $ show { a: 1 } == "{ a: 1 }"
   assert "Record +" $ ({ a: 1, b: 2.0 } + { a: 0, b: (-2.0) }) == { a: 1, b: 0.0 }
