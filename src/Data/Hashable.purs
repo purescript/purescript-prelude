@@ -37,8 +37,7 @@ class Eq a <= Hashable a where
   hash :: a -> Int
 
 instance hashableBoolean :: Hashable Boolean where
-  hash false = 0
-  hash true = 1
+  hash b = if b then 1 else 0
 
 instance hashableInt :: Hashable Int where
   hash n = n
