@@ -6,11 +6,11 @@ import Data.Eq (class Eq1)
 import Data.HeytingAlgebra (ff, tt)
 import Data.Ord (class Ord1)
 
--- | Monoid and semigroup for conjuntion.
+-- | Monoid and semigroup for conjunction.
 -- |
 -- | ``` purescript
 -- | Conj x <> Conj y == Conj (x && y)
--- | mempty :: Conj _ == Conj top
+-- | mempty :: Conj _ == Conj tt
 -- | ```
 newtype Conj a = Conj a
 
