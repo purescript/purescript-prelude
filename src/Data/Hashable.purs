@@ -81,7 +81,8 @@ instance hashableRecordCons ::
   , Row.Cons l vt whatev r
   ) => HashableRecord (Cons l vt tl) r where
   hashRecord rlp record =
-    hash field * 31 + hashRecord (RLProxy :: RLProxy tl) record
+    -- this mimicks Java's hash function for arrays
+    hashRecord (RLProxy :: RLProxy tl) record * 31 + hash field
     where
       field :: vt
       field = unsafeGet (reflectSymbol (SProxy :: SProxy l)) record

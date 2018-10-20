@@ -1,5 +1,6 @@
 "use strict";
 
+// Same as immutable.js, except for not dropping the highest bit.
 exports.hashNumber = function (f) {
   var o = f;
   if (o !== o || o === Infinity) {
@@ -16,6 +17,7 @@ exports.hashNumber = function (f) {
   return h;
 };
 
+// Same as Java. Improvements welcome.
 exports.hashString = function (s) {
   var h = 0;
   for (var i = 0; i < s.length; i++) {
@@ -24,6 +26,7 @@ exports.hashString = function (s) {
   return h;
 };
 
+// Almost the same as Java. Improvements welcome.
 exports.hashArray = function (hash) {
   return function (as) {
     var h = 0;
