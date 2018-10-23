@@ -3,11 +3,18 @@ module Data.Hashable (
   hash,
 
   class HashableRecord,
-  hashRecord
+  hashRecord,
+
+  Hash(Hash)
 ) where
 
 import Data.Eq (class Eq, class EqRecord)
+import Data.Ord (class Ord)
+import Data.Ordering (Ordering(..))
+import Data.Ring (negate)
+import Data.Semigroup ((<>))
 import Data.Semiring ((*), (+))
+import Data.Show (class Show, show)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit)
 import Data.Void (Void)
@@ -25,54 +32,71 @@ import Type.Data.RowList (RLProxy(..))
 -- | ```PureScript
 -- | (a == b) `implies` (hash a == hash b)
 -- | ```
--- | 
+-- |
 -- | That is, unequal hash values are a safe approximation of
 -- | inequality. In other words, two objects whose hash values differ,
 -- | are never equal. The reverse is not necessarily true.
 -- |
--- | Hash values produced by `hash` should not be relied upon to be
+-- | Hash values produced by `hash` must not be relied upon to be
 -- | stable accross multiple executions of a program and should not be
 -- | stored externally.
 class Eq a <= Hashable a where
-  hash :: a -> Int
+  hash :: a -> Hash a
+
+-- | The `Hash a` newtype wraps the hash code of a value of type `a`.
+-- |
+-- | Hash values should not be stored externally, as they must not be
+-- | relied upon to be stable accross multiple executions of a
+-- | program.
+newtype Hash a = Hash Int
+
+instance showHash :: Show (Hash a) where
+  show (Hash n) = "(Hash " <> show n <> ")"
+derive newtype instance eqHash :: Eq (Hash a)
+derive newtype instance ordHash :: Ord (Hash a)
 
 instance hashableBoolean :: Hashable Boolean where
-  hash b = if b then 1 else 0
+  hash b = if b then Hash 1 else Hash 0
 
 instance hashableInt :: Hashable Int where
-  hash n = n
+  hash n = Hash n
 
-foreign import hashNumber :: Number -> Int
+foreign import hashNumber :: Number -> Hash Number
 
 instance hashableNumber :: Hashable Number where
   hash = hashNumber
 
-foreign import hashChar :: Char -> Int
+foreign import hashChar :: Char -> Hash Char
 
 instance hashableChar :: Hashable Char where
   hash = hashChar
 
-foreign import hashString :: String -> Int
+foreign import hashString :: String -> Hash String
 
 instance hashableString :: Hashable String where
   hash = hashString
 
-foreign import hashArray :: forall a. (a -> Int) -> Array a -> Int
+foreign import hashArray :: forall a. (a -> Hash a) -> Array a -> Hash (Array a)
 
 instance hashableArray :: Hashable a => Hashable (Array a) where
   hash = hashArray hash
 
 instance hashableUnit :: Hashable Unit where
-  hash _ = 1
+  hash _ = Hash 1
 
 instance hashableVoid :: Hashable Void where
-  hash _ = 0
+  hash _ = Hash 0
+
+instance hashableOrdering :: Hashable Ordering where
+  hash LT = Hash (-1)
+  hash GT = Hash 1
+  hash EQ = Hash 0
 
 class EqRecord l r <= HashableRecord l r | l -> r where
-  hashRecord :: RLProxy l -> Record r -> Int
+  hashRecord :: RLProxy l -> Record r -> Hash (Record r)
 
 instance hashableRecordNil :: HashableRecord Nil r where
-  hashRecord _ _ = 0
+  hashRecord _ _ = Hash 0
 
 instance hashableRecordCons ::
   ( Hashable vt
@@ -81,11 +105,12 @@ instance hashableRecordCons ::
   , Row.Cons l vt whatev r
   ) => HashableRecord (Cons l vt tl) r where
   hashRecord rlp record =
+    let (Hash rHash) = hashRecord (RLProxy :: RLProxy tl) record
+        field :: vt
+        field = unsafeGet (reflectSymbol (SProxy :: SProxy l)) record
+        (Hash fHash) = hash field
     -- this mimicks Java's hash function for arrays
-    hashRecord (RLProxy :: RLProxy tl) record * 31 + hash field
-    where
-      field :: vt
-      field = unsafeGet (reflectSymbol (SProxy :: SProxy l)) record
+    in Hash (rHash * 31 + fHash)
 
 instance hashableRecord ::
   (RowToList r l, HashableRecord l r, EqRecord l r)
