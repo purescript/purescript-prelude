@@ -38,7 +38,7 @@ import Type.Data.RowList (RLProxy(..))
 -- | are never equal. The reverse is not necessarily true.
 -- |
 -- | Hash values produced by `hash` must not be relied upon to be
--- | stable accross multiple executions of a program and should not be
+-- | stable across multiple executions of a program and should not be
 -- | stored externally.
 class Eq a <= Hashable a where
   hash :: a -> Hash a
@@ -46,7 +46,7 @@ class Eq a <= Hashable a where
 -- | The `Hash a` newtype wraps the hash code of a value of type `a`.
 -- |
 -- | Hash values should not be stored externally, as they must not be
--- | relied upon to be stable accross multiple executions of a
+-- | relied upon to be stable across multiple executions of a
 -- | program.
 newtype Hash a = Hash Int
 
@@ -109,7 +109,7 @@ instance hashableRecordCons ::
         field :: vt
         field = unsafeGet (reflectSymbol (SProxy :: SProxy l)) record
         (Hash fHash) = hash field
-    -- this mimicks Java's hash function for arrays
+    -- this mimics Java's hash function for arrays
     in Hash (rHash * 31 + fHash)
 
 instance hashableRecord ::
