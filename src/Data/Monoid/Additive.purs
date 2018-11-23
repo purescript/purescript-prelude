@@ -9,7 +9,7 @@ import Data.Ord (class Ord1)
 -- |
 -- | ``` purescript
 -- | Additive x <> Additive y == Additive (x + y)
--- | mempty :: Additive _ == Additive zero
+-- | (mempty :: Additive _) == Additive zero
 -- | ```
 newtype Additive a = Additive a
 

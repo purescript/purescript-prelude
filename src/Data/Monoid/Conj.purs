@@ -10,7 +10,7 @@ import Data.Ord (class Ord1)
 -- |
 -- | ``` purescript
 -- | Conj x <> Conj y == Conj (x && y)
--- | mempty :: Conj _ == Conj tt
+-- | (mempty :: Conj _) == Conj tt
 -- | ```
 newtype Conj a = Conj a
 

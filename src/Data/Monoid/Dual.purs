@@ -9,7 +9,7 @@ import Data.Ord (class Ord1)
 -- |
 -- | ``` purescript
 -- | Dual x <> Dual y == Dual (y <> x)
--- | mempty :: Dual _ == Dual mempty
+-- | (mempty :: Dual _) == Dual mempty
 -- | ```
 newtype Dual a = Dual a
 
