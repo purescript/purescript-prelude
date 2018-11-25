@@ -10,7 +10,7 @@ import Data.Ord (class Ord1)
 -- |
 -- | ``` purescript
 -- | Disj x <> Disj y == Disj (x || y)
--- | mempty :: Disj _ == Disj bottom
+-- | (mempty :: Disj _) == Disj bottom
 -- | ```
 newtype Disj a = Disj a
 

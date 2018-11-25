@@ -22,9 +22,8 @@ import Type.Data.RowList (RLProxy(..))
 -- | A `Monoid` is a `Semigroup` with a value `mempty`, which is both a
 -- | left and right unit for the associative operation `<>`:
 -- |
--- | ```
--- | forall x. mempty <> x = x <> mempty = x
--- | ```
+-- | - Left unit: `(mempty <> x) = x`
+-- | - Right unit: `(x <> mempty) = x`
 -- |
 -- | `Monoid`s are commonly used as the result of fold operations, where
 -- | `<>` is used to combine individual results, and `mempty` gives the result
