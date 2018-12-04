@@ -15,11 +15,12 @@ import Data.Set (Set)
 import Data.Set as Set
 import Data.Array as Array
 import Data.Bifunctor (bimap)
-import Data.Record (get, delete)
+import Record (get, delete)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
-import Type.Prelude (class RowToList, class RowLacks)
+import Type.Prelude (class RowToList)
+import Prim.Row as Row
 import Type.Row (kind RowList, Nil, Cons, RLProxy(..))
-import Control.Monad.Eff (Eff)
+import Effect (Effect)
 
 import Data.Debugged.Type (Debugged(..))
 
@@ -68,8 +69,8 @@ instance debugRowListNil :: DebugRowList Nil () where
 instance debugRowListCons ::
   ( Debug a
   , DebugRowList listRest rowRest
-  , RowCons  key a rowRest rowFull
-  , RowLacks key rowRest
+  , Row.Cons  key a rowRest rowFull
+  , Row.Lacks key rowRest
   , RowToList rowFull (Cons key a listRest)
   , IsSymbol key
   ) => DebugRowList (Cons key a listRest) rowFull where
@@ -119,8 +120,8 @@ instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
     DAssoc "Map"
       (map (bimap debugged debugged) (Map.toUnfoldable m))
 
-instance debugEff :: Debug (Eff eff a) where
-  debugged _ = DOpaque "Eff" []
+instance debugEffect :: Debug (Effect a) where
+  debugged _ = DOpaque "Effect" []
 
 instance debugList :: Debug a => Debug (List a) where
   debugged xs = DCollection "List" (map debugged (List.toUnfoldable xs))

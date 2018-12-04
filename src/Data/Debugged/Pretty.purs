@@ -7,8 +7,8 @@ import Data.Tuple (Tuple(..))
 import Data.Maybe (fromMaybe)
 import Data.String as String
 import Data.Array as Array
-import Control.Monad.Eff (Eff)
-import Control.Monad.Eff.Console (CONSOLE, log)
+import Effect (Effect)
+import Effect.Console (log)
 
 import Data.Debugged.Type (Debugged(..))
 import Data.Debugged.Class (class Debug, debugged)
@@ -156,8 +156,8 @@ prettyPrintAtom d =
 -- print :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
 -- print = log <<< String.joinWith "\n" <<< prettyPrint top <<< debugged
 
-print' :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
+print' :: forall eff a. Debug a => a -> Effect Unit
 print' = log <<< prettyPrintOneLine <<< debugged
 
-eval :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
+eval :: forall eff a. Debug a => a -> Effect Unit
 eval = print'

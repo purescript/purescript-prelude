@@ -27,5 +27,5 @@ data Debugged
   | DCollection String (Array Debugged)
   | DAssoc String (Array (Tuple Debugged Debugged))
 
-derive instance eqDebugged :: Eq Debugged
-derive instance ordDebugged :: Ord Debugged
+derive instance eqDebuggedF :: Eq Debugged
+derive instance ordDebuggedF :: Ord Debugged
