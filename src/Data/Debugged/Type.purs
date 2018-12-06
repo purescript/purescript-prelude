@@ -237,7 +237,7 @@ needsParens tree =
       -- this slightly odd construction is to ensure we return true for any
       -- positive value and false for any negative value (including negative
       -- zero).
-      (1.0 / x) > 0.0
+      (1.0 / x) < 0.0
     App _ ->
       case children tree of
         [] -> false
