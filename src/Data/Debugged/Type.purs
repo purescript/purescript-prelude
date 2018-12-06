@@ -24,6 +24,7 @@ import Data.String as String
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
 
+-- | A strict rose tree type. Based on Data.Tree in Haskell's `containers`.
 data Tree a
   = Node a (Array (Tree a))
 
@@ -33,7 +34,22 @@ rootLabel (Node r _) = r
 children :: forall a. Tree a -> Array (Tree a)
 children (Node _ xs) = xs
 
+isLeaf :: forall a. Tree a -> Boolean
+isLeaf (Node _ []) = true
+isLeaf _ = false
+
 derive instance functorTree :: Functor Tree
+
+-- | Fold a tree bottom-up; the function `foldTree f` applies `f []` to each of
+-- | the leaf nodes, and then works its way up the internal nodes, applying `f`
+-- | to:
+-- | - the label at the current node, and
+-- | - the result of applying `f` to each child,
+-- | finishing at the root.
+foldTree :: forall a b. (a -> Array b -> b) -> Tree a -> b
+foldTree f = go
+  where
+  go (Node x ts) = f x (map go ts)
 
 -------------------------------------------------------------------------------
 -- THE REPR TYPE & CONSTRUCTORS -----------------------------------------------
@@ -239,9 +255,7 @@ needsParens tree =
       -- zero).
       (1.0 / x) < 0.0
     App _ ->
-      case children tree of
-        [] -> false
-        _  -> true
+      not (isLeaf tree)
     _ ->
       false
 
