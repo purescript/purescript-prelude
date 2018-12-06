@@ -22,7 +22,7 @@ import Prim.Row as Row
 import Type.Row (kind RowList, Nil, Cons, RLProxy(..))
 import Effect (Effect)
 
-import Data.Debugged.Type (Debugged(..))
+import Data.Debugged.Type as D
 
 -- | Ideally, all types of kind `Type` should have an instance of this class.
 -- | If you are defining a type where it's difficult/impossible to do anything
@@ -36,32 +36,32 @@ import Data.Debugged.Type (Debugged(..))
 -- | x /= y `implies` debugged x /= debugged y
 -- | ```
 class Debug a where
-  debugged :: a -> Debugged
+  debugged :: a -> D.Repr
 
 -- Prim
 instance debugInt :: Debug Int where
-  debugged = DInt
+  debugged = D.int
 
 instance debugNumber :: Debug Number where
-  debugged = DNumber
+  debugged = D.number
 
 instance debugBoolean :: Debug Boolean where
-  debugged = DBoolean
+  debugged = D.boolean
 
 instance debugString :: Debug String where
-  debugged = DString
+  debugged = D.string
 
 instance debugChar :: Debug Char where
-  debugged = DChar
+  debugged = D.char
 
 instance debugArray :: Debug a => Debug (Array a) where
-  debugged = DArray <<< map debugged
+  debugged = D.array <<< map debugged
 
 instance debugFunction :: Debug (a -> b) where
-  debugged _ = DOpaque "function" []
+  debugged _ = D.opaque "function" []
 
 class DebugRowList (list :: RowList) (row :: # Type) | list -> row where
-  debugRowList :: RLProxy list -> Record row -> List (Tuple String Debugged)
+  debugRowList :: RLProxy list -> Record row -> List (Tuple String D.Repr)
 
 instance debugRowListNil :: DebugRowList Nil () where
   debugRowList _ _ = Nil
@@ -86,18 +86,18 @@ instance debugRecord ::
   , DebugRowList list row
   ) => Debug (Record row) where
   debugged r =
-    DRecord (Array.fromFoldable (debugRowList prx r))
+    D.record (Array.fromFoldable (debugRowList prx r))
     where
     prx = RLProxy :: RLProxy list
 
 -- Prelude
 instance debugOrdering :: Debug Ordering where
-  debugged LT = DExpr "LT" []
-  debugged EQ = DExpr "EQ" []
-  debugged GT = DExpr "GT" []
+  debugged LT = D.constructor "LT" []
+  debugged EQ = D.constructor "EQ" []
+  debugged GT = D.constructor "GT" []
 
 instance debugUnit :: Debug Unit where
-  debugged _ = DExpr "unit" []
+  debugged _ = D.constructor "unit" []
 
 instance debugVoid :: Debug Void where
   debugged = absurd
@@ -105,42 +105,42 @@ instance debugVoid :: Debug Void where
 -- Other
 
 instance debugMaybe :: Debug a => Debug (Maybe a) where
-  debugged (Just x) = DExpr "Just" [debugged x]
-  debugged Nothing = DExpr "Nothing" []
+  debugged (Just x) = D.constructor "Just" [debugged x]
+  debugged Nothing = D.constructor "Nothing" []
 
 instance debugEither :: (Debug a, Debug b) => Debug (Either a b) where
-  debugged (Right x) = DExpr "Right" [debugged x]
-  debugged (Left x) = DExpr "Left" [debugged x]
+  debugged (Right x) = D.constructor "Right" [debugged x]
+  debugged (Left x) = D.constructor "Left" [debugged x]
 
 instance debugTuple :: (Debug a, Debug b) => Debug (Tuple a b) where
-  debugged (Tuple x y) = DExpr "Tuple" [debugged x, debugged y]
+  debugged (Tuple x y) = D.constructor "Tuple" [debugged x, debugged y]
 
 instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
   debugged m =
-    DAssoc "Map"
+    D.assoc "Map"
       (map (bimap debugged debugged) (Map.toUnfoldable m))
 
 instance debugEffect :: Debug (Effect a) where
-  debugged _ = DOpaque "Effect" []
+  debugged _ = D.opaque "Effect" []
 
 instance debugList :: Debug a => Debug (List a) where
-  debugged xs = DCollection "List" (map debugged (List.toUnfoldable xs))
+  debugged xs = D.collection "List" (map debugged (List.toUnfoldable xs))
 
 instance debugLazyList :: Debug a => Debug (LazyList.List a) where
-  debugged xs = DCollection "List.Lazy" (map debugged (LazyList.toUnfoldable xs))
+  debugged xs = D.collection "List.Lazy" (map debugged (LazyList.toUnfoldable xs))
 
 instance debugSet :: Debug a => Debug (Set a) where
-  debugged s = DCollection "Set" (map debugged (Set.toUnfoldable s))
+  debugged s = D.collection "Set" (map debugged (Set.toUnfoldable s))
 
-instance debugDebugged :: Debug Debugged where
-  debugged (DInt x) = DExpr "DInt" [debugged x]
-  debugged (DNumber x) = DExpr "DNumber" [debugged x]
-  debugged (DBoolean x) = DExpr "DBoolean" [debugged x]
-  debugged (DChar x) = DExpr "DChar" [debugged x]
-  debugged (DString x) = DExpr "DString" [debugged x]
-  debugged (DExpr name args) = DExpr "DExpr" [debugged name, debugged args]
-  debugged (DArray xs) = DExpr "DArray" [debugged xs]
-  debugged (DRecord xs) = DExpr "DRecord" [debugged xs]
-  debugged (DOpaque name xs) = DExpr "DOpaque" [debugged name, debugged xs]
-  debugged (DCollection name args) = DExpr "DCollection" [debugged name, debugged args]
-  debugged (DAssoc name args) = DExpr "DAssoc" [debugged name, debugged args]
+-- instance debugDebugged :: Debug Debugged where
+--   debugged (DInt x) = DExpr "DInt" [debugged x]
+--   debugged (DNumber x) = DExpr "DNumber" [debugged x]
+--   debugged (DBoolean x) = DExpr "DBoolean" [debugged x]
+--   debugged (DChar x) = DExpr "DChar" [debugged x]
+--   debugged (DString x) = DExpr "DString" [debugged x]
+--   debugged (DExpr name args) = DExpr "DExpr" [debugged name, debugged args]
+--   debugged (DArray xs) = DExpr "DArray" [debugged xs]
+--   debugged (DRecord xs) = DExpr "DRecord" [debugged xs]
+--   debugged (DOpaque name xs) = DExpr "DOpaque" [debugged name, debugged xs]
+--   debugged (DCollection name args) = DExpr "DCollection" [debugged name, debugged args]
+--   debugged (DAssoc name args) = DExpr "DAssoc" [debugged name, debugged args]
