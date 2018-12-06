@@ -2,6 +2,7 @@
 -- | format for representations of values. The `Repr` type is intended for
 -- | use in testing, debugging, and in the REPL, but not in production code.
 module Data.Debugged.Type
+  -- Data type and construction
   ( Repr
   , int
   , number
@@ -14,13 +15,18 @@ module Data.Debugged.Type
   , opaque
   , collection
   , assoc
+
+  -- pretty printing
   , prettyPrintOneLine
+
+  -- diffing
   ) where
 
 import Prelude
 import Data.Tuple (Tuple(..))
 import Data.String as String
 import Data.Array as Array
+import Data.Foldable (all)
 
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
@@ -241,6 +247,56 @@ prettyPrintOneLine = go <<< unRepr
   printAssoc _ =
     -- should not happen
     ""
+
+-- | A somewhat arbitrary heuristic to decide whether a subtree is sufficiently
+-- | small to be allowed to be printed on one line.
+isSmall :: Tree Label -> Boolean
+isSmall subtree =
+  let
+    xs = children subtree
+  in
+    all isReallySmall xs && Array.length xs <= 5
+
+-- | Is a subtree *really* small? Note that being a leaf neither sufficient nor
+-- | necessary for a subtree to count as "really small" (although most leaves
+-- | will be "really small").
+isReallySmall :: Tree Label -> Boolean
+isReallySmall subtree =
+  case rootLabel subtree of
+    Int _ ->
+      true
+    Number _ ->
+      true
+    Boolean _ ->
+      true
+    Char _ ->
+      true
+    String x ->
+      String.length x <= 15
+    Array ->
+      ifOne (children subtree) isLeaf
+    Record ->
+      false
+    Prop name ->
+      internal name
+    App name ->
+      internal name
+    Opaque name ->
+      internal name
+    Collection name ->
+      internal name
+    Assoc name ->
+      false
+    AssocProp ->
+      all isLeaf (children subtree)
+
+  where
+  internal name =
+    String.length name <= 10 && ifOne (children subtree) isLeaf
+
+  ifOne [] _ = true
+  ifOne [x] pred = pred x
+  ifOne _ _ = false
 
 -- | Check whether a subtree needs to be wrapped in parens when being
 -- | displayed in a context which would require them (e.g. as an argument to
