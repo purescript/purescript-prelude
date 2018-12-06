@@ -20,6 +20,7 @@ module Data.Debugged.Type
 import Prelude
 import Data.Tuple (Tuple(..))
 import Data.String as String
+import Data.Array as Array
 
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
@@ -277,8 +278,52 @@ data Delta a
   = Same a
 
   -- This label indicates that the two trees being compared differ at the node
-  -- being labelled. Every node with this label should have precisely two
+  -- being labelled. Every node with this label should have exactly two
   -- children: the first being the subtree rooted here in the first of the two
   -- trees being diffed, and the second being the subtree rooted here in the
-  -- second.
+  -- second tree.
   | Different
+
+  -- This label indicates that the first of the trees being diffed has a
+  -- subtree here, whereas the second does not. It should have exactly one
+  -- child: the subtree of the first tree rooted at the point where it appears.
+  | Extra1
+
+  -- This label indicates that the second of the trees being diffed has a
+  -- subtree here, whereas the second does not. It should have exactly one
+  -- child: the subtree of the second tree rooted at the point where it
+  -- appears.
+  | Extra2
+
+  -- This label indicates that we are in a differing subtree (and hence are not
+  -- going to bother to perform any more diffing).
+  | Subtree a
+
+derive instance eqDelta :: Eq a => Eq (Delta a)
+derive instance ordDelta :: Ord a => Ord (Delta a)
+
+diff :: forall a. Eq a => Tree a -> Tree a -> Tree (Delta a)
+diff = go
+  where
+  go left@(Node x xs) right@(Node y ys) =
+    if x == y
+      then Node (Same x) (goChildren xs ys)
+      else Node Different [map Subtree left, map Subtree right]
+
+  goChildren :: Array (Tree a) -> Array (Tree a) -> Array (Tree (Delta a))
+  goChildren xs ys =
+    let
+      xlen = Array.length xs
+      ylen = Array.length ys
+      begin = Array.zipWith go xs ys
+    in
+      case compare xlen ylen of
+        LT ->
+          begin <> map (extra Extra1) (Array.drop xlen ys)
+        EQ ->
+          begin
+        GT ->
+          begin <> map (extra Extra2) (Array.drop ylen xs)
+
+  extra :: Delta a -> Tree a -> Tree (Delta a)
+  extra ctor subtree = Node ctor [map Subtree subtree]
