@@ -27,6 +27,7 @@ import Data.Tuple (Tuple(..))
 import Data.String as String
 import Data.Array as Array
 import Data.Foldable (all)
+import Data.Maybe (Maybe(..), fromMaybe)
 
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
@@ -128,6 +129,29 @@ data Label
 
 derive instance eqLabel :: Eq Label
 derive instance ordLabel :: Ord Label
+
+-- | If a given tree is a correctly-formed Prop, apply the given function to
+-- | its name and its value and return the result. Note that a correctly-formed
+-- | Prop always has precisely one child: its value.
+withProp :: forall a. (String -> Tree Label -> a) -> Tree Label -> Maybe a
+withProp f =
+  case _ of
+    Node (Prop name) [value] ->
+      Just (f name value)
+    _ ->
+      Nothing
+
+-- | If a given tree is a correctly-formed AssocProp, apply the given function
+-- | to its key and its value and return the result. Note that a
+-- | correctly-formed AssocProp always has precisely two children: its key and
+-- | its value.
+withAssocProp :: forall a. (Tree Label -> Tree Label -> a) -> Tree Label -> Maybe a
+withAssocProp f =
+  case _ of
+    Node AssocProp [key, value] ->
+      Just (f key value)
+    _ ->
+      Nothing
 
 leaf :: Label -> Repr
 leaf label = Repr (Node label [])
@@ -234,19 +258,13 @@ prettyPrintOneLine = go <<< unRepr
       AssocProp -> ""
       Prop _ -> ""
 
-  printProp :: Tree Label -> String
-  printProp (Node (Prop name) [val]) =
-    name <> ": " <> go val
-  printProp _ =
-    -- should not happen
-    ""
+  printProp =
+    fromMaybe ""
+    <<< withProp \name val -> name <> ": " <> go val
 
-  printAssoc :: Tree Label -> String
-  printAssoc (Node AssocProp [a, b]) =
-    go a <> ": " <> go b
-  printAssoc _ =
-    -- should not happen
-    ""
+  printAssoc =
+    fromMaybe ""
+    <<< withAssocProp \key val -> go key <> ": " <> go val
 
 -- | A somewhat arbitrary heuristic to decide whether a subtree is sufficiently
 -- | small to be allowed to be printed on one line.
