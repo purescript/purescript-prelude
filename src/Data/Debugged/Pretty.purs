@@ -156,8 +156,8 @@ prettyPrintAtom d =
 -- print :: forall eff a. Debug a => a -> Eff (console :: CONSOLE | eff) Unit
 -- print = log <<< String.joinWith "\n" <<< prettyPrint top <<< debugged
 
-print' :: forall eff a. Debug a => a -> Effect Unit
+print' :: forall a. Debug a => a -> Effect Unit
 print' = log <<< prettyPrintOneLine <<< debugged
 
-eval :: forall eff a. Debug a => a -> Effect Unit
+eval :: forall a. Debug a => a -> Effect Unit
 eval = print'

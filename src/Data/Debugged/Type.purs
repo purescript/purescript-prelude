@@ -8,8 +8,8 @@ import Data.Tuple (Tuple)
 
 -- | A value of type `Debugged` is a representation of some PureScript value.
 -- | It is often possible to reconstruct the original value from its `Debugged`
--- | representation, but not always. Notable counterexamples are `Eff`, `Ref`,
--- | and `(->)`.
+-- | representation, but not always. Notable counterexamples are `Effect`,
+-- | `Ref`, and `(->)`.
 data Debugged
   = DInt Int
   | DNumber Number
