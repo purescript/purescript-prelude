@@ -1,5 +1,9 @@
-module PSCI.Support
-  ( module X
-  ) where
+module PSCI.Support ( eval ) where
 
-import Data.Debugged (eval) as X
+import Prelude
+import Effect (Effect)
+import Effect.Console (log)
+import Data.Debugged (class Debug, debugged, prettyPrintOneLine)
+
+eval :: forall a. Debug a => a -> Effect Unit
+eval = log <<< prettyPrintOneLine <<< debugged
