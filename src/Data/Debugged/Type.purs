@@ -17,7 +17,6 @@ module Data.Debugged.Type
   , assoc
 
   -- pretty printing
-  , prettyPrintOneLine
   , prettyPrint
 
   -- diffing
@@ -27,7 +26,7 @@ import Prelude
 
 import Data.Array as Array
 import Data.Foldable (all, foldMap)
-import Data.Maybe (Maybe(..), fromMaybe)
+import Data.Maybe (Maybe(..))
 import Data.String as String
 import Data.Tuple (Tuple(..))
 import Partial.Unsafe (unsafePartial)
@@ -214,8 +213,13 @@ prettyPrint :: Repr -> String
 prettyPrint = String.joinWith "\n" <<< go <<< unRepr
   where
   go :: Tree Label -> Array String
-  go tree | isSmall tree = line (prettyPrintOneLine (Repr tree))
   go tree =
+    if isSmall tree
+      then compact (goExpanded tree)
+      else goExpanded tree
+
+  goExpanded :: Tree Label -> Array String
+  goExpanded tree =
     case rootLabel tree of
       Int x ->
         line (show x)
@@ -251,6 +255,19 @@ prettyPrint = String.joinWith "\n" <<< go <<< unRepr
         []
       Prop _ ->
         []
+
+  -- Reduce a multiple-line pretty-printed expression down to one line.
+  compact :: Array String -> Array String
+  compact =
+    firstMiddleLast >>>
+    case _ of
+      Empty ->
+        []
+      Single x ->
+        [x]
+      TwoOrMore first middle last ->
+        [String.joinWith " "
+          ([first] <> map String.trim middle <> [String.trim last])]
 
   goAtom tree =
     if needsParens tree
@@ -326,65 +343,6 @@ surround start finish =
       <> middle
       <> [ last <> finish ]
 
--- | Pretty-print a representation on a single line.
-prettyPrintOneLine :: Repr -> String
-prettyPrintOneLine = go <<< unRepr
-  where
-  go tree =
-    case rootLabel tree of
-      Int x ->
-        show x
-      Number x ->
-        show x
-      Boolean x ->
-        show x
-      Char x ->
-        show x
-      String x ->
-        show x
-      App name ->
-        case children tree of
-          [] ->
-            name
-          args ->
-            name <> " " <> String.joinWith " " (map prettyPrintAtom args)
-      Array ->
-        "[" <>
-          String.joinWith ", " (map go (children tree)) <>
-          "]"
-      Record ->
-        "{" <>
-          String.joinWith ", " (map printProp (children tree)) <>
-          "}"
-      Opaque name ->
-        case children tree of
-          [] ->
-            "<" <> name <> ">"
-          xs ->
-            "<" <> name <> " " <>
-              String.joinWith ", " (map printProp xs)
-              <> ">"
-      Collection name ->
-        "<" <> name <> " [" <>
-          String.joinWith ", " (map go (children tree)) <>
-          "]>"
-      Assoc name ->
-        "<" <> name <> " {" <>
-          String.joinWith ", " (map printAssoc (children tree)) <>
-          "}>"
-
-      -- should not happen
-      AssocProp -> ""
-      Prop _ -> ""
-
-  printProp =
-    fromMaybe ""
-    <<< withProp \name val -> name <> ": " <> go val
-
-  printAssoc =
-    fromMaybe ""
-    <<< withAssocProp \key val -> go key <> ": " <> go val
-
 -- | A somewhat arbitrary heuristic to decide whether a subtree is sufficiently
 -- | small to be allowed to be printed on one line.
 isSmall :: Tree Label -> Boolean
@@ -452,13 +410,6 @@ needsParens tree =
       not (isLeaf tree)
     _ ->
       false
-
--- | Pretty-print a representation, adding parens if necessary.
-prettyPrintAtom :: Tree Label -> String
-prettyPrintAtom d =
-  if needsParens d
-    then "(" <> prettyPrintOneLine (Repr d) <> ")"
-    else prettyPrintOneLine (Repr d)
 
 -------------------------------------------------------------------------------
 -- DIFFING --------------------------------------------------------------------
