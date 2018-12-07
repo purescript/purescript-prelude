@@ -63,6 +63,28 @@ foldTree f = go
   where
   go (Node x ts) = f x (map go ts)
 
+data FirstMiddleLast a
+  = Empty
+  | Single a
+  | TwoOrMore a (Array a) a
+
+firstMiddleLast :: forall a. Array a -> FirstMiddleLast a
+firstMiddleLast =
+  case _ of
+    [] ->
+      Empty
+    [x] ->
+      Single x
+    xs ->
+      let
+        n = Array.length xs
+      in
+        unsafePartial $
+          TwoOrMore
+            (Array.unsafeIndex xs 0)
+            (Array.slice 1 (n-1) xs)
+            (Array.unsafeIndex xs (n-1))
+
 -------------------------------------------------------------------------------
 -- THE REPR TYPE & CONSTRUCTORS -----------------------------------------------
 
@@ -303,28 +325,6 @@ prettyPrint = String.joinWith "\n" <<< go <<< unRepr
       n ->
         unsafePartial $
           Array.slice 0 (n-2) xs <> [f (Array.unsafeIndex xs (n-1))]
-
-data FirstMiddleLast a
-  = Empty
-  | Single a
-  | TwoOrMore a (Array a) a
-
-firstMiddleLast :: forall a. Array a -> FirstMiddleLast a
-firstMiddleLast =
-  case _ of
-    [] ->
-      Empty
-    [x] ->
-      Single x
-    xs ->
-      let
-        n = Array.length xs
-      in
-        unsafePartial $
-          TwoOrMore
-            (Array.unsafeIndex xs 0)
-            (Array.slice 1 (n-1) xs)
-            (Array.unsafeIndex xs (n-1))
 
 -- | Produce a comma separated sequence over multiple lines with the given
 -- | beginning and ending string sequences.
