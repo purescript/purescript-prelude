@@ -25,7 +25,7 @@ module Data.Debugged.Type
 import Prelude
 
 import Data.Array as Array
-import Data.Foldable (all, foldMap)
+import Data.Foldable (all, foldMap, fold)
 import Data.Maybe (Maybe(..))
 import Data.String as String
 import Data.Tuple (Tuple(..))
@@ -234,21 +234,23 @@ prettyPrint = String.joinWith "\n" <<< go <<< unRepr
       App name ->
         line name <> foldMap (map ("  " <> _) <<< goAtom) (children tree)
       Array ->
-        commaSeq "[" "]" (map go (children tree))
+        commaSeq "[ " " ]" (map go (children tree))
       Record ->
-        commaSeq "{" "}" (Array.mapMaybe goProp (children tree))
+        commaSeq "{ " " }" (Array.mapMaybe goRecordProp (children tree))
       Opaque name ->
         surround "<" ">" $
           line name
-          <> commaSeq "" "" (Array.mapMaybe goProp (children tree))
+          <> map ("  " <> _)
+              (Array.filter (_ /= "")
+                (commaSeq "" "" (Array.mapMaybe goOpaqueProp (children tree))))
       Collection name ->
         surround "<" ">" $
           line name
-          <> commaSeq "[" "]" (map go (children tree))
+          <> commaSeq "[ " " ]" (map go (children tree))
       Assoc name ->
         surround "<" ">" $
           line name
-          <> commaSeq "{" "}" (Array.mapMaybe goAssocProp (children tree))
+          <> commaSeq "{ " " }" (Array.mapMaybe goAssocProp (children tree))
 
       -- should not happen
       AssocProp ->
@@ -274,9 +276,13 @@ prettyPrint = String.joinWith "\n" <<< go <<< unRepr
       then surround "(" ")" (go tree)
       else go tree
 
-  goProp =
+  goRecordProp =
     withProp \name val ->
       line (name <> ":") <> map ("    " <> _) (go val)
+
+  goOpaqueProp =
+    withProp \name val ->
+      line (name <> ":") <> map ("  " <> _) (go val)
 
   goAssocProp =
     withAssocProp \key val ->
@@ -316,7 +322,7 @@ firstMiddleLast =
             (Array.unsafeIndex xs (n-1))
 
 -- | Produce a comma separated sequence over multiple lines with the given
--- | beginning and ending characters.
+-- | beginning and ending string sequences.
 commaSeq :: String -> String -> Array (Array String) -> Array String
 commaSeq begin end =
   firstMiddleLast >>>
@@ -324,11 +330,14 @@ commaSeq begin end =
     Empty ->
       [ begin <> end ]
     Single item ->
-      surround (begin <> " ") (" " <> end) item
+      surround begin end item
     TwoOrMore first middle last ->
-      surround (begin <> " ") "," first
-      <> Array.concatMap (surround "  " ",") middle
-      <> surround "  " (" " <> end) last
+      surround begin "," first
+      <> Array.concatMap (surround spacer ",") middle
+      <> surround spacer end last
+
+  where
+  spacer = fold (Array.replicate (String.length begin) " ")
 
 surround :: String -> String -> Array String -> Array String
 surround start finish =
