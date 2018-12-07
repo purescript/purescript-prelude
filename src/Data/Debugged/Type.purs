@@ -18,16 +18,19 @@ module Data.Debugged.Type
 
   -- pretty printing
   , prettyPrintOneLine
+  , prettyPrint
 
   -- diffing
   ) where
 
 import Prelude
-import Data.Tuple (Tuple(..))
-import Data.String as String
+
 import Data.Array as Array
-import Data.Foldable (all)
+import Data.Foldable (all, foldMap)
 import Data.Maybe (Maybe(..), fromMaybe)
+import Data.String as String
+import Data.Tuple (Tuple(..))
+import Partial.Unsafe (unsafePartial)
 
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
@@ -92,11 +95,11 @@ data Label
   | Array
 
   -- This label represents a value of the type `Prim.Record`. Its immediate
-  -- children should all have DProp labels.
+  -- children should all have Prop labels.
   | Record
 
   -- This node represents a property with the given name. It should only occur
-  -- as a direct descendent of a DRecord- or DOpaque-labelled node.  A node
+  -- as a direct descendent of a Record- or Opaque-labelled node.  A node
   -- with this label should always have exactly one child: the property value.
   | Prop String
 
@@ -111,7 +114,7 @@ data Label
 
   -- This constructor represents an opaque data type such as `(->)` or `Ref`.
   -- The argument should contain the name of the data type. Nodes with this
-  -- label should only have DProp labels as immediate children.
+  -- label should only have Prop labels as immediate children.
   | Opaque String
 
   -- This constructor represents a list-like collection. The argument should
@@ -206,6 +209,122 @@ assoc name contents =
 
 -------------------------------------------------------------------------------
 -- PRETTY-PRINTING ------------------------------------------------------------
+
+prettyPrint :: Repr -> String
+prettyPrint = String.joinWith "\n" <<< go <<< unRepr
+  where
+  go :: Tree Label -> Array String
+  go tree | isSmall tree = line (prettyPrintOneLine (Repr tree))
+  go tree =
+    case rootLabel tree of
+      Int x ->
+        line (show x)
+      Number x ->
+        line (show x)
+      Boolean x ->
+        line (show x)
+      Char x ->
+        line (show x)
+      String x ->
+        line (show x)
+      App name ->
+        line name <> foldMap (map ("  " <> _) <<< goAtom) (children tree)
+      Array ->
+        commaSeq "[" "]" (map go (children tree))
+      Record ->
+        commaSeq "{" "}" (Array.mapMaybe goProp (children tree))
+      Opaque name ->
+        line ("<" <> name)
+        <> commaSeq "{" "}" (Array.mapMaybe goProp (children tree))
+      Collection name ->
+        line ("<" <> name)
+        <> commaSeq "[" "]" (map go (children tree))
+      Assoc name ->
+        line ("<" <> name)
+        <> commaSeq "{" "}" (Array.mapMaybe goAssocProp (children tree))
+
+      -- should not happen
+      AssocProp ->
+        []
+      Prop _ ->
+        []
+
+  goAtom tree =
+    if needsParens tree
+      then surround "(" ")" (go tree)
+      else go tree
+
+  goProp =
+    withProp \name val ->
+      line (name <> ":") <> map ("    " <> _) (go val)
+
+  goAssocProp =
+    withAssocProp \key val ->
+      withLast (_ <> ":") (go key)
+      <> go val
+
+  line c = [c]
+
+  withLast f xs =
+    case Array.length xs of
+      0 ->
+        []
+      n ->
+        unsafePartial $
+          Array.slice 0 (n-2) xs <> [f (Array.unsafeIndex xs (n-1))]
+
+data FirstMiddleLast a
+  = Empty
+  | Single a
+  | TwoOrMore a (Array a) a
+
+derive instance eqFirstMiddleLast :: Eq a => Eq (FirstMiddleLast a)
+derive instance ordFirstMiddleLast :: Ord a => Ord (FirstMiddleLast a)
+
+firstMiddleLast :: forall a. Array a -> FirstMiddleLast a
+firstMiddleLast =
+  case _ of
+    [] ->
+      Empty
+    [x] ->
+      Single x
+    xs ->
+      let
+        n = Array.length xs
+      in
+        unsafePartial $
+          TwoOrMore
+            (Array.unsafeIndex xs 0)
+            (Array.slice 1 (n-1) xs)
+            (Array.unsafeIndex xs (n-1))
+
+-- | Produce a comma separated sequence over multiple lines with the given
+-- | beginning and ending characters.
+commaSeq :: String -> String -> Array (Array String) -> Array String
+commaSeq begin end =
+  firstMiddleLast >>>
+  case _ of
+    Empty ->
+      [ begin <> end ]
+    Single item ->
+      surround (begin <> " ") (" " <> end) item
+    TwoOrMore first middle last ->
+      surround (begin <> " ") "," first
+      <> Array.concatMap (surround "  " ",") middle
+      <> surround "  " (" " <> end) last
+
+surround :: String -> String -> Array String -> Array String
+surround start finish =
+  firstMiddleLast >>>
+  case _ of
+    Empty ->
+      [ start <> finish ]
+    Single item ->
+      [ start <> item <> finish ]
+    TwoOrMore first middle last ->
+      [ start <> first ]
+      <> middle
+      <> [ last <> finish ]
 
 -- | Pretty-print a representation on a single line.
 prettyPrintOneLine :: Repr -> String
