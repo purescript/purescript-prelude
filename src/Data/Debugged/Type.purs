@@ -48,6 +48,8 @@ isLeaf :: forall a. Tree a -> Boolean
 isLeaf (Node _ []) = true
 isLeaf _ = false
 
+derive instance eqTree :: Eq a => Eq (Tree a)
+derive instance ordTree :: Ord a => Ord (Tree a)
 derive instance functorTree :: Functor Tree
 
 -- | Fold a tree bottom-up; the function `foldTree f` applies `f []` to each of
@@ -68,6 +70,9 @@ foldTree f = go
 -- | to reconstruct the original value from this representation, but not
 -- | always. Notable counterexamples are `Effect`, `Ref`, and `(->)`.
 newtype Repr = Repr (Tree Label)
+
+derive newtype instance eqRepr :: Eq Repr
+derive newtype instance ordRepr :: Ord Repr
 
 unRepr :: Repr -> Tree Label
 unRepr (Repr tree) = tree
