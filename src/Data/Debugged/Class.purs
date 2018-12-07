@@ -132,6 +132,9 @@ instance debugLazyList :: Debug a => Debug (LazyList.List a) where
 instance debugSet :: Debug a => Debug (Set a) where
   debugged s = D.collection "Set" (map debugged (Set.toUnfoldable s))
 
+instance debugRepr :: Debug D.Repr where
+  debugged r = D.opaque "Repr" [Tuple "value" r]
+
 -- instance debugDebugged :: Debug Debugged where
 --   debugged (DInt x) = DExpr "DInt" [debugged x]
 --   debugged (DNumber x) = DExpr "DNumber" [debugged x]
