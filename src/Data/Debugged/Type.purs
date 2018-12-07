@@ -234,14 +234,17 @@ prettyPrint = String.joinWith "\n" <<< go <<< unRepr
       Record ->
         commaSeq "{" "}" (Array.mapMaybe goProp (children tree))
       Opaque name ->
-        line ("<" <> name)
-        <> commaSeq "{" "}" (Array.mapMaybe goProp (children tree))
+        surround "<" ">" $
+          line name
+          <> commaSeq "" "" (Array.mapMaybe goProp (children tree))
       Collection name ->
-        line ("<" <> name)
-        <> commaSeq "[" "]" (map go (children tree))
+        surround "<" ">" $
+          line name
+          <> commaSeq "[" "]" (map go (children tree))
       Assoc name ->
-        line ("<" <> name)
-        <> commaSeq "{" "}" (Array.mapMaybe goAssocProp (children tree))
+        surround "<" ">" $
+          line name
+          <> commaSeq "{" "}" (Array.mapMaybe goAssocProp (children tree))
 
       -- should not happen
       AssocProp ->
@@ -277,9 +280,6 @@ data FirstMiddleLast a
   = Empty
   | Single a
   | TwoOrMore a (Array a) a
-
-derive instance eqFirstMiddleLast :: Eq a => Eq (FirstMiddleLast a)
-derive instance ordFirstMiddleLast :: Ord a => Ord (FirstMiddleLast a)
 
 firstMiddleLast :: forall a. Array a -> FirstMiddleLast a
 firstMiddleLast =
