@@ -27,11 +27,15 @@ module Data.Debugged.Type
 import Prelude
 
 import Data.Array as Array
-import Data.Foldable (all, foldMap, fold)
+import Data.Monoid.Additive (Additive(..))
+import Data.Newtype (unwrap)
+import Data.Foldable (all, foldMap, fold, sum)
 import Data.Maybe (Maybe(..))
 import Data.String as String
 import Data.Tuple (Tuple(..))
 import Partial.Unsafe (unsafePartial)
+
+import Data.Debugged.PrettyPrinter
 
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
@@ -64,28 +68,6 @@ foldTree :: forall a b. (a -> Array b -> b) -> Tree a -> b
 foldTree f = go
   where
   go (Node x ts) = f x (map go ts)
-
-data FirstMiddleLast a
-  = Empty
-  | Single a
-  | TwoOrMore a (Array a) a
-
-firstMiddleLast :: forall a. Array a -> FirstMiddleLast a
-firstMiddleLast =
-  case _ of
-    [] ->
-      Empty
-    [x] ->
-      Single x
-    xs ->
-      let
-        n = Array.length xs
-      in
-        unsafePartial $
-          TwoOrMore
-            (Array.unsafeIndex xs 0)
-            (Array.slice 1 (n-1) xs)
-            (Array.unsafeIndex xs (n-1))
 
 -------------------------------------------------------------------------------
 -- THE REPR TYPE & CONSTRUCTORS -----------------------------------------------
@@ -184,23 +166,23 @@ withAssocProp f =
     _ ->
       Nothing
 
-leaf :: Label -> Repr
-leaf label = Repr (Node label [])
+mkLeaf :: Label -> Repr
+mkLeaf label = Repr (Node label [])
 
 int :: Int -> Repr
-int = leaf <<< Int
+int = mkLeaf <<< Int
 
 number :: Number -> Repr
-number = leaf <<< Number
+number = mkLeaf <<< Number
 
 boolean :: Boolean -> Repr
-boolean = leaf <<< Boolean
+boolean = mkLeaf <<< Boolean
 
 char :: Char -> Repr
-char = leaf <<< Char
+char = mkLeaf <<< Char
 
 string :: String -> Repr
-string = leaf <<< String
+string = mkLeaf <<< String
 
 array :: Array Repr -> Repr
 array = Repr <<< Node Array <<< map unRepr
@@ -239,193 +221,108 @@ assoc name contents =
 -- PRETTY-PRINTING ------------------------------------------------------------
 
 prettyPrint :: Repr -> String
-prettyPrint = String.joinWith "\n" <<< go <<< unRepr
-  where
-  go :: Tree Label -> Array String
-  go tree =
-    if isSmall tree
-      then compact (goExpanded tree)
-      else goExpanded tree
+prettyPrint = printContent <<< foldTree prettyPrintGo <<< unRepr
 
-  goExpanded :: Tree Label -> Array String
-  goExpanded tree =
-    case rootLabel tree of
-      Int x ->
-        line (show x)
-      Number x ->
-        line (show x)
-      Boolean x ->
-        line (show x)
-      Char x ->
-        line (show x)
-      String x ->
-        line (show x)
-      App name ->
-        line name <> foldMap (map ("  " <> _) <<< goAtom) (children tree)
-      Array ->
-        commaSeq "[ " " ]" (map go (children tree))
-      Record ->
-        commaSeq "{ " " }" (Array.mapMaybe goRecordProp (children tree))
-      Opaque name ->
-        surround "<" ">" $
-          line name
-          <> map ("  " <> _)
-              (Array.filter (_ /= "")
-                (commaSeq "" "" (Array.mapMaybe goOpaqueProp (children tree))))
-      Collection name ->
-        surround "<" ">" $
-          line name
-          <> commaSeq "[ " " ]" (map go (children tree))
-      Assoc name ->
-        surround "<" ">" $
-          line name
-          <> commaSeq "{ " " }" (Array.mapMaybe goAssocProp (children tree))
+prettyPrintSizeThreshold :: Int
+prettyPrintSizeThreshold = 10
 
-      -- should not happen
-      AssocProp ->
-        []
-      Prop _ ->
-        []
+prettyPrintGo :: Label -> Array Content -> Content
+prettyPrintGo root children =
+  if size root + (2 * unwrap (foldMap _.size children)) <= prettyPrintSizeThreshold
+    then compact (prettyPrintGoExpanded root children)
+    else prettyPrintGoExpanded root children
 
-  -- Reduce a multiple-line pretty-printed expression down to one line.
-  compact :: Array String -> Array String
-  compact =
-    firstMiddleLast >>>
-    case _ of
-      Empty ->
-        []
-      Single x ->
-        [x]
-      TwoOrMore first middle last ->
-        [String.joinWith " "
-          ([first] <> map String.trim middle <> [String.trim last])]
-
-  goAtom tree =
-    if needsParens tree
-      then surround "(" ")" (go tree)
-      else go tree
-
-  goRecordProp =
-    withProp \name val ->
-      line (name <> ":") <> map ("    " <> _) (go val)
-
-  goOpaqueProp =
-    withProp \name val ->
-      line (name <> ":") <> map ("  " <> _) (go val)
-
-  goAssocProp =
-    withAssocProp \key val ->
-      withLast (_ <> ":") (go key)
-      <> go val
-
-  line c = [c]
-
-  withLast f xs =
-    case Array.length xs of
-      0 ->
-        []
-      n ->
-        unsafePartial $
-          Array.slice 0 (n-2) xs <> [f (Array.unsafeIndex xs (n-1))]
-
--- | Produce a comma separated sequence over multiple lines with the given
--- | beginning and ending string sequences.
-commaSeq :: String -> String -> Array (Array String) -> Array String
-commaSeq begin end =
-  firstMiddleLast >>>
-  case _ of
-    Empty ->
-      [ begin <> end ]
-    Single item ->
-      surround begin end item
-    TwoOrMore first middle last ->
-      surround begin "," first
-      <> Array.concatMap (surround spacer ",") middle
-      <> surround spacer end last
-
-  where
-  spacer = fold (Array.replicate (String.length begin) " ")
-
-surround :: String -> String -> Array String -> Array String
-surround start finish =
-  firstMiddleLast >>>
-  case _ of
-    Empty ->
-      [ start <> finish ]
-    Single item ->
-      [ start <> item <> finish ]
-    TwoOrMore first middle last ->
-      [ start <> first ]
-      <> middle
-      <> [ last <> finish ]
-
--- | A somewhat arbitrary heuristic to decide whether a subtree is sufficiently
--- | small to be allowed to be printed on one line.
-isSmall :: Tree Label -> Boolean
-isSmall subtree =
-  let
-    xs = children subtree
-  in
-    all isReallySmall xs && Array.length xs <= 5
-
--- | Is a subtree *really* small? Note that being a leaf neither sufficient nor
--- | necessary for a subtree to count as "really small" (although most leaves
--- | will be "really small").
-isReallySmall :: Tree Label -> Boolean
-isReallySmall subtree =
-  case rootLabel subtree of
-    Int _ ->
-      true
-    Number _ ->
-      true
-    Boolean _ ->
-      true
-    Char _ ->
-      true
-    String x ->
-      String.length x <= 15
-    Array ->
-      ifOne (children subtree) isLeaf
-    Record ->
-      false
-    Prop name ->
-      internal name
-    App name ->
-      internal name
-    Opaque name ->
-      internal name
-    Collection name ->
-      internal name
-    Assoc name ->
-      false
-    AssocProp ->
-      all isLeaf (children subtree)
-
-  where
-  internal name =
-    String.length name <= 10 && ifOne (children subtree) isLeaf
-
-  ifOne [] _ = true
-  ifOne [x] pred = pred x
-  ifOne _ _ = false
-
--- | Check whether a subtree needs to be wrapped in parens when being
--- | displayed in a context which would require them (e.g. as an argument to
--- | a data constructor).
-needsParens :: Tree Label -> Boolean
-needsParens tree =
-  case rootLabel tree of
+prettyPrintGoExpanded :: Label -> Array Content -> Content
+prettyPrintGoExpanded root children =
+  case root of
     Int x ->
-      x < 0
+      (leaf x) { needsParens = x < 0 }
     Number x ->
       -- this slightly odd construction is to ensure we return true for any
-      -- positive value and false for any negative value (including negative
-      -- zero).
-      (1.0 / x) < 0.0
-    App _ ->
-      not (isLeaf tree)
-    _ ->
-      false
+      -- positive value and false for any negative value (including
+      -- negative zero).
+      (leaf x) { needsParens = (1.0 / x) < 0.0 }
+    Boolean x ->
+      leaf x
+    Char x ->
+      leaf x
+    String x ->
+      leaf x
+    App name ->
+      parens (verbatim name <> foldMap (indent "  " <<< wrap) children)
+    Array ->
+      commaSeq "[ " " ]" children
+    Record ->
+      commaSeq "{ " " }" children
+    Opaque name ->
+      noParens $
+        surround "<" ">" $
+          verbatim name <> indent "  " (noWrap (commaSeq "" "" children))
+    Collection name ->
+      noParens $
+        surround "<" ">" $
+          verbatim name <> noWrap (commaSeq "[ " " ]" children)
+    Assoc name ->
+      noParens $
+        surround "<" ">" $
+          verbatim name <> noWrap (commaSeq "{ " " }" children)
+    AssocProp ->
+      case children of
+        [key, val] ->
+          noParens $ (surround "" ":" (noWrap key) <> noWrap val)
+        _ ->
+          -- should not happen
+          emptyContent
+    Prop name ->
+      case children of
+        [val] ->
+          noParens $ verbatim (name <> ":") <> indent "  " (noWrap val)
+        _ ->
+          -- should not happen
+          emptyContent
+
+class Sized a where
+  size :: a -> Int
+
+instance sizedLabel :: Sized Label where
+  size =
+    case _ of
+      Int _ ->
+        1
+      Number _ ->
+        1
+      Boolean _ ->
+        1
+      Char _ ->
+        1
+      String x ->
+        if String.length x <= 15 then 1 else 2
+      Array ->
+        1
+      Record ->
+        2
+      Prop name ->
+        if String.length name <= 15 then 1 else 2
+      App name ->
+        if String.length name <= 15 then 1 else 2
+      Opaque name ->
+        if String.length name <= 15 then 1 else 2
+      Collection name ->
+        if String.length name <= 15 then 1 else 2
+      Assoc _ ->
+        2
+      AssocProp ->
+        0
+
+instance sizedDelta :: Sized a => Sized (Delta a) where
+  size =
+    case _ of
+      Same x ->
+        size x
+      Subtree x ->
+        size x
+      _ ->
+        0
 
 -------------------------------------------------------------------------------
 -- DIFFING --------------------------------------------------------------------
