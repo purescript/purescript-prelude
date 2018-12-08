@@ -20,6 +20,8 @@ module Data.Debugged.Type
   , prettyPrint
 
   -- diffing
+  , ReprDelta
+  , diff
   ) where
 
 import Prelude
@@ -460,8 +462,8 @@ data Delta a
 derive instance eqDelta :: Eq a => Eq (Delta a)
 derive instance ordDelta :: Ord a => Ord (Delta a)
 
-diff :: forall a. Eq a => Tree a -> Tree a -> Tree (Delta a)
-diff = go
+diff' :: forall a. Eq a => Tree a -> Tree a -> Tree (Delta a)
+diff' = go
   where
   go left@(Node x xs) right@(Node y ys) =
     if x == y
@@ -485,3 +487,14 @@ diff = go
 
   extra :: Delta a -> Tree a -> Tree (Delta a)
   extra ctor subtree = Node ctor [map Subtree subtree]
+
+diff :: Repr -> Repr -> ReprDelta
+diff (Repr a) (Repr b) = ReprDelta (diff' a b)
+
+-- | A delta
+newtype ReprDelta = ReprDelta (Tree (Delta Label))
+
+unReprDelta (ReprDelta tree) = tree
+
+derive newtype instance eqReprDelta :: Eq ReprDelta
+derive newtype instance ordReprDelta :: Ord ReprDelta
