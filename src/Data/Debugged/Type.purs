@@ -16,26 +16,24 @@ module Data.Debugged.Type
   , collection
   , assoc
 
-  -- pretty printing
-  , prettyPrint
-
   -- diffing
   , ReprDelta
   , diff
+
+  -- pretty printing
+  , prettyPrint
+  , prettyPrintDelta
   ) where
 
 import Prelude
 
 import Data.Array as Array
-import Data.Monoid.Additive (Additive(..))
-import Data.Newtype (unwrap)
-import Data.Foldable (all, foldMap, fold, sum)
+import Data.Debugged.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
+import Data.Foldable (foldMap)
 import Data.Maybe (Maybe(..))
+import Data.Newtype (unwrap)
 import Data.String as String
 import Data.Tuple (Tuple(..))
-import Partial.Unsafe (unsafePartial)
-
-import Data.Debugged.PrettyPrinter
 
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
@@ -47,8 +45,8 @@ data Tree a
 rootLabel :: forall a. Tree a -> a
 rootLabel (Node r _) = r
 
-children :: forall a. Tree a -> Array (Tree a)
-children (Node _ xs) = xs
+subtrees :: forall a. Tree a -> Array (Tree a)
+subtrees (Node _ xs) = xs
 
 isLeaf :: forall a. Tree a -> Boolean
 isLeaf (Node _ []) = true
@@ -221,19 +219,34 @@ assoc name contents =
 -- PRETTY-PRINTING ------------------------------------------------------------
 
 prettyPrint :: Repr -> String
-prettyPrint = printContent <<< foldTree prettyPrintGo <<< unRepr
+prettyPrint =
+  printContent
+  <<< foldTree (withResizing prettyPrintGo)
+  <<< unRepr
+
+prettyPrintDelta :: ReprDelta -> String
+prettyPrintDelta =
+  printContent
+  <<< foldTree (withResizing prettyPrintGoDelta)
+  <<< unReprDelta
 
 prettyPrintSizeThreshold :: Int
 prettyPrintSizeThreshold = 10
 
+measure :: forall a. Sized a => a -> Array Content -> Int
+measure root children =
+  size root + (2 * unwrap (foldMap _.size children))
+
+withResizing :: forall a. Sized a =>
+  (a -> Array Content -> Content) ->
+  (a -> Array Content -> Content)
+withResizing f root children =
+  if measure root children <= prettyPrintSizeThreshold
+    then compact (f root children)
+    else f root children
+
 prettyPrintGo :: Label -> Array Content -> Content
 prettyPrintGo root children =
-  if size root + (2 * unwrap (foldMap _.size children)) <= prettyPrintSizeThreshold
-    then compact (prettyPrintGoExpanded root children)
-    else prettyPrintGoExpanded root children
-
-prettyPrintGoExpanded :: Label -> Array Content -> Content
-prettyPrintGoExpanded root children =
   case root of
     Int x ->
       (leaf x) { needsParens = x < 0 }
@@ -280,6 +293,53 @@ prettyPrintGoExpanded root children =
         _ ->
           -- should not happen
           emptyContent
+
+prettyPrintGoDelta :: Delta Label -> Array Content -> Content
+prettyPrintGoDelta root children =
+  case root of
+    Same a ->
+      prettyPrintGo a children
+    Different ->
+      case children of
+        [left, right] ->
+          noParens $
+            noWrap (markRemoved left) <> noWrap (markAdded right)
+        _ ->
+          -- should not happen
+          emptyContent
+    Extra1 ->
+      case children of
+        [x] ->
+          markRemoved x
+        _ ->
+          -- should not happen
+          emptyContent
+    Extra2 ->
+      case children of
+        [x] ->
+          markAdded x
+        _ ->
+          -- should not happen
+          emptyContent
+    Subtree a ->
+      prettyPrintGo a children
+
+ansiGreen :: String
+ansiGreen = "\27[32m"
+
+ansiRed :: String
+ansiRed = "\27[31m"
+
+ansiReset :: String
+ansiReset = "\27[0m"
+
+markAdded :: Content -> Content
+markAdded =
+  surround (ansiGreen <> "+") ansiReset
+
+markRemoved :: Content -> Content
+markRemoved =
+  surround (ansiRed <> "-") ansiReset
 
 class Sized a where
   size :: a -> Int
@@ -391,6 +451,7 @@ diff (Repr a) (Repr b) = ReprDelta (diff' a b)
 -- | A delta
 newtype ReprDelta = ReprDelta (Tree (Delta Label))
 
+unReprDelta :: ReprDelta -> Tree (Delta Label)
 unReprDelta (ReprDelta tree) = tree
 
 derive newtype instance eqReprDelta :: Eq ReprDelta
