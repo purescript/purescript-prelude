@@ -38,6 +38,9 @@ import Data.Debugged.Type as D
 class Debug a where
   debugged :: a -> D.Repr
 
+diffed :: forall a. Debug a => a -> a -> D.ReprDelta
+diffed x y = D.diff (debugged x) (debugged y)
+
 -- Prim
 instance debugInt :: Debug Int where
   debugged = D.int
@@ -134,16 +137,3 @@ instance debugSet :: Debug a => Debug (Set a) where
 
 instance debugRepr :: Debug D.Repr where
   debugged r = D.opaque "Repr" [Tuple "value" r]
-
--- instance debugDebugged :: Debug Debugged where
---   debugged (DInt x) = DExpr "DInt" [debugged x]
---   debugged (DNumber x) = DExpr "DNumber" [debugged x]
---   debugged (DBoolean x) = DExpr "DBoolean" [debugged x]
---   debugged (DChar x) = DExpr "DChar" [debugged x]
---   debugged (DString x) = DExpr "DString" [debugged x]
---   debugged (DExpr name args) = DExpr "DExpr" [debugged name, debugged args]
---   debugged (DArray xs) = DExpr "DArray" [debugged xs]
---   debugged (DRecord xs) = DExpr "DRecord" [debugged xs]
---   debugged (DOpaque name xs) = DExpr "DOpaque" [debugged name, debugged xs]
---   debugged (DCollection name args) = DExpr "DCollection" [debugged name, debugged args]
---   debugged (DAssoc name args) = DExpr "DAssoc" [debugged name, debugged args]

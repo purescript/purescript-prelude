@@ -274,7 +274,7 @@ prettyPrintGo root children =
     Collection name ->
       noParens $
         surround "<" ">" $
-          verbatim name <> noWrap (commaSeq "[ " " ]" children)
+          verbatim name <> indent "  " (noWrap (commaSeq "[ " " ]" children))
     Assoc name ->
       noParens $
         surround "<" ">" $
@@ -448,7 +448,9 @@ diff' = go
 diff :: Repr -> Repr -> ReprDelta
 diff (Repr a) (Repr b) = ReprDelta (diff' a b)
 
--- | A delta
+-- | A delta between two Repr values; describes the differences between two
+-- | values. Useful for testing, as this type can show you where exactly how
+-- | two values differ.
 newtype ReprDelta = ReprDelta (Tree (Delta Label))
 
 unReprDelta :: ReprDelta -> Tree (Delta Label)
