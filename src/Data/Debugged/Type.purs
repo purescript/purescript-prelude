@@ -1,7 +1,7 @@
 -- | This module provides the `Repr` type, which may be used as a common
 -- | format for representations of values. The `Repr` type is intended for
 -- | use in testing, debugging, and in the REPL, but not in production code.
-module Data.Debugged.Type
+module Data.Debug.Type
   -- Data type and construction
   ( Repr
   , int
@@ -28,7 +28,7 @@ module Data.Debugged.Type
 import Prelude
 
 import Data.Array as Array
-import Data.Debugged.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
+import Data.Debug.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
 import Data.Foldable (foldMap)
 import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)

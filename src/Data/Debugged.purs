@@ -1,6 +1,6 @@
-module Data.Debugged
+module Data.Debug
   ( module X ) where
 
-import Data.Debugged.Type as X
-import Data.Debugged.Class as X
-import Data.Debugged.Generic as X
+import Data.Debug.Type as X
+import Data.Debug.Class as X
+import Data.Debug.Generic as X

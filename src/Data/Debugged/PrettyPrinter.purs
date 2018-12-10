@@ -1,5 +1,5 @@
--- | A simple pretty-printer, intended for use with Debugged.Repr values.
-module Data.Debugged.PrettyPrinter where
+-- | A simple pretty-printer, intended for use with Debug.Repr values.
+module Data.Debug.PrettyPrinter where
 
 import Prelude
 

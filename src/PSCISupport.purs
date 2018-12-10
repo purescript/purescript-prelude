@@ -7,7 +7,7 @@ import Prelude
 
 import Effect (Effect)
 import Effect.Console (log)
-import Data.Debugged (class Debug, debugged, prettyPrint)
+import Data.Debug (class Debug, debug, prettyPrint)
 
 -- | The `Eval` class captures those types which can be
 -- | evaluated in the REPL.
@@ -21,4 +21,4 @@ instance evalEffect :: Eval a => Eval (Effect a) where
   eval x = x >>= eval
 else
 instance evalDebug :: Debug a => Eval a where
-  eval = log <<< prettyPrint <<< debugged
+  eval = log <<< prettyPrint <<< debug

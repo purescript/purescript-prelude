@@ -1,4 +1,4 @@
-module Data.Debugged.Generic
+module Data.Debug.Generic
   ( class GenericDebug
   , genericDebug'
   , genericDebug
@@ -8,8 +8,8 @@ module Data.Debugged.Generic
 
 import Prelude
 
-import Data.Debugged.Class (class Debug, debugged)
-import Data.Debugged.Type as D
+import Data.Debug.Class (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from)
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 
@@ -41,7 +41,7 @@ class GenericDebugArgs rep where
   genericDebugArgs :: rep -> Array D.Repr
 
 instance genericDebugArgsArgument :: Debug a => GenericDebugArgs (Argument a) where
-  genericDebugArgs (Argument a) = [debugged a]
+  genericDebugArgs (Argument a) = [debug a]
 
 instance genericDebugArgsProduct :: (GenericDebugArgs a, GenericDebugArgs b) => GenericDebugArgs (Product a b) where
   genericDebugArgs (Product a b) = genericDebugArgs a <> genericDebugArgs b

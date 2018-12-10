@@ -1,6 +1,6 @@
 -- | This module provides the `Debug` type class, for converting values into
--- | their `Debugged` representations.
-module Data.Debugged.Class where
+-- | their `Debug` representations.
+module Data.Debug.Class where
 
 import Prelude
 import Data.Tuple (Tuple(..))
@@ -22,46 +22,46 @@ import Prim.Row as Row
 import Type.Row (kind RowList, Nil, Cons, RLProxy(..))
 import Effect (Effect)
 
-import Data.Debugged.Type as D
+import Data.Debug.Type as D
 
 -- | Ideally, all types of kind `Type` should have an instance of this class.
 -- | If you are defining a type where it's difficult/impossible to do anything
 -- | useful here (e.g. `Ref` or `(->)`) then you should use the `DOpaque`
 -- | constructor.
 -- |
--- | If a type has an `Eq` instance, then the `debugged` function in its `Debug`
+-- | If a type has an `Eq` instance, then the `debug` function in its `Debug`
 -- | instance should be *injective*, that is:
 -- |
 -- | ```purescript
--- | x /= y `implies` debugged x /= debugged y
+-- | x /= y `implies` debug x /= debug y
 -- | ```
 class Debug a where
-  debugged :: a -> D.Repr
+  debug :: a -> D.Repr
 
 diffed :: forall a. Debug a => a -> a -> D.ReprDelta
-diffed x y = D.diff (debugged x) (debugged y)
+diffed x y = D.diff (debug x) (debug y)
 
 -- Prim
 instance debugInt :: Debug Int where
-  debugged = D.int
+  debug = D.int
 
 instance debugNumber :: Debug Number where
-  debugged = D.number
+  debug = D.number
 
 instance debugBoolean :: Debug Boolean where
-  debugged = D.boolean
+  debug = D.boolean
 
 instance debugString :: Debug String where
-  debugged = D.string
+  debug = D.string
 
 instance debugChar :: Debug Char where
-  debugged = D.char
+  debug = D.char
 
 instance debugArray :: Debug a => Debug (Array a) where
-  debugged = D.array <<< map debugged
+  debug = D.array <<< map debug
 
 instance debugFunction :: Debug (a -> b) where
-  debugged _ = D.opaque "function" []
+  debug _ = D.opaque "function" []
 
 class DebugRowList (list :: RowList) (row :: # Type) | list -> row where
   debugRowList :: RLProxy list -> Record row -> List (Tuple String D.Repr)
@@ -78,7 +78,7 @@ instance debugRowListCons ::
   , IsSymbol key
   ) => DebugRowList (Cons key a listRest) rowFull where
   debugRowList _ rec =
-    Tuple (reflectSymbol key) (debugged val) : rest
+    Tuple (reflectSymbol key) (debug val) : rest
     where
     key = SProxy :: SProxy key
     val = get key rec
@@ -88,52 +88,52 @@ instance debugRecord ::
   ( RowToList row list
   , DebugRowList list row
   ) => Debug (Record row) where
-  debugged r =
+  debug r =
     D.record (Array.fromFoldable (debugRowList prx r))
     where
     prx = RLProxy :: RLProxy list
 
 -- Prelude
 instance debugOrdering :: Debug Ordering where
-  debugged LT = D.constructor "LT" []
-  debugged EQ = D.constructor "EQ" []
-  debugged GT = D.constructor "GT" []
+  debug LT = D.constructor "LT" []
+  debug EQ = D.constructor "EQ" []
+  debug GT = D.constructor "GT" []
 
 instance debugUnit :: Debug Unit where
-  debugged _ = D.constructor "unit" []
+  debug _ = D.constructor "unit" []
 
 instance debugVoid :: Debug Void where
-  debugged = absurd
+  debug = absurd
 
 -- Other
 
 instance debugMaybe :: Debug a => Debug (Maybe a) where
-  debugged (Just x) = D.constructor "Just" [debugged x]
-  debugged Nothing = D.constructor "Nothing" []
+  debug (Just x) = D.constructor "Just" [debug x]
+  debug Nothing = D.constructor "Nothing" []
 
 instance debugEither :: (Debug a, Debug b) => Debug (Either a b) where
-  debugged (Right x) = D.constructor "Right" [debugged x]
-  debugged (Left x) = D.constructor "Left" [debugged x]
+  debug (Right x) = D.constructor "Right" [debug x]
+  debug (Left x) = D.constructor "Left" [debug x]
 
 instance debugTuple :: (Debug a, Debug b) => Debug (Tuple a b) where
-  debugged (Tuple x y) = D.constructor "Tuple" [debugged x, debugged y]
+  debug (Tuple x y) = D.constructor "Tuple" [debug x, debug y]
 
 instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
-  debugged m =
+  debug m =
     D.assoc "Map"
-      (map (bimap debugged debugged) (Map.toUnfoldable m))
+      (map (bimap debug debug) (Map.toUnfoldable m))
 
 instance debugEffect :: Debug (Effect a) where
-  debugged _ = D.opaque "Effect" []
+  debug _ = D.opaque "Effect" []
 
 instance debugList :: Debug a => Debug (List a) where
-  debugged xs = D.collection "List" (map debugged (List.toUnfoldable xs))
+  debug xs = D.collection "List" (map debug (List.toUnfoldable xs))
 
 instance debugLazyList :: Debug a => Debug (LazyList.List a) where
-  debugged xs = D.collection "List.Lazy" (map debugged (LazyList.toUnfoldable xs))
+  debug xs = D.collection "List.Lazy" (map debug (LazyList.toUnfoldable xs))
 
 instance debugSet :: Debug a => Debug (Set a) where
-  debugged s = D.collection "Set" (map debugged (Set.toUnfoldable s))
+  debug s = D.collection "Set" (map debug (Set.toUnfoldable s))
 
 instance debugRepr :: Debug D.Repr where
-  debugged r = D.opaque "Repr" [Tuple "value" r]
+  debug r = D.opaque "Repr" [Tuple "value" r]
