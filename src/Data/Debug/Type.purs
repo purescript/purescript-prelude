@@ -215,7 +215,7 @@ prettyPrintDelta =
   <<< unReprDelta
 
 prettyPrintSizeThreshold :: Int
-prettyPrintSizeThreshold = 10
+prettyPrintSizeThreshold = 8
 
 measure :: forall a. Sized a => a -> Array Content -> Int
 measure root children =
@@ -346,7 +346,7 @@ instance sizedLabel :: Sized Label where
       Record ->
         2
       Prop name ->
-        if String.length name <= 15 then 1 else 2
+        if String.length name <= 15 then 0 else 1
       App name ->
         if String.length name <= 15 then 1 else 2
       Opaque name ->
