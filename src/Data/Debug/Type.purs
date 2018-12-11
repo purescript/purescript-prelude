@@ -141,29 +141,6 @@ data Label
 derive instance eqLabel :: Eq Label
 derive instance ordLabel :: Ord Label
 
--- | If a given tree is a correctly-formed Prop, apply the given function to
--- | its name and its value and return the result. Note that a correctly-formed
--- | Prop always has precisely one child: its value.
-withProp :: forall a. (String -> Tree Label -> a) -> Tree Label -> Maybe a
-withProp f =
-  case _ of
-    Node (Prop name) [value] ->
-      Just (f name value)
-    _ ->
-      Nothing
-
--- | If a given tree is a correctly-formed AssocProp, apply the given function
--- | to its key and its value and return the result. Note that a
--- | correctly-formed AssocProp always has precisely two children: its key and
--- | its value.
-withAssocProp :: forall a. (Tree Label -> Tree Label -> a) -> Tree Label -> Maybe a
-withAssocProp f =
-  case _ of
-    Node AssocProp [key, value] ->
-      Just (f key value)
-    _ ->
-      Nothing
-
 mkLeaf :: Label -> Repr
 mkLeaf label = Repr (Node label [])
 
