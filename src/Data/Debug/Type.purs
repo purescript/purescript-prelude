@@ -1,6 +1,7 @@
--- | This module provides the `Repr` type, which may be used as a common
--- | format for representations of values. The `Repr` type is intended for
--- | use in testing, debugging, and in the REPL, but not in production code.
+-- | This module provides the basic building blocks which the `Debug` type
+-- | class makes use of. It provides the `Repr` type and functions for
+-- | constructing values of this type, the `ReprDelta` type for representing
+-- | differences between two `Repr` values, and pretty-printing functions.
 module Data.Debug.Type
   -- Data type and construction
   ( Repr
@@ -88,7 +89,8 @@ data Label
   -- or not children are permitted at a given node depends on the constructor
   -- of the label. We do however use newtypes, and we avoid exporting
   -- constructors in favour of specialised construction functions, in order to
-  -- ensure that the exposed API may only be used to construct correct trees.
+  -- ensure that all trees constructed by the exposed API are guaranteed to
+  -- be valid.
 
   -- These labels should always be leaves, and should only ever be used to
   -- represent the Prim types they contain.
@@ -195,6 +197,11 @@ assoc name contents =
 -------------------------------------------------------------------------------
 -- PRETTY-PRINTING ------------------------------------------------------------
 
+-- | Pretty-print a `Repr` value; intended for use in e.g. the repl.
+-- |
+-- | The output will be executable PureScript code provided that the given
+-- | `Repr` value does not contain any nodes which were constructed with the
+-- | `opaque`, `collection`, or `assoc` functions.
 prettyPrint :: Repr -> String
 prettyPrint =
   printContent
@@ -422,12 +429,14 @@ diff' = go
   extra :: Delta a -> Tree a -> Tree (Delta a)
   extra ctor subtree = Node ctor [map Subtree subtree]
 
+-- | Compare two `Repr` values and record the results as a `ReprDelta`
+-- | structure.
 diff :: Repr -> Repr -> ReprDelta
 diff (Repr a) (Repr b) = ReprDelta (diff' a b)
 
--- | A delta between two Repr values; describes the differences between two
--- | values. Useful for testing, as this type can show you where exactly how
--- | two values differ.
+-- | A delta between two `Repr` values; describes the differences between two
+-- | values. Useful for testing, as this type can show you exactly where an
+-- | expected and an actual value differ.
 newtype ReprDelta = ReprDelta (Tree (Delta Label))
 
 unReprDelta :: ReprDelta -> Tree (Delta Label)
