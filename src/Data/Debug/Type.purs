@@ -246,7 +246,10 @@ prettyPrintGo root children =
     String x ->
       leaf x
     App name ->
-      parens (verbatim name <> foldMap (indent "  " <<< wrap) children)
+      let
+        f = if Array.length children > 0 then parens else noParens
+      in
+        f (verbatim name <> foldMap (indent "  " <<< wrap) children)
     Array ->
       commaSeq "[ " " ]" children
     Record ->
