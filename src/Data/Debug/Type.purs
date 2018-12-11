@@ -219,7 +219,7 @@ prettyPrintSizeThreshold = 10
 
 measure :: forall a. Sized a => a -> Array Content -> Int
 measure root children =
-  size root + (2 * unwrap (foldMap _.size children))
+  size root + unwrap (foldMap _.size children)
 
 withResizing :: forall a. Sized a =>
   (a -> Array Content -> Content) ->
