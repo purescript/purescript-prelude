@@ -24,6 +24,8 @@ module Data.Debug.Type
   -- pretty printing
   , prettyPrint
   , prettyPrintDelta
+  , PrettyPrintOptions
+  , defaultPrettyPrintOptions
   ) where
 
 import Prelude
@@ -31,6 +33,7 @@ import Prelude
 import Data.Array as Array
 import Data.Debug.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
 import Data.Foldable (foldMap)
+import Data.Maybe (Maybe(..), maybe)
 import Data.Newtype (unwrap)
 import Data.String as String
 import Data.Tuple (Tuple(..))
@@ -66,6 +69,26 @@ foldTree :: forall a b. (a -> Array b -> b) -> Tree a -> b
 foldTree f = go
   where
   go (Node x ts) = f x (map go ts)
+
+-- | Remove all children below a certain depth and replace them with a leaf
+-- | with the given label. The arguments are:
+-- | - the label to use for leaves which replace pruned subtrees.
+-- | - a function which tells us whether to count the current node as
+-- |   contributing to the depth of the subtree
+-- | - the depth to preserve.
+prune :: forall a. a -> (a -> Boolean) -> Int -> Tree a -> Tree a
+prune replacement counts depth = go (max 1 depth)
+  where
+  -- If we've reached a leaf anyway, just print it
+  go 0 n@(Node _ []) =
+    n
+  go 0 _ =
+    Node replacement []
+  go d (Node label children) =
+    let
+      d' = if counts label then d-1 else d
+    in
+      Node label (map (go d') children)
 
 -------------------------------------------------------------------------------
 -- THE REPR TYPE & CONSTRUCTORS -----------------------------------------------
@@ -225,30 +248,143 @@ assoc name contents =
   makeAssocProp :: Tuple Repr Repr -> Tree Label
   makeAssocProp (Tuple (Repr k) (Repr v)) = Node AssocProp [k, v]
 
+-- | Should a label be considered as adding depth from the perspective of
+-- | only pretty-printing to a certain depth?
+addsDepth :: Label -> Boolean
+addsDepth =
+  case _ of
+    Prop _ -> false
+    AssocProp -> false
+    _ -> true
+
+-------------------------------------------------------------------------------
+-- DIFFING --------------------------------------------------------------------
+
+-- | A type for labels for delta trees. If a tree has labels of type `a`, then
+-- | we can represent a delta tree with labels of type `Delta a`.
+data Delta a
+  -- Each occurrence of this label corresponds to a node where the two trees
+  -- being compared are identical.
+  = Same a
+
+  -- This label indicates that the two trees being compared differ at the node
+  -- being labelled. Every node with this label should have exactly two
+  -- children: the first being the subtree rooted here in the first of the two
+  -- trees being diffed, and the second being the subtree rooted here in the
+  -- second tree.
+  | Different
+
+  -- This label indicates that the first of the trees being diffed has a
+  -- subtree here, whereas the second does not. It should have exactly one
+  -- child: the subtree of the first tree rooted at the point where it appears.
+  | Extra1
+
+  -- This label indicates that the second of the trees being diffed has a
+  -- subtree here, whereas the second does not. It should have exactly one
+  -- child: the subtree of the second tree rooted at the point where it
+  -- appears.
+  | Extra2
+
+  -- This label indicates that we are in a differing subtree (and hence are not
+  -- going to bother to perform any more diffing).
+  | Subtree a
+
+derive instance eqDelta :: Eq a => Eq (Delta a)
+derive instance ordDelta :: Ord a => Ord (Delta a)
+
+diff' :: forall a. Eq a => Tree a -> Tree a -> Tree (Delta a)
+diff' = go
+  where
+  go left@(Node x xs) right@(Node y ys) =
+    if x == y
+      then Node (Same x) (goChildren xs ys)
+      else Node Different [map Subtree left, map Subtree right]
+
+  goChildren :: Array (Tree a) -> Array (Tree a) -> Array (Tree (Delta a))
+  goChildren xs ys =
+    let
+      xlen = Array.length xs
+      ylen = Array.length ys
+      begin = Array.zipWith go xs ys
+    in
+      case compare xlen ylen of
+        LT ->
+          begin <> map (extra Extra1) (Array.drop xlen ys)
+        EQ ->
+          begin
+        GT ->
+          begin <> map (extra Extra2) (Array.drop ylen xs)
+
+  extra :: Delta a -> Tree a -> Tree (Delta a)
+  extra ctor subtree = Node ctor [map Subtree subtree]
+
+-- | Compare two `Repr` values and record the results as a `ReprDelta`
+-- | structure.
+diffRepr :: Repr -> Repr -> ReprDelta
+diffRepr (Repr a) (Repr b) = ReprDelta (diff' a b)
+
+-- | A delta between two `Repr` values; describes the differences between two
+-- | values. Useful for testing, as this type can show you exactly where an
+-- | expected and an actual value differ.
+newtype ReprDelta = ReprDelta (Tree (Delta Label))
+
+unReprDelta :: ReprDelta -> Tree (Delta Label)
+unReprDelta (ReprDelta tree) = tree
+
+derive newtype instance eqReprDelta :: Eq ReprDelta
+derive newtype instance ordReprDelta :: Ord ReprDelta
+
+-- | Should a label be considered as adding depth from the perspective of
+-- | only pretty-printing to a certain depth?
+addsDepthDelta :: forall a. (a -> Boolean) -> Delta a -> Boolean
+addsDepthDelta f =
+  case _ of
+    Subtree label ->
+      f label
+    Same label ->
+      f label
+    _ ->
+      false
+
 -------------------------------------------------------------------------------
 -- PRETTY-PRINTING ------------------------------------------------------------
+
+type PrettyPrintOptions
+  = { maxDepth :: Maybe Int }
+
+defaultPrettyPrintOptions :: PrettyPrintOptions
+defaultPrettyPrintOptions =
+  { maxDepth: Just 4 }
 
 -- | Pretty-print a `Repr` value; intended for use in e.g. the repl.
 -- |
 -- | The output will be executable PureScript code provided that the given
 -- | `Repr` value does not contain any nodes which were constructed with the
 -- | `opaque`, `collection`, or `assoc` functions.
-prettyPrint :: Repr -> String
-prettyPrint =
+prettyPrint :: PrettyPrintOptions -> Repr -> String
+prettyPrint opts =
   printContent
   <<< foldTree (withResizing labelSize prettyPrintGo)
+  <<< pruneTo opts.maxDepth
   <<< unRepr
+
+  where
+  pruneTo = maybe identity (prune Omitted addsDepth)
 
 -- | Pretty-print a `ReprDelta` value. The result will contain ANSI terminal
 -- | codes to mark additions in green and deletions in red. A value is
 -- | considered to have been 'added' if it exists in the second argument to
 -- | `diff` but not the first, and similarly it is considered 'deleted' if it
 -- | appears in the first but not the second.
-prettyPrintDelta :: ReprDelta -> String
-prettyPrintDelta =
+prettyPrintDelta :: PrettyPrintOptions -> ReprDelta -> String
+prettyPrintDelta opts =
   printContent
   <<< foldTree (withResizing (deltaSize labelSize) prettyPrintGoDelta)
+  <<< pruneTo opts.maxDepth
   <<< unReprDelta
+
+  where
+  pruneTo = maybe identity (prune (Same Omitted) (addsDepthDelta addsDepth))
 
 prettyPrintSizeThreshold :: Int
 prettyPrintSizeThreshold = 8
@@ -408,80 +544,3 @@ deltaSize size =
       size x
     _ ->
       0
-
--------------------------------------------------------------------------------
--- DIFFING --------------------------------------------------------------------
-
--- | A type for labels for delta trees. If a tree has labels of type `a`, then
--- | we can represent a delta tree with labels of type `Delta a`.
-data Delta a
-  -- Each occurrence of this label corresponds to a node where the two trees
-  -- being compared are identical.
-  = Same a
-
-  -- This label indicates that the two trees being compared differ at the node
-  -- being labelled. Every node with this label should have exactly two
-  -- children: the first being the subtree rooted here in the first of the two
-  -- trees being diffed, and the second being the subtree rooted here in the
-  -- second tree.
-  | Different
-
-  -- This label indicates that the first of the trees being diffed has a
-  -- subtree here, whereas the second does not. It should have exactly one
-  -- child: the subtree of the first tree rooted at the point where it appears.
-  | Extra1
-
-  -- This label indicates that the second of the trees being diffed has a
-  -- subtree here, whereas the second does not. It should have exactly one
-  -- child: the subtree of the second tree rooted at the point where it
-  -- appears.
-  | Extra2
-
-  -- This label indicates that we are in a differing subtree (and hence are not
-  -- going to bother to perform any more diffing).
-  | Subtree a
-
-derive instance eqDelta :: Eq a => Eq (Delta a)
-derive instance ordDelta :: Ord a => Ord (Delta a)
-
-diff' :: forall a. Eq a => Tree a -> Tree a -> Tree (Delta a)
-diff' = go
-  where
-  go left@(Node x xs) right@(Node y ys) =
-    if x == y
-      then Node (Same x) (goChildren xs ys)
-      else Node Different [map Subtree left, map Subtree right]
-
-  goChildren :: Array (Tree a) -> Array (Tree a) -> Array (Tree (Delta a))
-  goChildren xs ys =
-    let
-      xlen = Array.length xs
-      ylen = Array.length ys
-      begin = Array.zipWith go xs ys
-    in
-      case compare xlen ylen of
-        LT ->
-          begin <> map (extra Extra1) (Array.drop xlen ys)
-        EQ ->
-          begin
-        GT ->
-          begin <> map (extra Extra2) (Array.drop ylen xs)
-
-  extra :: Delta a -> Tree a -> Tree (Delta a)
-  extra ctor subtree = Node ctor [map Subtree subtree]
-
--- | Compare two `Repr` values and record the results as a `ReprDelta`
--- | structure.
-diffRepr :: Repr -> Repr -> ReprDelta
-diffRepr (Repr a) (Repr b) = ReprDelta (diff' a b)
-
--- | A delta between two `Repr` values; describes the differences between two
--- | values. Useful for testing, as this type can show you exactly where an
--- | expected and an actual value differ.
-newtype ReprDelta = ReprDelta (Tree (Delta Label))
-
-unReprDelta :: ReprDelta -> Tree (Delta Label)
-unReprDelta (ReprDelta tree) = tree
-
-derive newtype instance eqReprDelta :: Eq ReprDelta
-derive newtype instance ordReprDelta :: Ord ReprDelta
