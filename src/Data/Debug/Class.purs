@@ -4,6 +4,8 @@ module Data.Debug.Class
   ( class Debug
   , debug
   , diff
+  , class DebugRowList
+  , debugRowList
   ) where
 
 import Prelude
@@ -70,6 +72,8 @@ instance debugArray :: Debug a => Debug (Array a) where
 instance debugFunction :: Debug (a -> b) where
   debug _ = D.opaque "function" []
 
+-- | This class is part of the machinery for the `Debug (Record r)` instance;
+-- | it is not intended to be used directly.
 class DebugRowList (list :: RowList) (row :: # Type) | list -> row where
   debugRowList :: RLProxy list -> Record row -> List (Tuple String D.Repr)
 
