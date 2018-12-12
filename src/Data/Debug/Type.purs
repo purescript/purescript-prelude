@@ -20,10 +20,15 @@ module Data.Debug.Type
   -- diffing
   , ReprDelta
   , diffRepr
+  , diffReprWith
+  , DiffOptions
+  , defaultDiffOptions
 
   -- pretty printing
   , prettyPrint
   , prettyPrintDelta
+  , prettyPrintWith
+  , prettyPrintDeltaWith
   , PrettyPrintOptions
   , defaultPrettyPrintOptions
   ) where
@@ -37,6 +42,7 @@ import Data.Maybe (Maybe(..), maybe)
 import Data.Newtype (unwrap)
 import Data.String as String
 import Data.Tuple (Tuple(..))
+import Math as Math
 
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
@@ -220,7 +226,7 @@ makeProps = map unwrapProp
     Node (Prop name) [val]
 
 -- | Create a `Repr` for a value constructed by a data constructor. For
--- | example, the expression `Just 3` may be represented by the expression
+-- | example, the expression `Just 3` may be represented by
 -- | `constructor "Just" [int 3]`.
 constructor :: String -> Array Repr -> Repr
 constructor name args =
@@ -248,14 +254,30 @@ assoc name contents =
   makeAssocProp :: Tuple Repr Repr -> Tree Label
   makeAssocProp (Tuple (Repr k) (Repr v)) = Node AssocProp [k, v]
 
--- | Should a label be considered as adding depth from the perspective of
--- | only pretty-printing to a certain depth?
+-- | Should a label be considered as adding depth (from the perspective of
+-- | only pretty-printing to a certain depth)?
 addsDepth :: Label -> Boolean
 addsDepth =
   case _ of
     Prop _ -> false
     AssocProp -> false
     _ -> true
+
+relativeError :: Number -> Number -> Number
+relativeError x y = Math.abs (x - y) / max (Math.abs x) (Math.abs y)
+
+eqRelative :: Number -> Number -> Number -> Boolean
+eqRelative error x y = relativeError x y <= error
+
+-- | Compare labels for approximate equality (in the case of Number
+-- | constructors), using the specified relative error.
+labelApproxEq :: Number -> Label -> Label -> Boolean
+labelApproxEq error x y =
+  case x, y of
+    Number x', Number y' ->
+      eqRelative error x' y'
+    _, _ ->
+      x == y
 
 -------------------------------------------------------------------------------
 -- DIFFING --------------------------------------------------------------------
@@ -292,11 +314,22 @@ data Delta a
 derive instance eqDelta :: Eq a => Eq (Delta a)
 derive instance ordDelta :: Ord a => Ord (Delta a)
 
-diff' :: forall a. Eq a => Tree a -> Tree a -> Tree (Delta a)
-diff' = go
+-- | Options for diffing `Repr` values.
+-- |
+-- | - **maxRelativeError:** The maximum relative error within which two
+-- |   `Number` values may be considered equal.
+type DiffOptions =
+  { maxRelativeError :: Number }
+
+defaultDiffOptions :: DiffOptions
+defaultDiffOptions =
+  { maxRelativeError: 1e-12 }
+
+diff' :: forall a. (a -> a -> Boolean) -> Tree a -> Tree a -> Tree (Delta a)
+diff' labelEq = go
   where
   go left@(Node x xs) right@(Node y ys) =
-    if x == y
+    if labelEq x y
       then Node (Same x) (goChildren xs ys)
       else Node Different [map Subtree left, map Subtree right]
 
@@ -319,9 +352,15 @@ diff' = go
   extra ctor subtree = Node ctor [map Subtree subtree]
 
 -- | Compare two `Repr` values and record the results as a `ReprDelta`
--- | structure.
+-- | structure, using the specified options.
+diffReprWith :: DiffOptions -> Repr -> Repr -> ReprDelta
+diffReprWith opts (Repr a) (Repr b) =
+  ReprDelta (diff' (labelApproxEq opts.maxRelativeError) a b)
+
+-- | Compare two `Repr` values and record the results as a `ReprDelta`
+-- | structure, using the default options.
 diffRepr :: Repr -> Repr -> ReprDelta
-diffRepr (Repr a) (Repr b) = ReprDelta (diff' a b)
+diffRepr = diffReprWith defaultDiffOptions
 
 -- | A delta between two `Repr` values; describes the differences between two
 -- | values. Useful for testing, as this type can show you exactly where an
@@ -349,6 +388,13 @@ addsDepthDelta f =
 -------------------------------------------------------------------------------
 -- PRETTY-PRINTING ------------------------------------------------------------
 
+-- | Options for configuring the pretty-printer.
+-- |
+-- | - **maxDepth:** How many levels of the tree should be printed before
+-- |   cutting off. If set to `Nothing`, the entire tree is always printed.
+-- | - **compactThreshold:** Controls how large a subtree is allowed to become
+-- |   before it is broken over multiple lines. The larger this value is, the
+-- |   fewer lines will be needed to pretty-print something.
 type PrettyPrintOptions
   = { maxDepth :: Maybe Int
     , compactThreshold :: Int
@@ -360,13 +406,14 @@ defaultPrettyPrintOptions =
   , compactThreshold: 8
   }
 
--- | Pretty-print a `Repr` value; intended for use in e.g. the repl.
+-- | Pretty-print a `Repr` value using the specified options; intended for use
+-- | in e.g. the repl.
 -- |
 -- | The output will be executable PureScript code provided that the given
 -- | `Repr` value does not contain any nodes which were constructed with the
 -- | `opaque`, `collection`, or `assoc` functions.
-prettyPrint :: PrettyPrintOptions -> Repr -> String
-prettyPrint opts =
+prettyPrintWith :: PrettyPrintOptions -> Repr -> String
+prettyPrintWith opts =
   printContent
   <<< foldTree (withResizing labelSize opts.compactThreshold prettyPrintGo)
   <<< pruneTo opts.maxDepth
@@ -375,13 +422,19 @@ prettyPrint opts =
   where
   pruneTo = maybe identity (prune Omitted addsDepth)
 
--- | Pretty-print a `ReprDelta` value. The result will contain ANSI terminal
--- | codes to mark additions in green and deletions in red. A value is
--- | considered to have been 'added' if it exists in the second argument to
--- | `diff` but not the first, and similarly it is considered 'deleted' if it
--- | appears in the first but not the second.
-prettyPrintDelta :: PrettyPrintOptions -> ReprDelta -> String
-prettyPrintDelta opts =
+-- | Pretty-print a `Repr` value using the default options; see also
+-- | `prettyPrintWith`.
+prettyPrint :: Repr -> String
+prettyPrint = prettyPrintWith defaultPrettyPrintOptions
+
+-- | Pretty-print a `ReprDelta` value using the specified options.
+-- |
+-- | The result will contain ANSI terminal codes to mark additions in green
+-- | and deletions in red. A value is considered to have been 'added' if it
+-- | exists in the second argument to `diff` but not the first, and similarly
+-- | it is considered 'deleted' if it appears in the first but not the second.
+prettyPrintDeltaWith :: PrettyPrintOptions -> ReprDelta -> String
+prettyPrintDeltaWith opts =
   printContent
   <<< foldTree (withResizing (deltaSize labelSize)
                              opts.compactThreshold
@@ -391,6 +444,11 @@ prettyPrintDelta opts =
 
   where
   pruneTo = maybe identity (prune (Same Omitted) (addsDepthDelta addsDepth))
+
+-- | Pretty-print a `ReprDelta` value using the default options; see also
+-- | `prettyPrintDeltaWith`.
+prettyPrintDelta :: ReprDelta -> String
+prettyPrintDelta = prettyPrintDeltaWith defaultPrettyPrintOptions
 
 measure :: forall a. (a -> Int) -> a -> Array Content -> Int
 measure size root children =
