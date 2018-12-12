@@ -31,7 +31,6 @@ import Prelude
 import Data.Array as Array
 import Data.Debug.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
 import Data.Foldable (foldMap)
-import Data.Maybe (Maybe(..))
 import Data.Newtype (unwrap)
 import Data.String as String
 import Data.Tuple (Tuple(..))
