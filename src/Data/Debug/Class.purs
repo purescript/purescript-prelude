@@ -1,6 +1,10 @@
 -- | This module provides the `Debug` type class, for converting values into
 -- | their `Debug` representations.
-module Data.Debug.Class where
+module Data.Debug.Class
+  ( class Debug
+  , debug
+  , diff
+  ) where
 
 import Prelude
 import Data.Tuple (Tuple(..))
@@ -38,10 +42,13 @@ import Data.Debug.Type as D
 class Debug a where
   debug :: a -> D.Repr
 
-diffed :: forall a. Debug a => a -> a -> D.ReprDelta
-diffed x y = D.diff (debug x) (debug y)
+-- | Compare two values and record the results as a `ReprDelta` structure.
+diff :: forall a. Debug a => a -> a -> D.ReprDelta
+diff x y = D.diffRepr (debug x) (debug y)
 
+-------------------------------------------------------------------------------
 -- Prim
+
 instance debugInt :: Debug Int where
   debug = D.int
 

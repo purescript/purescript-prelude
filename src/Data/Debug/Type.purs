@@ -19,7 +19,7 @@ module Data.Debug.Type
 
   -- diffing
   , ReprDelta
-  , diff
+  , diffRepr
 
   -- pretty printing
   , prettyPrint
@@ -467,8 +467,8 @@ diff' = go
 
 -- | Compare two `Repr` values and record the results as a `ReprDelta`
 -- | structure.
-diff :: Repr -> Repr -> ReprDelta
-diff (Repr a) (Repr b) = ReprDelta (diff' a b)
+diffRepr :: Repr -> Repr -> ReprDelta
+diffRepr (Repr a) (Repr b) = ReprDelta (diff' a b)
 
 -- | A delta between two `Repr` values; describes the differences between two
 -- | values. Useful for testing, as this type can show you exactly where an
