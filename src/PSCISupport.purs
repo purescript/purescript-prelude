@@ -1,5 +1,6 @@
--- | This module provides support for the
--- | PureScript interactive mode, PSCI.
+-- | This module provides support for the PureScript interactive mode, PSCI.
+-- |
+-- | This module is a bit of a hack. See the README for further details.
 
 module PSCI.Support where
 
