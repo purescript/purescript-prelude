@@ -350,11 +350,15 @@ addsDepthDelta f =
 -- PRETTY-PRINTING ------------------------------------------------------------
 
 type PrettyPrintOptions
-  = { maxDepth :: Maybe Int }
+  = { maxDepth :: Maybe Int
+    , compactThreshold :: Int
+    }
 
 defaultPrettyPrintOptions :: PrettyPrintOptions
 defaultPrettyPrintOptions =
-  { maxDepth: Just 4 }
+  { maxDepth: Just 4
+  , compactThreshold: 8
+  }
 
 -- | Pretty-print a `Repr` value; intended for use in e.g. the repl.
 -- |
@@ -364,7 +368,7 @@ defaultPrettyPrintOptions =
 prettyPrint :: PrettyPrintOptions -> Repr -> String
 prettyPrint opts =
   printContent
-  <<< foldTree (withResizing labelSize prettyPrintGo)
+  <<< foldTree (withResizing labelSize opts.compactThreshold prettyPrintGo)
   <<< pruneTo opts.maxDepth
   <<< unRepr
 
@@ -379,15 +383,14 @@ prettyPrint opts =
 prettyPrintDelta :: PrettyPrintOptions -> ReprDelta -> String
 prettyPrintDelta opts =
   printContent
-  <<< foldTree (withResizing (deltaSize labelSize) prettyPrintGoDelta)
+  <<< foldTree (withResizing (deltaSize labelSize)
+                             opts.compactThreshold
+                             prettyPrintGoDelta)
   <<< pruneTo opts.maxDepth
   <<< unReprDelta
 
   where
   pruneTo = maybe identity (prune (Same Omitted) (addsDepthDelta addsDepth))
-
-prettyPrintSizeThreshold :: Int
-prettyPrintSizeThreshold = 8
 
 measure :: forall a. (a -> Int) -> a -> Array Content -> Int
 measure size root children =
@@ -395,10 +398,11 @@ measure size root children =
 
 withResizing :: forall a.
   (a -> Int) ->
+  Int ->
   (a -> Array Content -> Content) ->
   (a -> Array Content -> Content)
-withResizing size f root children =
-  if measure size root children <= prettyPrintSizeThreshold
+withResizing size threshold f root children =
+  if measure size root children <= threshold
     then compact (f root children)
     else f root children
 
