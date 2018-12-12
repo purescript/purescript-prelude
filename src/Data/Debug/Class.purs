@@ -26,7 +26,7 @@ import Data.Debug.Type as D
 
 -- | Ideally, all types of kind `Type` should have an instance of this class.
 -- | If you are defining a type where it's difficult/impossible to do anything
--- | useful here (e.g. `Ref` or `(->)`) then you should use the `DOpaque`
+-- | useful here (e.g. `Ref` or `(->)`) then you should use the `opaque`
 -- | constructor.
 -- |
 -- | If a type has an `Eq` instance, then the `debug` function in its `Debug`
@@ -93,7 +93,9 @@ instance debugRecord ::
     where
     prx = RLProxy :: RLProxy list
 
+-------------------------------------------------------------------------------
 -- Prelude
+
 instance debugOrdering :: Debug Ordering where
   debug LT = D.constructor "LT" []
   debug EQ = D.constructor "EQ" []
@@ -105,7 +107,8 @@ instance debugUnit :: Debug Unit where
 instance debugVoid :: Debug Void where
   debug = absurd
 
--- Other
+-------------------------------------------------------------------------------
+-- Core
 
 instance debugMaybe :: Debug a => Debug (Maybe a) where
   debug (Just x) = D.constructor "Just" [debug x]

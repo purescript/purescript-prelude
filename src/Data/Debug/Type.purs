@@ -73,7 +73,7 @@ foldTree f = go
 
 -- | A debugging representation of some PureScript value. It is often possible
 -- | to reconstruct the original value from this representation, but not
--- | always. Notable counterexamples are `Effect`, `Ref`, and `(->)`.
+-- | always; notable counterexamples are `Effect`, `Ref`, and `(->)`.
 newtype Repr = Repr (Tree Label)
 
 derive newtype instance eqRepr :: Eq Repr
@@ -146,24 +146,42 @@ derive instance ordLabel :: Ord Label
 mkLeaf :: Label -> Repr
 mkLeaf label = Repr (Node label [])
 
+-- | Create a `Repr` for an `Int`. This function should only be used to
+-- | construct `Repr` values for values of the type `Int`; other numeric types
+-- | should use one of the other functions available, such as `opaque`.
 int :: Int -> Repr
 int = mkLeaf <<< Int
 
+-- | Create a `Repr` for an `Number`. This function should only be used to
+-- | construct `Repr` values for values of the type `Number`; other numeric
+-- | types should use one of the other functions available, such as `opaque`.
 number :: Number -> Repr
 number = mkLeaf <<< Number
 
+-- | Create a `Repr` for an `Boolean`. This function should only be used to
+-- | construct `Repr` values for values of the type `Boolean`.
 boolean :: Boolean -> Repr
 boolean = mkLeaf <<< Boolean
 
+-- | Create a `Repr` for a `Char`. This function should only be used to
+-- | construct `Repr` values for values of the type `Char`.
 char :: Char -> Repr
 char = mkLeaf <<< Char
 
+-- | Create a `Repr` for a `String`. This function should only be used to
+-- | construct `Repr` values for values of the type `String`.
 string :: String -> Repr
 string = mkLeaf <<< String
 
+-- | Create a `Repr` for an `Array`, given its contents. This function should
+-- | only be used to construct `Repr` values for values of the type `Array a`;
+-- | other array-like types may use the `collection` function.
 array :: Array Repr -> Repr
 array = Repr <<< Node Array <<< map unRepr
 
+-- | Create a `Repr` for a `Record`, given its fields. This function should
+-- | only be used to construct `Repr` values for values of the type `Record r`;
+-- | other record-like types may use the `assoc` function.
 record :: Array (Tuple String Repr) -> Repr
 record =
   Repr <<< Node Record <<< makeProps
@@ -175,18 +193,28 @@ makeProps = map unwrapProp
   unwrapProp (Tuple name (Repr val)) =
     Node (Prop name) [val]
 
+-- | Create a `Repr` for a value constructed by a data constructor. For
+-- | example, the expression `Just 3` may be represented by the expression
+-- | `constructor "Just" [int 3]`.
 constructor :: String -> Array Repr -> Repr
 constructor name args =
   Repr (Node (App name) (map unRepr args))
 
+-- | Create a `Repr` for an opaque type, such as `Ref` or `(->)`. The first
+-- | argument is the type name, the second is an array of any extra properties
+-- | the value might have.
 opaque :: String -> Array (Tuple String Repr) -> Repr
 opaque name props =
   Repr (Node (Opaque name) (makeProps props))
 
+-- | Create a `Repr` for a collection type. The first argument is the type
+-- | name, the second is the contents.
 collection :: String -> Array Repr -> Repr
 collection name contents =
   Repr (Node (Collection name) (map unRepr contents))
 
+-- | Create a `Repr` for a type representing a mapping of keys to values, such
+-- | as `Map`. The first argument is the type name, the second is the contents.
 assoc :: String -> Array (Tuple Repr Repr) -> Repr
 assoc name contents =
   Repr (Node (Assoc name) (map makeAssocProp contents))
@@ -208,6 +236,11 @@ prettyPrint =
   <<< foldTree (withResizing prettyPrintGo)
   <<< unRepr
 
+-- | Pretty-print a `ReprDelta` value. The result will contain ANSI terminal
+-- | codes to mark additions in green and deletions in red. A value is
+-- | considered to have been 'added' if it exists in the second argument to
+-- | `diff` but not the first, and similarly it is considered 'deleted' if it
+-- | appears in the first but not the second.
 prettyPrintDelta :: ReprDelta -> String
 prettyPrintDelta =
   printContent

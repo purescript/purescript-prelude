@@ -1,7 +1,21 @@
+-- | This module provides a mechanism for deriving `Debug` instances for types
+-- | which export their constructors. To use it, simply derive a `Generic`
+-- | instance and then use `genericDebug` in the `Debug` instance. For example:
+-- |
+-- | ```
+-- | data MyType = [...]
+-- | derive instance genericMyType :: Generic MyType _
+-- | instance debugMyType :: Debug MyType where
+-- |   debug genericDebug
+-- | ```
+-- |
+-- | Note that the resulting `Debug` instance will expose details of the
+-- | constructors. Therefore, this mechanism is not suitable for types which
+-- | hide their constructors.
 module Data.Debug.Generic
-  ( class GenericDebug
+  ( genericDebug
+  , class GenericDebug
   , genericDebug'
-  , genericDebug
   , class GenericDebugArgs
   , genericDebugArgs
   ) where
@@ -20,6 +34,8 @@ genericDebug :: forall a rep.
   a -> D.Repr
 genericDebug = genericDebug' <<< from
 
+-- | This class is part of the machinery for deriving `Debug` instances; it is
+-- | not intended to be used directly.
 class GenericDebug rep where
   genericDebug' :: rep -> D.Repr
 
@@ -37,6 +53,8 @@ instance genericDebugSum :: (GenericDebug a, GenericDebug b) => GenericDebug (Su
   genericDebug' (Inl a) = genericDebug' a
   genericDebug' (Inr b) = genericDebug' b
 
+-- | This class is part of the machinery for deriving `Debug` instances; it is
+-- | not intended to be used directly.
 class GenericDebugArgs rep where
   genericDebugArgs :: rep -> Array D.Repr
 
