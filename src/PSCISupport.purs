@@ -17,6 +17,9 @@ import Data.Debug (class Debug, debug, prettyPrint)
 class Eval a where
   eval :: a -> Effect Unit
 
+instance evalEffectUnit :: Eval (Effect Unit) where
+  eval = identity
+else
 instance evalEffect :: Eval a => Eval (Effect a) where
   eval x = x >>= eval
 else
