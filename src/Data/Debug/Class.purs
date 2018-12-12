@@ -147,3 +147,6 @@ instance debugSet :: Debug a => Debug (Set a) where
 
 instance debugRepr :: Debug D.Repr where
   debug r = D.opaque "Repr" [Tuple "value" r]
+
+instance debugReprDelta :: Debug D.ReprDelta where
+  debug _ = D.opaque "ReprDelta" []
