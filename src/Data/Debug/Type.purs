@@ -139,6 +139,10 @@ data Label
   -- value.
   | AssocProp
 
+  -- This constructor is only used for pretty-printing, where we have cut the
+  -- tree off after a certain depth.
+  | Omitted
+
 derive instance eqLabel :: Eq Label
 derive instance ordLabel :: Ord Label
 
@@ -232,7 +236,7 @@ assoc name contents =
 prettyPrint :: Repr -> String
 prettyPrint =
   printContent
-  <<< foldTree (withResizing prettyPrintGo)
+  <<< foldTree (withResizing labelSize prettyPrintGo)
   <<< unRepr
 
 -- | Pretty-print a `ReprDelta` value. The result will contain ANSI terminal
@@ -243,21 +247,22 @@ prettyPrint =
 prettyPrintDelta :: ReprDelta -> String
 prettyPrintDelta =
   printContent
-  <<< foldTree (withResizing prettyPrintGoDelta)
+  <<< foldTree (withResizing (deltaSize labelSize) prettyPrintGoDelta)
   <<< unReprDelta
 
 prettyPrintSizeThreshold :: Int
 prettyPrintSizeThreshold = 8
 
-measure :: forall a. Sized a => a -> Array Content -> Int
-measure root children =
+measure :: forall a. (a -> Int) -> a -> Array Content -> Int
+measure size root children =
   size root + unwrap (foldMap _.size children)
 
-withResizing :: forall a. Sized a =>
+withResizing :: forall a.
+  (a -> Int) ->
   (a -> Array Content -> Content) ->
   (a -> Array Content -> Content)
-withResizing f root children =
-  if measure root children <= prettyPrintSizeThreshold
+withResizing size f root children =
+  if measure size root children <= prettyPrintSizeThreshold
     then compact (f root children)
     else f root children
 
@@ -312,6 +317,8 @@ prettyPrintGo root children =
         _ ->
           -- should not happen
           emptyContent
+    Omitted ->
+      parens (verbatim "...")
 
 prettyPrintGoDelta :: Delta Label -> Array Content -> Content
 prettyPrintGoDelta root children =
@@ -360,48 +367,47 @@ markRemoved :: Content -> Content
 markRemoved =
   surround (ansiRed <> "-") ansiReset
 
-class Sized a where
-  size :: a -> Int
+labelSize :: Label -> Int
+labelSize =
+  case _ of
+    Int _ ->
+      1
+    Number _ ->
+      1
+    Boolean _ ->
+      1
+    Char _ ->
+      1
+    String x ->
+      if String.length x <= 15 then 1 else 2
+    Array ->
+      1
+    Record ->
+      2
+    Prop name ->
+      if String.length name <= 15 then 0 else 1
+    App name ->
+      if String.length name <= 15 then 1 else 2
+    Opaque name ->
+      if String.length name <= 15 then 1 else 2
+    Collection name ->
+      if String.length name <= 15 then 1 else 2
+    Assoc _ ->
+      2
+    AssocProp ->
+      0
+    Omitted ->
+      0
 
-instance sizedLabel :: Sized Label where
-  size =
-    case _ of
-      Int _ ->
-        1
-      Number _ ->
-        1
-      Boolean _ ->
-        1
-      Char _ ->
-        1
-      String x ->
-        if String.length x <= 15 then 1 else 2
-      Array ->
-        1
-      Record ->
-        2
-      Prop name ->
-        if String.length name <= 15 then 0 else 1
-      App name ->
-        if String.length name <= 15 then 1 else 2
-      Opaque name ->
-        if String.length name <= 15 then 1 else 2
-      Collection name ->
-        if String.length name <= 15 then 1 else 2
-      Assoc _ ->
-        2
-      AssocProp ->
-        0
-
-instance sizedDelta :: Sized a => Sized (Delta a) where
-  size =
-    case _ of
-      Same x ->
-        size x
-      Subtree x ->
-        size x
-      _ ->
-        0
+deltaSize :: forall a. (a -> Int) -> Delta a -> Int
+deltaSize size =
+  case _ of
+    Same x ->
+      size x
+    Subtree x ->
+      size x
+    _ ->
+      0
 
 -------------------------------------------------------------------------------
 -- DIFFING --------------------------------------------------------------------
