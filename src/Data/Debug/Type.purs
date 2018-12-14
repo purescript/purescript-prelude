@@ -37,7 +37,7 @@ import Prelude
 
 import Data.Array as Array
 import Data.Debug.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
-import Data.Foldable (foldMap)
+import Data.Foldable (foldMap, all, elem)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Newtype (unwrap)
 import Data.String as String
@@ -511,12 +511,20 @@ prettyPrintGo root children =
     Prop name ->
       case children of
         [val] ->
-          noParens $ verbatim (name <> ":") <> indent "  " (noWrap val)
+          noParens $
+            verbatim (prettyPrintLabel name <> ":")
+            <> indent "  " (noWrap val)
         _ ->
           -- should not happen
           emptyContent
     Omitted ->
       parens (verbatim "...")
+
+prettyPrintLabel :: String -> String
+prettyPrintLabel name =
+  if isUnquotedKey name
+    then name
+    else show name
 
 prettyPrintGoDelta :: Delta Label -> Array Content -> Content
 prettyPrintGoDelta root children =
@@ -606,3 +614,43 @@ deltaSize size =
       size x
     _ ->
       0
+
+-- | Check whether a record key would need to be quoted if it were appearing
+-- | in a record literal in a PureScript source file. Note that currently this
+-- | function is more conservative than it needs to be.
+-- |
+-- | See `Language.PureScript.Parser.Lexer.isUnquotedKey`.
+isUnquotedKey :: String -> Boolean
+isUnquotedKey key =
+  case String.uncons key of
+    Nothing ->
+      false
+    Just { head, tail } ->
+      isUnquotedKeyHead head
+      && all isUnquotedKeyTail (String.toCodePointArray tail)
+
+-- | Note that this is more restrictive than necessary, since we consider
+-- | record labels beginning with a lowercase non-ascii character to require
+-- | quoting, when in fact this is not necessarily true.
+isUnquotedKeyHead :: String.CodePoint -> Boolean
+isUnquotedKeyHead = ((_ == "_") || isLowerAlphaAscii) <<< String.singleton
+
+isLowerAlphaAscii :: String -> Boolean
+isLowerAlphaAscii = between "a" "z"
+
+isUpperAlphaAscii :: String -> Boolean
+isUpperAlphaAscii = between "A" "Z"
+
+isNumericAscii :: String -> Boolean
+isNumericAscii = between "0" "9"
+
+-- | Note that this is more restrictive than necessary, since we consider
+-- | record label tails containing non-ascii characters to require quoting when
+-- | in fact this is not necessarily true.
+isUnquotedKeyTail :: String.CodePoint -> Boolean
+isUnquotedKeyTail =
+  (_ `elem` (map String.codePointFromChar ['_', '\'']))
+    || (isAlphaNumAscii <<< String.singleton)
+
+isAlphaNumAscii :: String -> Boolean
+isAlphaNumAscii = isLowerAlphaAscii || isUpperAlphaAscii || isNumericAscii
