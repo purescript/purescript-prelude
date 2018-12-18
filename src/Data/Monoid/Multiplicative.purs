@@ -9,7 +9,7 @@ import Data.Ord (class Ord1)
 -- |
 -- | ``` purescript
 -- | Multiplicative x <> Multiplicative y == Multiplicative (x * y)
--- | mempty :: Multiplicative _ == Multiplicative one
+-- | (mempty :: Multiplicative _) == Multiplicative one
 -- | ```
 newtype Multiplicative a = Multiplicative a
 
