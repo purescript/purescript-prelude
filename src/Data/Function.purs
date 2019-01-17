@@ -1,7 +1,7 @@
 module Data.Function
   ( flip
   , const
-  , apply, ($)
+  , apply, ($), (|$)
   , applyFlipped, (#)
   , applyN
   , on
@@ -54,6 +54,7 @@ apply f x = f x
 -- | length <<< groupBy productCategory <<< filter isInStock $ products
 -- | ```
 infixr 0 apply as $
+infixl 1 apply as |$
 
 -- | Applies an argument to a function. This is primarily used as the `(#)`
 -- | operator, which allows parentheses to be ommitted in some cases, or as a
