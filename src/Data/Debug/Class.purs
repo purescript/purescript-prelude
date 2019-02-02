@@ -75,7 +75,7 @@ instance debugArray :: Debug a => Debug (Array a) where
   debug = D.array <<< map debug
 
 instance debugFunction :: Debug (a -> b) where
-  debug _ = D.opaque "function" []
+  debug _ = D.opaque_ "function"
 
 -- | This class is part of the machinery for the `Debug (Record r)` instance;
 -- | it is not intended to be used directly.
@@ -143,7 +143,7 @@ instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
       (map (bimap debug debug) (Map.toUnfoldable m))
 
 instance debugEffect :: Debug (Effect a) where
-  debug _ = D.opaque "Effect" []
+  debug _ = D.opaque_ "Effect"
 
 instance debugList :: Debug a => Debug (List a) where
   debug xs = D.collection "List" (map debug (List.toUnfoldable xs))
@@ -155,7 +155,7 @@ instance debugSet :: Debug a => Debug (Set a) where
   debug s = D.collection "Set" (map debug (Set.toUnfoldable s))
 
 instance debugRepr :: Debug D.Repr where
-  debug r = D.opaque "Repr" [Tuple "value" r]
+  debug r = D.opaque "Repr" r
 
 instance debugReprDelta :: Debug D.ReprDelta where
-  debug _ = D.opaque "ReprDelta" []
+  debug _ = D.opaque_ "ReprDelta"

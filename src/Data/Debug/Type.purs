@@ -14,6 +14,8 @@ module Data.Debug.Type
   , record
   , constructor
   , opaque
+  , opaque_
+  , opaqueLiteral
   , collection
   , assoc
 
@@ -152,8 +154,17 @@ data Label
 
   -- This constructor represents an opaque data type such as `(->)` or `Ref`.
   -- The argument should contain the name of the data type. Nodes with this
-  -- label should only have Prop labels as immediate children.
+  -- label may have a number of Prop labels as immediate children, or
+  -- alternatively a single Literal label.
   | Opaque String
+
+  -- This constructor should only ever appear as an immediate child of an
+  -- `Opaque` constructor, and should always be a leaf node. It is useful for
+  -- types which have an obvious representation which doesn't fit into any of
+  -- the other options for constructing Repr values. For example, dates or
+  -- times may want to use this constructor in order to display as e.g. <Date:
+  -- 2019-02-01> or <Time: 12:00? respectively.
+  | Literal String
 
   -- This constructor represents a list-like collection. The argument should
   -- contain the name of the data type.
@@ -226,18 +237,34 @@ makeProps = map unwrapProp
     Node (Prop name) [val]
 
 -- | Create a `Repr` for a value constructed by a data constructor. For
--- | example, the expression `Just 3` may be represented by
--- | `constructor "Just" [int 3]`.
+-- | example, the value `Just 3` may be represented by `constructor "Just" [int
+-- | 3]`.
 constructor :: String -> Array Repr -> Repr
 constructor name args =
   Repr (Node (App name) (map unRepr args))
 
 -- | Create a `Repr` for an opaque type, such as `Ref` or `(->)`. The first
--- | argument is the type name, the second is an array of any extra properties
--- | the value might have.
-opaque :: String -> Array (Tuple String Repr) -> Repr
-opaque name props =
-  Repr (Node (Opaque name) (makeProps props))
+-- | argument is the type name, and the second may contain any additional
+-- | information which might be useful to include in a pretty-printed
+-- | representation.
+opaque :: String -> Repr -> Repr
+opaque name child =
+  Repr (Node (Opaque name) [unRepr child])
+
+-- | Like `opaque`, but without the second `Repr` argument; for when there is
+-- | no additional information to provide.
+opaque_ :: String -> Repr
+opaque_ name =
+  Repr (Node (Opaque name) [])
+
+-- | Create a `Repr` for an opaque type. The first argument is the type name,
+-- | and the second argument is a string representation of the value. This
+-- | function should only be used in cases where no other constructor is
+-- | appropriate, as `Repr` values constsructed this way will generally not be
+-- | able to give detailed diffs.
+opaqueLiteral :: String -> String -> Repr
+opaqueLiteral name val =
+  Repr (Node (Opaque name) [Node (Literal val) []])
 
 -- | Create a `Repr` for a collection type. The first argument is the type
 -- | name, the second is the contents.
@@ -493,6 +520,8 @@ prettyPrintGo root children =
       noParens $
         surround "<" ">" $
           verbatim name <> indent "  " (noWrap (commaSeq "" "" children))
+    Literal str ->
+      noParens $ verbatim str
     Collection name ->
       noParens $
         surround "<" ">" $
@@ -596,6 +625,8 @@ labelSize =
       if String.length name <= 15 then 1 else 2
     Opaque name ->
       if String.length name <= 15 then 1 else 2
+    Literal str ->
+      if String.length str <= 15 then 1 else 2
     Collection name ->
       if String.length name <= 15 then 1 else 2
     Assoc _ ->
