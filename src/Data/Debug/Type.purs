@@ -166,10 +166,6 @@ data Label
   -- 2019-02-01> or <Time: 12:00? respectively.
   | Literal String
 
-  -- This constructor represents a list-like collection. The argument should
-  -- contain the name of the data type.
-  | Collection String
-
   -- This constructor is for map-like collections. The children are the
   -- contents; every direct child should have an AssocProp label.
   | Assoc String
@@ -267,10 +263,11 @@ opaqueLiteral name val =
   Repr (Node (Opaque name) [Node (Literal val) []])
 
 -- | Create a `Repr` for a collection type. The first argument is the type
--- | name, the second is the contents.
+-- | name, the second is the contents. Defined as `\name contents -> opaque
+-- | name (array contents)`.
 collection :: String -> Array Repr -> Repr
 collection name contents =
-  Repr (Node (Collection name) (map unRepr contents))
+  opaque name (array contents)
 
 -- | Create a `Repr` for a type representing a mapping of keys to values, such
 -- | as `Map`. The first argument is the type name, the second is the contents.
@@ -517,19 +514,20 @@ prettyPrintGo root children =
     Record ->
       commaSeq "{ " " }" children
     Opaque name ->
-      noParens $
-        surround "<" ">" $
-          verbatim name <> indent "  " (noWrap (commaSeq "" "" children))
+      if Array.null children
+        then
+          noParens $ surround "<" ">" $ verbatim name
+        else
+          noParens $
+            surround "<" ">" $
+              verbatim (name <> ":")
+              <> indent "  " (noWrap (commaSeq "" "" children))
     Literal str ->
       noParens $ verbatim str
-    Collection name ->
-      noParens $
-        surround "<" ">" $
-          verbatim name <> indent "  " (noWrap (commaSeq "[ " " ]" children))
     Assoc name ->
       noParens $
         surround "<" ">" $
-          verbatim name <> noWrap (commaSeq "{ " " }" children)
+          verbatim (name <> ":") <> noWrap (commaSeq "{ " " }" children)
     AssocProp ->
       case children of
         [key, val] ->
@@ -627,8 +625,6 @@ labelSize =
       if String.length name <= 15 then 1 else 2
     Literal str ->
       if String.length str <= 15 then 1 else 2
-    Collection name ->
-      if String.length name <= 15 then 1 else 2
     Assoc _ ->
       2
     AssocProp ->
