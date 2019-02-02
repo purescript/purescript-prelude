@@ -9,26 +9,30 @@ module Data.Debug.Class
   ) where
 
 import Prelude
-import Data.Tuple (Tuple(..))
-import Data.Maybe (Maybe(..))
+
+import Data.Array as Array
+import Data.Bifunctor (bimap)
+import Data.Date (Date, day, month, year)
+import Data.Debug.Type as D
 import Data.Either (Either(..))
+import Data.Enum (fromEnum)
 import Data.List (List(..), (:))
 import Data.List as List
 import Data.List.Lazy as LazyList
 import Data.Map (Map)
 import Data.Map as Map
+import Data.Maybe (Maybe(..))
+import Data.Monoid (power)
 import Data.Set (Set)
 import Data.Set as Set
-import Data.Array as Array
-import Data.Bifunctor (bimap)
-import Record (get, delete)
+import Data.String as String
 import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
-import Type.Prelude (class RowToList)
-import Prim.Row as Row
-import Type.Row (kind RowList, Nil, Cons, RLProxy(..))
+import Data.Tuple (Tuple(..))
 import Effect (Effect)
-
-import Data.Debug.Type as D
+import Prim.Row as Row
+import Record (get, delete)
+import Type.Prelude (class RowToList)
+import Type.Row (kind RowList, Nil, Cons, RLProxy(..))
 
 -- | Ideally, all types of kind `Type` should have an instance of this class.
 -- | If you are defining a type where it's difficult/impossible to do anything
@@ -153,6 +157,15 @@ instance debugLazyList :: Debug a => Debug (LazyList.List a) where
 
 instance debugSet :: Debug a => Debug (Set a) where
   debug s = D.collection "Set" (map debug (Set.toUnfoldable s))
+
+instance debugDate :: Debug Date where
+  debug d = D.opaqueLiteral "Date"
+    (ljust0 4 (show (fromEnum (year d))) <> "-" <>
+     ljust0 2 (show (fromEnum (month d))) <> "-" <>
+     ljust0 2 (show (fromEnum (day d))))
+    where
+    ljust0 n str =
+      power "0" (n - String.length str) <> str
 
 instance debugRepr :: Debug D.Repr where
   debug r = D.opaque "Repr" r
