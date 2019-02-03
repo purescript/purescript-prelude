@@ -303,6 +303,18 @@ labelApproxEq error x y =
     _, _ ->
       x == y
 
+labelIsUnimportant :: Label -> Boolean
+labelIsUnimportant =
+  case _ of
+    AssocProp ->
+      true
+    Array ->
+      true
+    Record ->
+      true
+    _ ->
+      false
+
 -------------------------------------------------------------------------------
 -- DIFFING --------------------------------------------------------------------
 
@@ -349,13 +361,27 @@ defaultDiffOptions :: DiffOptions
 defaultDiffOptions =
   { maxRelativeError: 1e-12 }
 
-diff' :: forall a. (a -> a -> Boolean) -> Tree a -> Tree a -> Tree (Delta a)
-diff' labelEq = go
+diff' :: forall a.
+  (a -> a -> Boolean) ->
+  (a -> Boolean) ->
+  Tree a ->
+  Tree a ->
+  Tree (Delta a)
+diff' labelEq isUnimportantLabel = go
   where
   go left@(Node x xs) right@(Node y ys) =
     if labelEq x y
-      then Node (Same x) (goChildren xs ys)
-      else Node Different [map Subtree left, map Subtree right]
+      then
+        let
+          children = goChildren xs ys
+        in
+          if isUnimportantLabel x && all differing children
+            then
+              Node Different [map Subtree left, map Subtree right]
+            else
+              Node (Same x) children
+      else
+        Node Different [map Subtree left, map Subtree right]
 
   goChildren :: Array (Tree a) -> Array (Tree a) -> Array (Tree (Delta a))
   goChildren xs ys =
@@ -375,11 +401,24 @@ diff' labelEq = go
   extra :: Delta a -> Tree a -> Tree (Delta a)
   extra ctor subtree = Node ctor [map Subtree subtree]
 
+  differing :: Tree (Delta a) -> Boolean
+  differing (Node root _) =
+    case root of
+      Same _ ->
+        false
+      _ ->
+        true
+
 -- | Compare two `Repr` values and record the results as a `ReprDelta`
 -- | structure, using the specified options.
 diffReprWith :: DiffOptions -> Repr -> Repr -> ReprDelta
 diffReprWith opts (Repr a) (Repr b) =
-  ReprDelta (diff' (labelApproxEq opts.maxRelativeError) a b)
+  ReprDelta $
+    diff'
+      (labelApproxEq opts.maxRelativeError)
+      labelIsUnimportant
+      a
+      b
 
 -- | Compare two `Repr` values and record the results as a `ReprDelta`
 -- | structure, using the default options.
