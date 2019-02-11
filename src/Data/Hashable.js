@@ -29,7 +29,7 @@ exports.hashString = function (s) {
 // Almost the same as Java. Improvements welcome.
 exports.hashArray = function (hash) {
   return function (as) {
-    var h = 0;
+    var h = as.length;
     for (var i = 0; i < as.length; i++) {
       h = (31 * h + hash(as[i])) | 0;
     }
