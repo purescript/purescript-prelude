@@ -20,10 +20,10 @@ import Record.Unsafe (unsafeSet)
 import Type.Data.RowList (RLProxy(..))
 
 -- | A `Monoid` is a `Semigroup` with a value `mempty`, which is both a
--- | left and right unit for the associative operation `<>`:
+-- | left and right identity for the associative operation `<>`:
 -- |
--- | - Left unit: `(mempty <> x) = x`
--- | - Right unit: `(x <> mempty) = x`
+-- | - Left identity: `(mempty <> x) = x`
+-- | - Right identity: `(x <> mempty) = x`
 -- |
 -- | `Monoid`s are commonly used as the result of fold operations, where
 -- | `<>` is used to combine individual results, and `mempty` gives the result

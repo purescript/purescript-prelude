@@ -21,8 +21,7 @@ import Type.Data.RowList (RLProxy(..))
 -- |   - `a || b = b || a`
 -- |   - `a && b = b && a`
 -- | - Absorption:
--- |   - `a || (a && b) = a`
--- |   - `a && (a || b) = a`
+-- |   - `a || (a && b) = a && (a || b) = a`
 -- | - Idempotent:
 -- |   - `a || a = a`
 -- |   - `a && a = a`
@@ -31,8 +30,8 @@ import Type.Data.RowList (RLProxy(..))
 -- |   - `a && tt = a`
 -- | - Implication:
 -- |   - ``a `implies` a = tt``
--- |   - ``a && (a `implies` b) = a && b``
--- |   - ``b && (a `implies` b) = b``
+-- |   - ``(a && b) `implies` (b && c) = a `implies` c``
+-- |   - ``(a `implies` b) || (b `implies` a)``
 -- |   - ``a `implies` (b && c) = (a `implies` b) && (a `implies` c)``
 -- | - Complemented:
 -- |   - ``not a = a `implies` ff``
