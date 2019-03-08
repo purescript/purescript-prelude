@@ -3,7 +3,6 @@ module Test.Main where
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
-import Data.Hashable (hash)
 
 type AlmostEff = Unit -> Unit
 
