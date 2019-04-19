@@ -1,10 +1,16 @@
 "use strict";
 
-exports.refEq = function (r1) {
+var refEq = function (r1) {
   return function (r2) {
     return r1 === r2;
   };
 };
+
+exports.eqBooleanImpl = refEq;
+exports.eqIntImpl = refEq;
+exports.eqNumberImpl = refEq;
+exports.eqCharImpl = refEq;
+exports.eqStringImpl = refEq;
 
 exports.eqArrayImpl = function (f) {
   return function (xs) {

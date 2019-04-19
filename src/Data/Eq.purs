@@ -38,19 +38,19 @@ notEq x y = (x == y) == false
 infix 4 notEq as /=
 
 instance eqBoolean :: Eq Boolean where
-  eq = refEq
+  eq = eqBooleanImpl
 
 instance eqInt :: Eq Int where
-  eq = refEq
+  eq = eqIntImpl
 
 instance eqNumber :: Eq Number where
-  eq = refEq
+  eq = eqNumberImpl
 
 instance eqChar :: Eq Char where
-  eq = refEq
+  eq = eqCharImpl
 
 instance eqString :: Eq String where
-  eq = refEq
+  eq = eqStringImpl
 
 instance eqUnit :: Eq Unit where
   eq _ _ = true
@@ -64,7 +64,12 @@ instance eqArray :: Eq a => Eq (Array a) where
 instance eqRec :: (RL.RowToList row list, EqRecord list row) => Eq (Record row) where
   eq = eqRecord (RLProxy :: RLProxy list)
 
-foreign import refEq :: forall a. a -> a -> Boolean
+foreign import eqBooleanImpl :: Boolean -> Boolean -> Boolean
+foreign import eqIntImpl :: Int -> Int -> Boolean
+foreign import eqNumberImpl :: Number -> Number -> Boolean
+foreign import eqCharImpl :: Char -> Char -> Boolean
+foreign import eqStringImpl :: String -> String -> Boolean
+
 foreign import eqArrayImpl :: forall a. (a -> a -> Boolean) -> Array a -> Array a -> Boolean
 
 -- | The `Eq1` type class represents type constructors with decidable equality.
