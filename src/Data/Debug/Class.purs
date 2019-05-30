@@ -31,8 +31,8 @@ import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Prim.Row as Row
 import Record (get, delete)
-import Type.Prelude (class RowToList)
-import Type.Row (kind RowList, Nil, Cons, RLProxy(..))
+import Prim.RowList (class RowToList, kind RowList, Nil, Cons)
+import Type.Data.RowList (RLProxy(..))
 
 -- | Ideally, all types of kind `Type` should have an instance of this class.
 -- | If you are defining a type where it's difficult/impossible to do anything

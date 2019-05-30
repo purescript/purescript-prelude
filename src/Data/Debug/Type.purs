@@ -623,13 +623,13 @@ prettyPrintGoDelta root children =
       prettyPrintGo a children
 
 ansiGreen :: String
-ansiGreen = "\27[32m"
+ansiGreen = "\x1b[32m"
 
 ansiRed :: String
-ansiRed = "\27[31m"
+ansiRed = "\x1b[31m"
 
 ansiReset :: String
-ansiReset = "\27[0m"
+ansiReset = "\x1b[0m"
 
 markAdded :: Content -> Content
 markAdded =
