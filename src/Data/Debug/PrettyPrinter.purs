@@ -72,18 +72,20 @@ noWrap c =
   }
 
 unParens :: forall r. Boolean -> AnyContent r -> Content
-unParens parens r =
+unParens needsParens r =
   { size: r.size
   , lines: r.lines
-  , needsParens: parens
+  , needsParens
   }
 
 -- | Turn a `ContentParens` back into a `Content`; for use in contexts where
 -- | parens might be needed.
+parens :: forall r. AnyContent r -> Content
 parens = unParens true
 
 -- | Turn a `ContentParens` back into a `Content`; for use in contexts where
 -- | parens will not be needed.
+noParens :: forall r. AnyContent r -> Content
 noParens = unParens false
 
 emptyContent :: Content
@@ -112,6 +114,7 @@ compactLines =
           [String.joinWith " "
             ([first] <> map String.trim middle <> [String.trim last])]
 
+compact :: forall r. AnyContent r -> AnyContent r
 compact = withLines compactLines
 
 surroundLines :: String -> String -> Array String -> Array String
@@ -127,6 +130,7 @@ surroundLines start finish =
       <> middle
       <> [ last <> finish ]
 
+surround :: forall r. String -> String -> AnyContent r -> AnyContent r
 surround start finish = withLines (surroundLines start finish)
 
 printContent :: forall r. AnyContent r -> String
@@ -177,6 +181,7 @@ commaSeqLines begin end =
 
   spacer = fold (Array.replicate (String.length begin) " ")
 
+withLast :: forall a. (a -> a) -> Array a -> Array a
 withLast f xs =
   case Array.length xs of
     0 ->
