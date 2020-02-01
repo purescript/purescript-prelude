@@ -16,5 +16,5 @@ module Type.Data.Row where
 -- | { x :: Int, y :: Int } -> { x :: Int, y :: Int }
 -- | ```
 -- | Here `row` has been specialised to `( x :: Int, y :: Int )`.
-data RProxy (row :: # Type)
+data RProxy (row :: Row Type)
   = RProxy
