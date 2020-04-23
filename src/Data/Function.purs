@@ -27,10 +27,10 @@ flip f b a = f a b
 -- | const 1 "hello" = 1
 -- | ```
 -- |
--- | Can also be thought of as creating a function that ignores its argument:
+-- | It can also be thought of as creating a function that ignores its argument:
 -- |
 -- | ```purescript
--- | const 1 == \_ -> 1
+-- | const 1 = \_ -> 1
 -- | ```
 const :: forall a b. a -> b -> a
 const a _ = a
