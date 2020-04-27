@@ -164,16 +164,16 @@ main = do
   assert $ top == D
 
   log "Checking composite bottom"
-  assert $ bottom == None :: Option SimpleBounded
+  assert $ bottom == (None :: Option SimpleBounded)
 
   log "Checking composite top"
   assert $ top == Some D
 
   log "Checking product bottom"
-  assert $ bottom == Pair Zero A :: Pair Bit SimpleBounded
+  assert $ bottom == (Pair Zero A :: Pair Bit SimpleBounded)
 
   log "Checking product top"
-  assert $ top == Pair One D :: Pair Bit SimpleBounded
+  assert $ top == (Pair One D :: Pair Bit SimpleBounded)
 
   log "Checking simple pred bottom"
   assert $ pred (bottom :: SimpleBounded) == Nothing
