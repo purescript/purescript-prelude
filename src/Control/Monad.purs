@@ -29,7 +29,7 @@ import Data.Unit (Unit)
 -- | - Right Identity: `x >>= pure = x`
 -- | - Applicative Superclass: `apply = ap`
 -- |
--- | ## Do Notation
+-- | ### Do Notation
 -- |
 -- | When using a type that has an instance for `Monad`, one can use
 -- | "do notation." In short, this code...

@@ -30,7 +30,7 @@ import Data.Unit (Unit, unit)
 -- | - Homomorphism: `(pure f) <*> (pure x) = pure (f x)`
 -- | - Interchange: `u <*> (pure y) = (pure (_ $ y)) <*> u`
 -- |
--- | ## Ado Notation
+-- | ### Ado Notation
 -- |
 -- | When using a type that has an instance for `Applicative`, one can use
 -- | "ado notation." In short, this code...
