@@ -8,6 +8,17 @@ import Data.Show (class Show)
 -- | `Void` is useful to eliminate the possibility of a value being created.
 -- | For example, a value of type `Either Void Boolean` can never have
 -- | a Left value created in PureScript.
+-- |
+-- | This should not be confused with the word, `void,` that commonly appears in
+-- | C-deriving languages, such as Java:
+-- | ```
+-- | public class Foo {
+-- |   void doSomething() { System.out.println("hello world!"); }
+-- | }
+-- | ```
+-- |
+-- | In PureScript, one often uses `Unit` to achieve similar effects as
+-- | the lowercased `void` above.
 newtype Void = Void Void
 
 instance showVoid :: Show Void where
