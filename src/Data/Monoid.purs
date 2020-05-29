@@ -29,6 +29,8 @@ import Type.Data.RowList (RLProxy(..))
 -- | `<>` is used to combine individual results, and `mempty` gives the result
 -- | of folding an empty collection of elements.
 -- |
+-- | ### Newtypes for Monoid
+-- |
 -- | Some types (e.g. `Int`, `Boolean`) can implement multiple law-abiding
 -- | instances for `Monoid`. For example, `<>` could be `+` and `mempty` could
 -- | be `0`. Likewise, `<>` could be `*` and `mempty` could be `1`.

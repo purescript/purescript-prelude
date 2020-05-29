@@ -21,6 +21,8 @@ import Type.Data.RowList (RLProxy(..))
 -- | concatenation. Another example is `List a`, with `(<>)` defined as
 -- | list concatenation.
 -- |
+-- | ### Newtypes for Semigroup
+-- |
 -- | There are two other ways to implement an instance for this type class
 -- | regardless of which type is used. These instances can be used by
 -- | wrapping the values in one of the two newtypes below:
