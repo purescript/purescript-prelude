@@ -63,6 +63,16 @@ infixr 1 bindFlipped as =<<
 instance bindFn :: Bind ((->) r) where
   bind m f x = f (m x) x
 
+-- | The `Array` monad's "do notation" works like a nested for loop:
+-- | ```
+-- | foo :: Array Int
+-- | foo = do
+-- |   eachElementInArray1 <- [0, 1]
+-- |   eachElementInArray2 <- [1, 2]
+-- |   pure (eachElementInArray1 + eachElementInArray2)
+-- |
+-- | foo == [(0 + 1), (0 + 2), (1 + 1), (1 + 2)] == [1, 2, 2, 3]
+-- | ```
 instance bindArray :: Bind Array where
   bind = arrayBind
 
