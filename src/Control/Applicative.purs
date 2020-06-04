@@ -29,38 +29,6 @@ import Data.Unit (Unit, unit)
 -- | - Composition: `pure (<<<) <*> f <*> g <*> h = f <*> (g <*> h)`
 -- | - Homomorphism: `(pure f) <*> (pure x) = pure (f x)`
 -- | - Interchange: `u <*> (pure y) = (pure (_ $ y)) <*> u`
--- |
--- | ### Ado Notation
--- |
--- | When using a type that has an instance for `Applicative`, one can use
--- | "ado notation." In short, this code...
--- | ```
--- | foo =
--- |   functionThatTakes4Args <$> boxedA
--- |                          <*> boxedB
--- |                          <*> boxedUnit
--- |                          <*> boxedC
--- |   where
--- |   functionThatTakes4Args a b _ c =
--- |     let x = a * a + b
--- |     in x + c
--- | ```
--- |
--- | ... can be converted into into "ado notation:"
--- | ```
--- | foo = ado
--- |   a <- boxedA
--- |   b <- boxedB
--- |   boxedUnit
--- |   c <- boxedC
--- |   let x = a * a + b
--- |   in x + c
--- | ```
--- |
--- | Note: if one wants to use "ado notation" but redefine what the in-scope
--- | definitions are for `map`, `apply`, and `pure` in a given context, one can
--- | use "qualified ado notation." This is an intermediate/advanced language
--- | feature not explained here.
 class Apply f <= Applicative f where
   pure :: forall a. a -> f a
 
