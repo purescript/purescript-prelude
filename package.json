@@ -8,7 +8,7 @@
   "devDependencies": {
     "eslint": "^4.19.1",
     "purescript-psa": "^0.6.0",
-    "pulp": "^12.2.0",
+    "pulp": "^15.0.0",
     "rimraf": "^2.6.2"
   }
 }
