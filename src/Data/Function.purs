@@ -56,7 +56,7 @@ apply f x = f x
 infixr 0 apply as $
 
 -- | Applies an argument to a function. This is primarily used as the `(#)`
--- | operator, which allows parentheses to be ommitted in some cases, or as a
+-- | operator, which allows parentheses to be omitted in some cases, or as a
 -- | natural way to apply a value to a chain of composed functions.
 applyFlipped :: forall a b. a -> (a -> b) -> b
 applyFlipped x f = f x
