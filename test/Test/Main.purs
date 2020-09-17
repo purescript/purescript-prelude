@@ -149,4 +149,9 @@ testRecordInstances = do
   testOrd { a: 42, b: "hello" } { a: 42, b: "hello" } EQ
   testOrd { a: 42, b: "hell" } { a: 42, b: "hello" } LT
   testOrd { a: 42, b: "hello" } { a: 42, b: "hell" } GT
-
+  assert "Record bottom" $
+    (bottom :: { a :: Boolean }).a
+    == bottom
+  assert "Record top" $
+    (top :: { a :: Boolean }).a
+    == top
