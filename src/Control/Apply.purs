@@ -59,6 +59,12 @@ infixl 4 applySecond as *>
 
 -- | Lift a function of two arguments to a function which accepts and returns
 -- | values wrapped with the type constructor `f`.
+-- |
+-- | ```purescript
+-- | lift2 add (Just 1) (Just 2) == Just 3
+-- | lift2 add Nothing (Just 2) == Nothing
+-- |```
+-- |
 lift2 :: forall a b c f. Apply f => (a -> b -> c) -> f a -> f b -> f c
 lift2 f a b = f <$> a <*> b
 
