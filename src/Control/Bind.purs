@@ -63,16 +63,16 @@ infixr 1 bindFlipped as =<<
 instance bindFn :: Bind ((->) r) where
   bind m f x = f (m x) x
 
--- | The `Array` monad's "do notation" works like a nested for loop. Each
--- | `bind`/`elem <- array` adds another level of nesting in the loop:
+-- | The `Array` monad works like a nested for loop. Each
+-- | `bind`/`>>=` adds another level of nesting in the loop:
 -- | ```
 -- | foo :: Array Int
 -- | foo = do
--- |   eachElementInArray1 <- [0, 1]
--- |   eachElementInArray2 <- [1, 2]
--- |   pure (eachElementInArray1 + eachElementInArray2)
+-- |   ["a", "b"] >>= \eachElementInArray1 ->
+-- |     ["c", "d"] >>= \eachElementInArray2
+-- |       pure (eachElementInArray1 <> eachElementInArray2)
 -- |
--- | foo == [(0 + 1), (0 + 2), (1 + 1), (1 + 2)] == [1, 2, 2, 3]
+-- | foo == [ ("a" <> "c"), ("a" <> "d"), ("b" <> "c"), ("b" <> "d") == [ "ac", "ad", "bc", "bd"]
 -- | ```
 instance bindArray :: Bind Array where
   bind = arrayBind
