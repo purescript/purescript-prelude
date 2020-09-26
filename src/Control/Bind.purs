@@ -77,7 +77,7 @@ instance bindFn :: Bind ((->) r) where
 -- | -- ... is the same as...
 -- | [ ("a" <> "c"), ("a" <> "d"), ("b" <> "c"), ("b" <> "d") ]
 -- | -- which simplifies to...
--- | [ "ac", "ad", "bc", "bd"]
+-- | [ "ac", "ad", "bc", "bd" ]
 -- | ```
 instance bindArray :: Bind Array where
   bind = arrayBind
