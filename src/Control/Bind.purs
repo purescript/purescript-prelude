@@ -67,7 +67,7 @@ instance bindFn :: Bind ((->) r) where
 -- | `bind`/`>>=` adds another level of nesting in the loop:
 -- | ```
 -- | foo :: Array Int
--- | foo = do
+-- | foo =
 -- |   ["a", "b"] >>= \eachElementInArray1 ->
 -- |     ["c", "d"] >>= \eachElementInArray2
 -- |       pure (eachElementInArray1 <> eachElementInArray2)
