@@ -9,6 +9,7 @@ module Control.Semigroupoid where
 -- |
 -- | One example of a `Semigroupoid` is the function type constructor `(->)`,
 -- | with `(<<<)` defined as function composition.
+class Semigroupoid :: forall k. (k -> k -> Type) -> Constraint
 class Semigroupoid a where
   compose :: forall b c d. a c d -> a b c -> a b d
 

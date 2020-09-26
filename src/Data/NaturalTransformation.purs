@@ -14,6 +14,7 @@ module Data.NaturalTransformation where
 -- | `f` and `g` should be functors, but the `Functor` constraint is not
 -- | enforced here; that the types are of kind `Type -> Type` is enough for our
 -- | purposes.
+type NaturalTransformation :: forall k. (k -> Type) -> (k -> Type) -> Type
 type NaturalTransformation f g = forall a. f a -> g a
 
 infixr 4 type NaturalTransformation as ~>
