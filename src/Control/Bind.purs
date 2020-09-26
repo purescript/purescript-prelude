@@ -70,7 +70,7 @@ instance bindFn :: Bind ((->) r) where
 -- | Array's `bind`/`>>=` works like a nested for loop. Each `bind` adds
 -- | another level of nesting in the loop. For example:
 -- | ```
--- | foo :: Array Int
+-- | foo :: Array String
 -- | foo =
 -- |   ["a", "b"] >>= \eachElementInArray1 ->
 -- |     ["c", "d"] >>= \eachElementInArray2
