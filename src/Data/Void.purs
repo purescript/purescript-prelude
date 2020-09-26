@@ -18,7 +18,7 @@ import Data.Show (class Show)
 -- | ```
 -- |
 -- | In PureScript, one often uses `Unit` to achieve similar effects as
--- | the lowercased `void` above.
+-- | the `void` of C-family languages above.
 newtype Void = Void Void
 
 instance showVoid :: Show Void where
