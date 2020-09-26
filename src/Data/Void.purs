@@ -10,7 +10,7 @@ import Data.Show (class Show)
 -- | a Left value created in PureScript.
 -- |
 -- | This should not be confused with the word, `void,` that commonly appears in
--- | C-deriving languages, such as Java:
+-- | C-family languages, such as Java:
 -- | ```
 -- | public class Foo {
 -- |   void doSomething() { System.out.println("hello world!"); }
