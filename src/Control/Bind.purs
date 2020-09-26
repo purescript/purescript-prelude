@@ -72,7 +72,12 @@ instance bindFn :: Bind ((->) r) where
 -- |     ["c", "d"] >>= \eachElementInArray2
 -- |       pure (eachElementInArray1 <> eachElementInArray2)
 -- |
--- | foo == [ ("a" <> "c"), ("a" <> "d"), ("b" <> "c"), ("b" <> "d") == [ "ac", "ad", "bc", "bd"]
+-- | -- In other words...
+-- | foo
+-- | -- ... is the same as...
+-- | [ ("a" <> "c"), ("a" <> "d"), ("b" <> "c"), ("b" <> "d") ]
+-- | -- which simplifies to...
+-- | [ "ac", "ad", "bc", "bd"]
 -- | ```
 instance bindArray :: Bind Array where
   bind = arrayBind
