@@ -9,7 +9,7 @@ import Data.Show (class Show)
 -- | For example, a value of type `Either Void Boolean` can never have
 -- | a Left value created in PureScript.
 -- |
--- | This should not be confused with the word, `void,` that commonly appears in
+-- | This should not be confused with the keyword `void` that commonly appears in
 -- | C-family languages, such as Java:
 -- | ```
 -- | public class Foo {
