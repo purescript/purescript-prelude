@@ -1,6 +1,6 @@
 module Type.Data.Row where
 
--- | A proxy data type whose type parameter is a type of kind `# Type` (a row
+-- | A proxy data type whose type parameter is a type of kind `Row Type` (a row
 -- | of types).
 -- |
 -- | Commonly used for specialising a function with a quantified type.
