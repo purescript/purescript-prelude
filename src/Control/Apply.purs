@@ -26,6 +26,15 @@ import Control.Category (identity)
 -- | the function application operator `($)` to arguments wrapped with the
 -- | type constructor `f`.
 -- |
+-- | Put differently...
+-- | ```
+-- | foo =
+-- |   functionTakingNArguments <$> computationProducingArg1
+-- |                            <*> computationProducingArg2
+-- |                            <*> ...
+-- |                            <*> computationProducingArgN
+-- | ```
+-- |
 -- | Instances must satisfy the following law in addition to the `Functor`
 -- | laws:
 -- |

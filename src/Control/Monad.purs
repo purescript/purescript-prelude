@@ -31,6 +31,7 @@ import Data.Unit (Unit)
 class (Applicative m, Bind m) <= Monad m
 
 instance monadFn :: Monad ((->) r)
+
 instance monadArray :: Monad Array
 
 -- | `liftM1` provides a default implementation of `(<$>)` for any

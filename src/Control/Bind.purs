@@ -63,6 +63,26 @@ infixr 1 bindFlipped as =<<
 instance bindFn :: Bind ((->) r) where
   bind m f x = f (m x) x
 
+-- | The `bind`/`>>=` function for `Array` works by applying a function to
+-- | each element in the array, and flattening the results into a single,
+-- | new array.
+-- |
+-- | Array's `bind`/`>>=` works like a nested for loop. Each `bind` adds
+-- | another level of nesting in the loop. For example:
+-- | ```
+-- | foo :: Array String
+-- | foo =
+-- |   ["a", "b"] >>= \eachElementInArray1 ->
+-- |     ["c", "d"] >>= \eachElementInArray2
+-- |       pure (eachElementInArray1 <> eachElementInArray2)
+-- |
+-- | -- In other words...
+-- | foo
+-- | -- ... is the same as...
+-- | [ ("a" <> "c"), ("a" <> "d"), ("b" <> "c"), ("b" <> "d") ]
+-- | -- which simplifies to...
+-- | [ "ac", "ad", "bc", "bd" ]
+-- | ```
 instance bindArray :: Bind Array where
   bind = arrayBind
 

@@ -18,7 +18,16 @@ import Type.Data.RowList (RLProxy(..))
 -- | - Associativity: `(x <> y) <> z = x <> (y <> z)`
 -- |
 -- | One example of a `Semigroup` is `String`, with `(<>)` defined as string
--- | concatenation.
+-- | concatenation. Another example is `List a`, with `(<>)` defined as
+-- | list concatenation.
+-- |
+-- | ### Newtypes for Semigroup
+-- |
+-- | There are two other ways to implement an instance for this type class
+-- | regardless of which type is used. These instances can be used by
+-- | wrapping the values in one of the two newtypes below:
+-- | 1. `First` - Use the first argument every time: `append first _ = first`.
+-- | 2. `Last` - Use the last argument every time: `append _ last = last`.
 class Semigroup a where
   append :: a -> a -> a
 

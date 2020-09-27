@@ -28,6 +28,19 @@ import Type.Data.RowList (RLProxy(..))
 -- | `Monoid`s are commonly used as the result of fold operations, where
 -- | `<>` is used to combine individual results, and `mempty` gives the result
 -- | of folding an empty collection of elements.
+-- |
+-- | ### Newtypes for Monoid
+-- |
+-- | Some types (e.g. `Int`, `Boolean`) can implement multiple law-abiding
+-- | instances for `Monoid`. Let's use `Int` as an example
+-- | 1. `<>` could be `+` and `mempty` could be `0`
+-- | 2. `<>` could be `*` and `mempty` could be `1`.
+-- |
+-- | To clarify these ambiguous situations, one should use the newtypes
+-- | defined in `Data.Monoid.<NewtypeName>` modules.
+-- |
+-- | In the above ambiguous situation, we could use `Additive`
+-- | for the first situation or `Multiplicative` for the second one.
 class Semigroup m <= Monoid m where
   mempty :: m
 
