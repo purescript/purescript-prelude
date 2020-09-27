@@ -3,10 +3,17 @@ module Data.Bounded
   , bottom
   , top
   , module Data.Ord
+  , class BoundedRecord, bottomRecord, topRecord
   ) where
 
-import Data.Ord (class Ord, Ordering(..), compare, (<), (<=), (>), (>=))
+import Data.Ord (class Ord, class OrdRecord, Ordering(..), compare, (<), (<=), (>), (>=))
+import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Data.Unit (Unit, unit)
+import Prim.Row as Row
+import Prim.RowList as RL
+import Record.Unsafe (unsafeSet)
+import Type.Data.Row (RProxy(..))
+import Type.Data.RowList (RLProxy(..))
 
 -- | The `Bounded` type class represents totally ordered types that have an
 -- | upper and lower boundary.
@@ -54,3 +61,41 @@ foreign import bottomNumber :: Number
 instance boundedNumber :: Bounded Number where
   top = topNumber
   bottom = bottomNumber
+
+class OrdRecord rowlist row <= BoundedRecord rowlist row subrow | rowlist -> subrow where
+  topRecord :: RLProxy rowlist -> RProxy row -> Record subrow
+  bottomRecord :: RLProxy rowlist -> RProxy row -> Record subrow
+
+instance boundedRecordNil :: BoundedRecord RL.Nil row () where
+  topRecord _ _ = {}
+  bottomRecord _ _ = {}
+
+instance boundedRecordCons
+    :: ( IsSymbol key
+       , Bounded focus
+       , Row.Cons key focus rowTail row
+       , Row.Cons key focus subrowTail subrow
+       , BoundedRecord rowlistTail row subrowTail
+       )
+    => BoundedRecord (RL.Cons key focus rowlistTail) row subrow where
+  topRecord _ rowProxy
+    = insert top tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+      tail = topRecord (RLProxy :: RLProxy rowlistTail) rowProxy
+
+  bottomRecord _ rowProxy
+    = insert bottom tail
+    where
+      key = reflectSymbol (SProxy :: SProxy key)
+      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+      tail = bottomRecord (RLProxy :: RLProxy rowlistTail) rowProxy
+
+instance boundedRecord
+    :: ( RL.RowToList row list
+       , BoundedRecord list row row
+       )
+    => Bounded (Record row) where
+  top = topRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
+  bottom = bottomRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)

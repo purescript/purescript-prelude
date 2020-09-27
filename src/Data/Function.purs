@@ -26,6 +26,12 @@ flip f b a = f a b
 -- | ```purescript
 -- | const 1 "hello" = 1
 -- | ```
+-- |
+-- | It can also be thought of as creating a function that ignores its argument:
+-- |
+-- | ```purescript
+-- | const 1 = \_ -> 1
+-- | ```
 const :: forall a b. a -> b -> a
 const a _ = a
 
@@ -56,7 +62,7 @@ apply f x = f x
 infixr 0 apply as $
 
 -- | Applies an argument to a function. This is primarily used as the `(#)`
--- | operator, which allows parentheses to be ommitted in some cases, or as a
+-- | operator, which allows parentheses to be omitted in some cases, or as a
 -- | natural way to apply a value to a chain of composed functions.
 applyFlipped :: forall a b. a -> (a -> b) -> b
 applyFlipped x f = f x
