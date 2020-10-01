@@ -13,6 +13,7 @@ import Control.Semigroupoid (class Semigroupoid, compose, (<<<), (>>>))
 -- | `Semigroupoid` law:
 -- |
 -- | - Identity: `identity <<< p = p <<< identity = p`
+class Category :: forall k. (k -> k -> Type) -> Constraint
 class Semigroupoid a <= Category a where
   identity :: forall t. a t t
 
