@@ -6,6 +6,7 @@ module Control.Bind
   , composeKleisli, (>=>)
   , composeKleisliFlipped, (<=<)
   , ifM
+  , ap
   , module Data.Functor
   , module Control.Apply
   , module Control.Applicative
@@ -32,10 +33,11 @@ import Data.Unit (Unit)
 -- |
 -- | where the function argument of `f` is given the name `y`.
 -- |
--- | Instances must satisfy the following law in addition to the `Apply`
+-- | Instances must satisfy the following laws in addition to the `Apply`
 -- | laws:
 -- |
 -- | - Associativity: `(x >>= f) >>= g = x >>= (\k -> f k >>= g)`
+-- | - Apply Superclass: `apply = ap`
 -- |
 -- | Associativity tells us that we can regroup operations which use `do`
 -- | notation so that we can unambiguously write, for example:
@@ -134,3 +136,18 @@ infixr 1 composeKleisliFlipped as <=<
 -- | ```
 ifM :: forall a m. Bind m => m Boolean -> m a -> m a -> m a
 ifM cond t f = cond >>= \cond' -> if cond' then t else f
+
+
+-- | `ap` provides a default implementation of `(<*>)` for any `Bind`, without
+-- | using `(<*>)` as provided by the `Apply`-`Bind` superclass relationship.
+-- |
+-- | `ap` can therefore be used to write `Apply` instances as follows:
+-- |
+-- | ```purescript
+-- | instance applyF :: Apply F where
+-- |   apply = ap
+-- | ```
+ap :: forall m a b. Bind m => m (a -> b) -> m a -> m b
+ap f a = do
+  f' <- f
+  map f' a

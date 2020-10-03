@@ -1,7 +1,6 @@
 module Control.Monad
   ( class Monad
   , liftM1
-  , ap
   , whenM
   , unlessM
   , module Data.Functor
@@ -12,7 +11,7 @@ module Control.Monad
 
 import Control.Applicative (class Applicative, liftA1, pure, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
-import Control.Bind (class Bind, bind, ifM, join, (<=<), (=<<), (>=>), (>>=))
+import Control.Bind (class Bind, bind, ap, ifM, join, (<=<), (=<<), (>=>), (>>=))
 
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Unit (Unit)
@@ -27,7 +26,6 @@ import Data.Unit (Unit)
 -- |
 -- | - Left Identity: `pure x >>= f = f x`
 -- | - Right Identity: `x >>= pure = x`
--- | - Applicative Superclass: `apply = ap`
 class (Applicative m, Bind m) <= Monad m
 
 instance monadFn :: Monad ((->) r)
@@ -49,23 +47,6 @@ liftM1 :: forall m a b. Monad m => (a -> b) -> m a -> m b
 liftM1 f a = do
   a' <- a
   pure (f a')
-
--- | `ap` provides a default implementation of `(<*>)` for any
--- | [`Monad`](#monad), without using `(<*>)` as provided by the
--- | [`Apply`](#apply)-[`Monad`](#monad) superclass relationship.
--- |
--- | `ap` can therefore be used to write [`Apply`](#apply) instances as
--- | follows:
--- |
--- | ```purescript
--- | instance applyF :: Apply F where
--- |   apply = ap
--- | ```
-ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
-ap f a = do
-  f' <- f
-  a' <- a
-  pure (f' a')
 
 -- | Perform a monadic action when a condition is true, where the conditional
 -- | value is also in a monadic context.
