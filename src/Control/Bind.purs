@@ -137,7 +137,6 @@ infixr 1 composeKleisliFlipped as <=<
 ifM :: forall a m. Bind m => m Boolean -> m a -> m a -> m a
 ifM cond t f = cond >>= \cond' -> if cond' then t else f
 
-
 -- | `ap` provides a default implementation of `(<*>)` for any `Bind`, without
 -- | using `(<*>)` as provided by the `Apply`-`Bind` superclass relationship.
 -- |
