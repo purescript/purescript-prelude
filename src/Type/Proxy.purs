@@ -48,7 +48,21 @@
 -- | ```
 module Type.Proxy where
 
-import Prelude
+import Control.Applicative (class Applicative)
+import Control.Apply (class Apply)
+import Control.Bind (class Bind, class Discard)
+import Control.Monad (class Monad)
+
+import Data.BooleanAlgebra (class BooleanAlgebra)
+import Data.Bounded (class Bounded)
+import Data.CommutativeRing (class CommutativeRing)
+import Data.Eq (class Eq)
+import Data.Functor (class Functor)
+import Data.HeytingAlgebra (class HeytingAlgebra)
+import Data.Ord (class Ord)
+import Data.Ring (class Ring)
+import Data.Semiring (class Semiring)
+import Data.Show (class Show, show)
 
 -- | Proxy type for all `kind`s.
 data Proxy :: forall k. k -> Type
