@@ -13,6 +13,13 @@ data SProxy (sym :: Symbol) = SProxy
 
 -- | A class for known symbols
 class IsSymbol (sym :: Symbol) where
+  -- Note: Before v0.14.0, we did not have polykinds. Thus, we needed
+  -- kind-specific proxy types to pass a Symbol around.
+  -- Once v0.14.0 was released, we could use the kind-generic `Proxy` type
+  -- insteand. However, to reduce the code breakage, we're using
+  -- `forall proxy. proxy sym` here so that `SProxy` code will still compile.
+  -- When PureScript makes a new breaking release after the v0.14.0 release,
+  -- this type signature will be updated to `Proxy sym -> String`.
   reflectSymbol :: forall proxy. proxy sym -> String
 
 -- local definition for use in `reifySymbol`
