@@ -3,6 +3,8 @@ module Type.Data.Row where
 -- | A proxy data type whose type parameter is a type of kind `Row Type` (a row
 -- | of types).
 -- |
+-- | **Deprecated as of v0.14.0 PureScript release**: use `Type.Proxy` instead.
+-- |
 -- | Commonly used for specialising a function with a quantified type.
 -- | For example, suppose we have an identity function for records of type:
 -- | ```purescript
