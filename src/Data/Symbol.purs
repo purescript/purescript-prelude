@@ -8,6 +8,7 @@ module Data.Symbol
 import Type.Proxy (Proxy(..))
 
 -- | A value-level proxy for a type-level symbol.
+-- | **Deprecated as of v0.14.0 PureScript release**: use `Type.Proxy` instead.
 data SProxy (sym :: Symbol) = SProxy
 
 -- | A class for known symbols
