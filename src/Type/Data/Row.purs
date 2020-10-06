@@ -14,7 +14,7 @@ module Type.Data.Row where
 -- | Then applying this function to an `RProxy` with a specialised type
 -- | allows us to specify a concrete type for `row`:
 -- | ```purescript
--- | :t recordIdentity (RProxy :: RProxy ( x :: Int, y :: Int ))
+-- | :t recordIdentity (Proxy :: Proxy ( x :: Int, y :: Int ))
 -- | { x :: Int, y :: Int } -> { x :: Int, y :: Int }
 -- | ```
 -- | Here `row` has been specialised to `( x :: Int, y :: Int )`.

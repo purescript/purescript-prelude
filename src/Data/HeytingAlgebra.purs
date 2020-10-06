@@ -97,8 +97,8 @@ instance heytingAlgebraProxy3 :: HeytingAlgebra (Proxy3 a) where
   tt = Proxy3
 
 instance heytingAlgebraRecord :: (RL.RowToList row list, HeytingAlgebraRecord list row row) => HeytingAlgebra (Record row) where
-  ff = ffRecord  (Proxy :: Proxy list) (RProxy :: RProxy row)
-  tt = ttRecord  (Proxy :: Proxy list) (RProxy :: RProxy row)
+  ff = ffRecord  (Proxy :: Proxy list) (Proxy :: Proxy row)
+  tt = ttRecord  (Proxy :: Proxy list) (Proxy :: Proxy row)
   conj = conjRecord  (Proxy :: Proxy list)
   disj = disjRecord  (Proxy :: Proxy list)
   implies = impliesRecord  (Proxy :: Proxy list)

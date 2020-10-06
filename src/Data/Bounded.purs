@@ -110,5 +110,5 @@ instance boundedRecord
        , BoundedRecord list row row
        )
     => Bounded (Record row) where
-  top = topRecord (Proxy :: Proxy list) (RProxy :: RProxy row)
-  bottom = bottomRecord (Proxy :: Proxy list) (RProxy :: RProxy row)
+  top = topRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
+  bottom = bottomRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
