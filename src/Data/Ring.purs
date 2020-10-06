@@ -11,6 +11,7 @@ import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
 import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `Ring` class is for types that support addition, multiplication,
 -- | and subtraction operations.
@@ -35,6 +36,15 @@ instance ringUnit :: Ring Unit where
 
 instance ringFn :: Ring b => Ring (a -> b) where
   sub f g x = f x - g x
+
+instance ringProxy :: Ring (Proxy a) where
+  sub _ _ = Proxy
+
+instance ringProxy2 :: Ring (Proxy2 a) where
+  sub _ _ = Proxy2
+
+instance ringProxy3 :: Ring (Proxy3 a) where
+  sub _ _ = Proxy3
 
 instance ringRecord :: (RL.RowToList row list, RingRecord list row row) => Ring (Record row) where
   sub = subRecord (RLProxy :: RLProxy list)

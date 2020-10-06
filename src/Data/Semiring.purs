@@ -10,6 +10,7 @@ import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
 import Type.Data.Row (RProxy(..))
 import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `Semiring` class is for types that support an addition and
 -- | multiplication operation.
@@ -64,6 +65,24 @@ instance semiringUnit :: Semiring Unit where
   zero = unit
   mul _ _ = unit
   one = unit
+
+instance semiringProxy :: Semiring (Proxy a) where
+  add _ _ = Proxy
+  mul _ _ = Proxy
+  one = Proxy
+  zero = Proxy
+
+instance semiringProxy2 :: Semiring (Proxy2 a) where
+  add _ _ = Proxy2
+  mul _ _ = Proxy2
+  one = Proxy2
+  zero = Proxy2
+
+instance semiringProxy3 :: Semiring (Proxy3 a) where
+  add _ _ = Proxy3
+  mul _ _ = Proxy3
+  one = Proxy3
+  zero = Proxy3
 
 instance semiringRecord :: (RL.RowToList row list, SemiringRecord list row row) => Semiring (Record row) where
   add = addRecord (RLProxy :: RLProxy list)

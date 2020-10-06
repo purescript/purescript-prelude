@@ -10,6 +10,7 @@ import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
 
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Unit (Unit, unit)
+import Type.Proxy (Proxy(..))
 
 -- | The `Applicative` type class extends the [`Apply`](#apply) type class
 -- | with a `pure` function, which can be used to create values of type `f a`
@@ -37,6 +38,9 @@ instance applicativeFn :: Applicative ((->) r) where
 
 instance applicativeArray :: Applicative Array where
   pure x = [x]
+
+instance applicativeProxy :: Applicative Proxy where
+  pure _ = Proxy
 
 -- | `liftA1` provides a default implementation of `(<$>)` for any
 -- | [`Applicative`](#applicative) functor, without using `(<$>)` as provided

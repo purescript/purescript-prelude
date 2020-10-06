@@ -10,6 +10,7 @@ import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
 import Type.Data.Row (RProxy(..))
 import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `HeytingAlgebra` type class represents types that are bounded lattices with
 -- | an implication operator such that the following laws hold:
@@ -70,6 +71,30 @@ instance heytingAlgebraFunction :: HeytingAlgebra b => HeytingAlgebra (a -> b) w
   conj f g a = f a && g a
   disj f g a = f a || g a
   not f a = not (f a)
+
+instance heytingAlgebraProxy :: HeytingAlgebra (Proxy a) where
+  conj _ _ = Proxy
+  disj _ _ = Proxy
+  implies _ _ = Proxy
+  ff = Proxy
+  not _ = Proxy
+  tt = Proxy
+
+instance heytingAlgebraProxy2 :: HeytingAlgebra (Proxy2 a) where
+  conj _ _ = Proxy2
+  disj _ _ = Proxy2
+  implies _ _ = Proxy2
+  ff = Proxy2
+  not _ = Proxy2
+  tt = Proxy2
+
+instance heytingAlgebraProxy3 :: HeytingAlgebra (Proxy3 a) where
+  conj _ _ = Proxy3
+  disj _ _ = Proxy3
+  implies _ _ = Proxy3
+  ff = Proxy3
+  not _ = Proxy3
+  tt = Proxy3
 
 instance heytingAlgebraRecord :: (RL.RowToList row list, HeytingAlgebraRecord list row row) => HeytingAlgebra (Record row) where
   ff = ffRecord  (RLProxy :: RLProxy list) (RProxy :: RProxy row)
