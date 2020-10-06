@@ -111,8 +111,8 @@ foreign import boolNot :: Boolean -> Boolean
 -- | A class for records where all fields have `HeytingAlgebra` instances, used
 -- | to implement the `HeytingAlgebra` instance for records.
 class HeytingAlgebraRecord rowlist row subrow | rowlist -> subrow where
-  ffRecord :: RLProxy rowlist -> RProxy row -> Record subrow
-  ttRecord :: RLProxy rowlist -> RProxy row -> Record subrow
+  ffRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
+  ttRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
   impliesRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
   disjRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
   conjRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow

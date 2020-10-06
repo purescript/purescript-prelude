@@ -76,8 +76,8 @@ instance boundedProxy3 :: Bounded (Proxy3 a) where
   top = Proxy3
 
 class OrdRecord rowlist row <= BoundedRecord rowlist row subrow | rowlist -> subrow where
-  topRecord :: RLProxy rowlist -> RProxy row -> Record subrow
-  bottomRecord :: RLProxy rowlist -> RProxy row -> Record subrow
+  topRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
+  bottomRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
 
 instance boundedRecordNil :: BoundedRecord RL.Nil row () where
   topRecord _ _ = {}

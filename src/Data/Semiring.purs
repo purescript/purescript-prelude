@@ -100,8 +100,8 @@ foreign import numMul :: Number -> Number -> Number
 class SemiringRecord rowlist row subrow | rowlist -> subrow where
   addRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
   mulRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
-  oneRecord :: RLProxy rowlist -> RProxy row -> Record subrow
-  zeroRecord :: RLProxy rowlist -> RProxy row -> Record subrow
+  oneRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
+  zeroRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
 
 instance semiringRecordNil :: SemiringRecord RL.Nil row () where
   addRecord  _ _ _ = {}
