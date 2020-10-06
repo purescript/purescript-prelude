@@ -63,7 +63,7 @@ instance eqArray :: Eq a => Eq (Array a) where
   eq = eqArrayImpl eq
 
 instance eqRec :: (RL.RowToList row list, EqRecord list row) => Eq (Record row) where
-  eq = eqRecord (RLProxy :: RLProxy list)
+  eq = eqRecord (Proxy :: Proxy list)
 
 instance eqProxy :: Eq (Proxy a) where
   eq _ _ = true
@@ -111,4 +111,4 @@ instance eqRowCons
     where
       key = reflectSymbol (SProxy :: SProxy key)
       get = unsafeGet key :: Record row -> focus
-      tail = eqRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      tail = eqRecord (Proxy :: Proxy rowlistTail) ra rb

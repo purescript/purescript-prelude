@@ -47,7 +47,7 @@ instance showProxy3 :: Show (Proxy3 a) where
   show _ = "Proxy3"
 
 instance showRecord :: (RL.RowToList rs ls, ShowRecordFields ls rs) => Show (Record rs) where
-  show record = case showRecordFields (RLProxy :: RLProxy ls) record of
+  show record = case showRecordFields (Proxy :: Proxy ls) record of
     [] -> "{}"
     fields -> join " " ["{", join ", " fields, "}"]
 
@@ -70,7 +70,7 @@ instance showRecordFieldsCons
     where
       key = reflectSymbol (SProxy :: SProxy key)
       focus = unsafeGet key record :: focus
-      tail = showRecordFields (RLProxy :: RLProxy rowlistTail) record
+      tail = showRecordFields (Proxy :: Proxy rowlistTail) record
 
 foreign import showIntImpl :: Int -> String
 foreign import showNumberImpl :: Number -> String

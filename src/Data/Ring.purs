@@ -47,7 +47,7 @@ instance ringProxy3 :: Ring (Proxy3 a) where
   sub _ _ = Proxy3
 
 instance ringRecord :: (RL.RowToList row list, RingRecord list row row) => Ring (Record row) where
-  sub = subRecord (RLProxy :: RLProxy list)
+  sub = subRecord (Proxy :: Proxy list)
 
 -- | `negate x` can be used as a shorthand for `zero - x`.
 negate :: forall a. Ring a => a -> a
@@ -76,4 +76,4 @@ instance ringRecordCons
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
       key = reflectSymbol (SProxy :: SProxy key)
       get = unsafeGet key :: Record row -> focus
-      tail = subRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      tail = subRecord (Proxy :: Proxy rowlistTail) ra rb

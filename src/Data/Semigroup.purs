@@ -59,7 +59,7 @@ instance semigroupProxy3 :: Semigroup (Proxy3 a) where
   append _ _ = Proxy3
 
 instance semigroupRecord :: (RL.RowToList row list, SemigroupRecord list row row) => Semigroup (Record row) where
-  append = appendRecord (RLProxy :: RLProxy list)
+  append = appendRecord (Proxy :: Proxy list)
 
 foreign import concatString :: String -> String -> String
 foreign import concatArray :: forall a. Array a -> Array a -> Array a
@@ -84,4 +84,4 @@ instance semigroupRecordCons
       key = reflectSymbol (SProxy :: SProxy key)
       get = unsafeGet key :: Record row -> focus
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      tail = appendRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      tail = appendRecord (Proxy :: Proxy rowlistTail) ra rb

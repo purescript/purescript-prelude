@@ -96,19 +96,19 @@ instance boundedRecordCons
     where
       key = reflectSymbol (SProxy :: SProxy key)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      tail = topRecord (RLProxy :: RLProxy rowlistTail) rowProxy
+      tail = topRecord (Proxy :: Proxy rowlistTail) rowProxy
 
   bottomRecord _ rowProxy
     = insert bottom tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      tail = bottomRecord (RLProxy :: RLProxy rowlistTail) rowProxy
+      tail = bottomRecord (Proxy :: Proxy rowlistTail) rowProxy
 
 instance boundedRecord
     :: ( RL.RowToList row list
        , BoundedRecord list row row
        )
     => Bounded (Record row) where
-  top = topRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
-  bottom = bottomRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
+  top = topRecord (Proxy :: Proxy list) (RProxy :: RProxy row)
+  bottom = bottomRecord (Proxy :: Proxy list) (RProxy :: RProxy row)

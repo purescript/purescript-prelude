@@ -240,7 +240,7 @@ instance ordRecordCons
   compareRecord _ ra rb
     = if left /= EQ
         then left
-        else compareRecord (RLProxy :: RLProxy rowlistTail) ra rb
+        else compareRecord (Proxy :: Proxy rowlistTail) ra rb
     where
       key = reflectSymbol (SProxy :: SProxy key)
       unsafeGet' = unsafeGet :: String -> Record row -> focus
@@ -251,4 +251,4 @@ instance ordRecord
        , OrdRecord list row
        )
     => Ord (Record row) where
-  compare = compareRecord (RLProxy :: RLProxy list)
+  compare = compareRecord (Proxy :: Proxy list)

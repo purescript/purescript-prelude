@@ -85,10 +85,10 @@ instance semiringProxy3 :: Semiring (Proxy3 a) where
   zero = Proxy3
 
 instance semiringRecord :: (RL.RowToList row list, SemiringRecord list row row) => Semiring (Record row) where
-  add = addRecord (RLProxy :: RLProxy list)
-  mul = mulRecord (RLProxy :: RLProxy list)
-  one = oneRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
-  zero = zeroRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
+  add = addRecord (Proxy :: Proxy list)
+  mul = mulRecord (Proxy :: Proxy list)
+  one = oneRecord (Proxy :: Proxy list) (RProxy :: RProxy row)
+  zero = zeroRecord (Proxy :: Proxy list) (RProxy :: RProxy row)
 
 foreign import intAdd :: Int -> Int -> Int
 foreign import intMul :: Int -> Int -> Int
@@ -120,24 +120,24 @@ instance semiringRecordCons
     where
       key = reflectSymbol (SProxy :: SProxy key)
       get = unsafeGet key :: Record row -> focus
-      tail = addRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      tail = addRecord (Proxy :: Proxy rowlistTail) ra rb
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
   mulRecord _ ra rb = insert (get ra * get rb) tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
       get = unsafeGet key :: Record row -> focus
-      tail = mulRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      tail = mulRecord (Proxy :: Proxy rowlistTail) ra rb
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
   oneRecord _ _ = insert one tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
-      tail = oneRecord (RLProxy :: RLProxy rowlistTail) (RProxy :: RProxy row)
+      tail = oneRecord (Proxy :: Proxy rowlistTail) (RProxy :: RProxy row)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
   zeroRecord _ _ = insert zero tail
     where
       key = reflectSymbol (SProxy :: SProxy key)
-      tail = zeroRecord (RLProxy :: RLProxy rowlistTail) (RProxy :: RProxy row)
+      tail = zeroRecord (Proxy :: Proxy rowlistTail) (RProxy :: RProxy row)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow

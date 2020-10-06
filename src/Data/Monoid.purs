@@ -60,7 +60,7 @@ instance monoidArray :: Monoid (Array a) where
   mempty = []
 
 instance monoidRecord :: (RL.RowToList row list, MonoidRecord list row row) => Monoid (Record row) where
-  mempty = memptyRecord (RLProxy :: RLProxy list)
+  mempty = memptyRecord (Proxy :: Proxy list)
 
 -- | Append a value to itself a certain number of times. For the
 -- | `Multiplicative` type, and for a non-negative power, this is the same as
@@ -107,4 +107,4 @@ instance monoidRecordCons
     where
       key = reflectSymbol (SProxy :: SProxy key)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      tail = memptyRecord (RLProxy :: RLProxy rowlistTail)
+      tail = memptyRecord (Proxy :: Proxy rowlistTail)
