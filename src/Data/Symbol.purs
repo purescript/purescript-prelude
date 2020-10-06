@@ -12,7 +12,7 @@ data SProxy (sym :: Symbol) = SProxy
 
 -- | A class for known symbols
 class IsSymbol (sym :: Symbol) where
-  reflectSymbol :: Proxy sym -> String
+  reflectSymbol :: forall proxy. proxy sym -> String
 
 -- local definition for use in `reifySymbol`
 foreign import unsafeCoerce :: forall a b. a -> b
