@@ -25,7 +25,7 @@ import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
 import Type.Data.RowList (RLProxy(..))
-import Type.Proxy (Proxy, Proxy2, Proxy3)
+import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 
 -- | The `Ord` type class represents types which support comparisons with a
 -- | _total order_.
@@ -225,7 +225,7 @@ instance ord1Array :: Ord1 Array where
   compare1 = compare
 
 class EqRecord rowlist row <= OrdRecord rowlist row where
-  compareRecord :: RLProxy rowlist -> Record row -> Record row -> Ordering
+  compareRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Ordering
 
 instance ordRecordNil :: OrdRecord RL.Nil row where
   compareRecord _ _ _ = EQ

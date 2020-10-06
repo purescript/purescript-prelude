@@ -7,7 +7,7 @@ import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
 import Type.Data.RowList (RLProxy(..))
-import Type.Proxy (Proxy, Proxy2, Proxy3)
+import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 
 -- | The `Show` type class represents those types which can be converted into
 -- | a human-readable `String` representation.
@@ -53,8 +53,9 @@ instance showRecord :: (RL.RowToList rs ls, ShowRecordFields ls rs) => Show (Rec
 
 -- | A class for records where all fields have `Show` instances, used to
 -- | implement the `Show` instance for records.
+class ShowRecordFields :: RL.RowList Type -> Row Type -> Constraint
 class ShowRecordFields rowlist row where
-  showRecordFields :: RLProxy rowlist -> Record row -> Array String
+  showRecordFields :: forall rlproxy. rlproxy rowlist -> Record row -> Array String
 
 instance showRecordFieldsNil :: ShowRecordFields RL.Nil row where
   showRecordFields _ _ = []

@@ -12,12 +12,12 @@ import Data.EuclideanRing (mod, (/))
 import Data.Ord ((<=))
 import Data.Ordering (Ordering(..))
 import Data.Semigroup (class Semigroup, class SemigroupRecord, (<>))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeSet)
-import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..))
 
 -- | A `Monoid` is a `Semigroup` with a value `mempty`, which is both a
 -- | left and right unit for the associative operation `<>`:
@@ -89,8 +89,9 @@ guard false _ = mempty
 
 -- | A class for records where all fields have `Monoid` instances, used to
 -- | implement the `Monoid` instance for records.
+class MonoidRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemigroupRecord rowlist row subrow <= MonoidRecord rowlist row subrow | rowlist -> row subrow where
-  memptyRecord :: RLProxy rowlist -> Record subrow
+  memptyRecord :: forall rlproxy. rlproxy rowlist -> Record subrow
 
 instance monoidRecordNil :: MonoidRecord RL.Nil row () where
   memptyRecord _ = {}
@@ -105,6 +106,6 @@ instance monoidRecordCons
   memptyRecord _
     = insert mempty tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
       tail = memptyRecord (Proxy :: Proxy rowlistTail)

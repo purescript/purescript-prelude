@@ -98,8 +98,8 @@ foreign import numMul :: Number -> Number -> Number
 -- | A class for records where all fields have `Semiring` instances, used to
 -- | implement the `Semiring` instance for records.
 class SemiringRecord rowlist row subrow | rowlist -> subrow where
-  addRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
-  mulRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
+  addRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
+  mulRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
   oneRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
   zeroRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
 

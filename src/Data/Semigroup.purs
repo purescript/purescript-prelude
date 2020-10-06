@@ -67,7 +67,7 @@ foreign import concatArray :: forall a. Array a -> Array a -> Array a
 -- | A class for records where all fields have `Semigroup` instances, used to
 -- | implement the `Semigroup` instance for records.
 class SemigroupRecord rowlist row subrow | rowlist -> subrow where
-  appendRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
+  appendRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
 
 instance semigroupRecordNil :: SemigroupRecord RL.Nil row () where
   appendRecord _ _ _ = {}

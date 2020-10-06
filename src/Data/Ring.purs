@@ -59,7 +59,7 @@ foreign import numSub :: Number -> Number -> Number
 -- | A class for records where all fields have `Ring` instances, used to
 -- | implement the `Ring` instance for records.
 class SemiringRecord rowlist row subrow <= RingRecord rowlist row subrow | rowlist -> subrow where
-  subRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
+  subRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
 
 instance ringRecordNil :: RingRecord RL.Nil row () where
   subRecord _ _ _ = {}

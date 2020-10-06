@@ -113,10 +113,10 @@ foreign import boolNot :: Boolean -> Boolean
 class HeytingAlgebraRecord rowlist row subrow | rowlist -> subrow where
   ffRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
   ttRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
-  impliesRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
-  disjRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
-  conjRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
-  notRecord :: RLProxy rowlist -> Record row -> Record subrow
+  impliesRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
+  disjRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
+  conjRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
+  notRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record subrow
 
 instance heytingAlgebraRecordNil :: HeytingAlgebraRecord RL.Nil row () where
   conjRecord _ _ _ = {}
