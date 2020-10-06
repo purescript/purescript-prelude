@@ -118,26 +118,26 @@ instance semiringRecordCons
     => SemiringRecord (RL.Cons key focus rowlistTail) row subrow where
   addRecord _ ra rb = insert (get ra + get rb) tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       get = unsafeGet key :: Record row -> focus
       tail = addRecord (Proxy :: Proxy rowlistTail) ra rb
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
   mulRecord _ ra rb = insert (get ra * get rb) tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       get = unsafeGet key :: Record row -> focus
       tail = mulRecord (Proxy :: Proxy rowlistTail) ra rb
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
   oneRecord _ _ = insert one tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       tail = oneRecord (Proxy :: Proxy rowlistTail) (Proxy :: Proxy row)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
   zeroRecord _ _ = insert zero tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       tail = zeroRecord (Proxy :: Proxy rowlistTail) (Proxy :: Proxy row)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow

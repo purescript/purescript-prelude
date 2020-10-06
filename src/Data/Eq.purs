@@ -109,6 +109,6 @@ instance eqRowCons
     => EqRecord (RL.Cons key focus rowlistTail) row where
   eqRecord _ ra rb = (get ra == get rb) && tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       get = unsafeGet key :: Record row -> focus
       tail = eqRecord (Proxy :: Proxy rowlistTail) ra rb

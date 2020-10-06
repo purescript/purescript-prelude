@@ -242,7 +242,7 @@ instance ordRecordCons
         then left
         else compareRecord (Proxy :: Proxy rowlistTail) ra rb
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       unsafeGet' = unsafeGet :: String -> Record row -> focus
       left = unsafeGet' key ra `compare` unsafeGet' key rb
 

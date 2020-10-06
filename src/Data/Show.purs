@@ -69,7 +69,7 @@ instance showRecordFieldsCons
   showRecordFields _ record
     = cons (join ": " [ key, show focus ]) tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       focus = unsafeGet key record :: focus
       tail = showRecordFields (Proxy :: Proxy rowlistTail) record
 

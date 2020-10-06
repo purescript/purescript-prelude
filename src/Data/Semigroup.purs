@@ -81,7 +81,7 @@ instance semigroupRecordCons
     => SemigroupRecord (RL.Cons key focus rowlistTail) row subrow where
   appendRecord _ ra rb = insert (get ra <> get rb) tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       get = unsafeGet key :: Record row -> focus
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
       tail = appendRecord (Proxy :: Proxy rowlistTail) ra rb

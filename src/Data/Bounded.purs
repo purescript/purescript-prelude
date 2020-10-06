@@ -94,14 +94,14 @@ instance boundedRecordCons
   topRecord _ rowProxy
     = insert top tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
       tail = topRecord (Proxy :: Proxy rowlistTail) rowProxy
 
   bottomRecord _ rowProxy
     = insert bottom tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
       tail = bottomRecord (Proxy :: Proxy rowlistTail) rowProxy
 
