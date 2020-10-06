@@ -3,13 +3,11 @@ module Data.HeytingAlgebra
   , class HeytingAlgebraRecord, ffRecord, ttRecord, impliesRecord, conjRecord, disjRecord, notRecord
   ) where
 
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
-import Type.Data.Row (RProxy(..))
-import Type.Data.RowList (RLProxy(..))
 import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `HeytingAlgebra` type class represents types that are bounded lattices with
@@ -110,6 +108,7 @@ foreign import boolNot :: Boolean -> Boolean
 
 -- | A class for records where all fields have `HeytingAlgebra` instances, used
 -- | to implement the `HeytingAlgebra` instance for records.
+class HeytingAlgebraRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class HeytingAlgebraRecord rowlist row subrow | rowlist -> subrow where
   ffRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
   ttRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow

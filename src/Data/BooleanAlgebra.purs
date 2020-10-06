@@ -31,6 +31,7 @@ instance booleanAlgebraProxy3 :: BooleanAlgebra (Proxy3 a)
 
 -- | A class for records where all fields have `BooleanAlgebra` instances, used
 -- | to implement the `BooleanAlgebra` instance for records.
+class BooleanAlgebraRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class HeytingAlgebraRecord rowlist row subrow <= BooleanAlgebraRecord rowlist row subrow | rowlist -> subrow
 
 instance booleanAlgebraRecordNil :: BooleanAlgebraRecord RL.Nil row ()

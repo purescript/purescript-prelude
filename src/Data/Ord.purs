@@ -16,7 +16,7 @@ module Data.Ord
   ) where
 
 import Data.Eq (class Eq, class Eq1, class EqRecord, (/=))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Ordering (Ordering(..))
 import Data.Ring (class Ring, zero, one, negate)
 import Data.Unit (Unit)
@@ -24,7 +24,6 @@ import Data.Void (Void)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Data.RowList (RLProxy(..))
 import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 
 -- | The `Ord` type class represents types which support comparisons with a
@@ -224,6 +223,7 @@ class Eq1 f <= Ord1 f where
 instance ord1Array :: Ord1 Array where
   compare1 = compare
 
+class OrdRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row <= OrdRecord rowlist row where
   compareRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Ordering
 

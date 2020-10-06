@@ -5,12 +5,11 @@ module Data.Ring
   ) where
 
 import Data.Semiring (class Semiring, class SemiringRecord, add, mul, one, zero, (*), (+))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
-import Type.Data.RowList (RLProxy(..))
 import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `Ring` class is for types that support addition, multiplication,
@@ -58,6 +57,7 @@ foreign import numSub :: Number -> Number -> Number
 
 -- | A class for records where all fields have `Ring` instances, used to
 -- | implement the `Ring` instance for records.
+class RingRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemiringRecord rowlist row subrow <= RingRecord rowlist row subrow | rowlist -> subrow where
   subRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
 

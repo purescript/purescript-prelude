@@ -7,13 +7,11 @@ module Data.Bounded
   ) where
 
 import Data.Ord (class Ord, class OrdRecord, Ordering(..), compare, (<), (<=), (>), (>=))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeSet)
-import Type.Data.Row (RProxy(..))
-import Type.Data.RowList (RLProxy(..))
 import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `Bounded` type class represents totally ordered types that have an
@@ -75,6 +73,7 @@ instance boundedProxy3 :: Bounded (Proxy3 a) where
   bottom = Proxy3
   top = Proxy3
 
+class BoundedRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class OrdRecord rowlist row <= BoundedRecord rowlist row subrow | rowlist -> subrow where
   topRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
   bottomRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow

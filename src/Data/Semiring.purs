@@ -3,13 +3,11 @@ module Data.Semiring
   , class SemiringRecord, addRecord, mulRecord, oneRecord, zeroRecord
   ) where
 
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
-import Type.Data.Row (RProxy(..))
-import Type.Data.RowList (RLProxy(..))
 import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `Semiring` class is for types that support an addition and
@@ -97,6 +95,7 @@ foreign import numMul :: Number -> Number -> Number
 
 -- | A class for records where all fields have `Semiring` instances, used to
 -- | implement the `Semiring` instance for records.
+class SemiringRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemiringRecord rowlist row subrow | rowlist -> subrow where
   addRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
   mulRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow

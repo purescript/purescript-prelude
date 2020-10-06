@@ -3,13 +3,12 @@ module Data.Semigroup
   , class SemigroupRecord, appendRecord
   ) where
 
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit, unit)
 import Data.Void (Void, absurd)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
-import Type.Data.RowList (RLProxy(..))
 import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `Semigroup` type class identifies an associative operation on a type.
@@ -66,6 +65,7 @@ foreign import concatArray :: forall a. Array a -> Array a -> Array a
 
 -- | A class for records where all fields have `Semigroup` instances, used to
 -- | implement the `Semigroup` instance for records.
+class SemigroupRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint  
 class SemigroupRecord rowlist row subrow | rowlist -> subrow where
   appendRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
 

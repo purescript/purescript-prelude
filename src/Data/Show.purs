@@ -3,10 +3,9 @@ module Data.Show
   , class ShowRecordFields, showRecordFields
   ) where
 
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Data.RowList (RLProxy(..))
 import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 
 -- | The `Show` type class represents those types which can be converted into

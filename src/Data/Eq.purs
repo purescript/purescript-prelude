@@ -5,13 +5,12 @@ module Data.Eq
   ) where
 
 import Data.HeytingAlgebra ((&&))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit)
 import Data.Void (Void)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Data.RowList (RLProxy(..))
 import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 
 -- | The `Eq` type class represents types which support decidable equality.
@@ -94,6 +93,7 @@ notEq1 x y = (x `eq1` y) == false
 
 -- | A class for records where all fields have `Eq` instances, used to implement
 -- | the `Eq` instance for records.
+class EqRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row where
   eqRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Boolean
 
