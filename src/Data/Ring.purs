@@ -5,12 +5,12 @@ module Data.Ring
   ) where
 
 import Data.Semiring (class Semiring, class SemiringRecord, add, mul, one, zero, (*), (+))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
-import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `Ring` class is for types that support addition, multiplication,
 -- | and subtraction operations.
@@ -37,8 +37,17 @@ instance ringUnit :: Ring Unit where
 instance ringFn :: Ring b => Ring (a -> b) where
   sub f g x = f x - g x
 
+instance ringProxy :: Ring (Proxy a) where
+  sub _ _ = Proxy
+
+instance ringProxy2 :: Ring (Proxy2 a) where
+  sub _ _ = Proxy2
+
+instance ringProxy3 :: Ring (Proxy3 a) where
+  sub _ _ = Proxy3
+
 instance ringRecord :: (RL.RowToList row list, RingRecord list row row) => Ring (Record row) where
-  sub = subRecord (RLProxy :: RLProxy list)
+  sub = subRecord (Proxy :: Proxy list)
 
 -- | `negate x` can be used as a shorthand for `zero - x`.
 negate :: forall a. Ring a => a -> a
@@ -49,8 +58,9 @@ foreign import numSub :: Number -> Number -> Number
 
 -- | A class for records where all fields have `Ring` instances, used to
 -- | implement the `Ring` instance for records.
+class RingRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemiringRecord rowlist row subrow <= RingRecord rowlist row subrow | rowlist -> subrow where
-  subRecord :: RLProxy rowlist -> Record row -> Record row -> Record subrow
+  subRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
 
 instance ringRecordNil :: RingRecord RL.Nil row () where
   subRecord _ _ _ = {}
@@ -65,6 +75,6 @@ instance ringRecordCons
   subRecord _ ra rb = insert (get ra - get rb) tail
     where
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       get = unsafeGet key :: Record row -> focus
-      tail = subRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      tail = subRecord (Proxy :: Proxy rowlistTail) ra rb

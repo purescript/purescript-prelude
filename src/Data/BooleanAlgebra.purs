@@ -9,6 +9,7 @@ import Data.Symbol (class IsSymbol)
 import Data.Unit (Unit)
 import Prim.Row as Row
 import Prim.RowList as RL
+import Type.Proxy (Proxy, Proxy2, Proxy3)
 
 -- | The `BooleanAlgebra` type class represents types that behave like boolean
 -- | values.
@@ -24,9 +25,13 @@ instance booleanAlgebraBoolean :: BooleanAlgebra Boolean
 instance booleanAlgebraUnit :: BooleanAlgebra Unit
 instance booleanAlgebraFn :: BooleanAlgebra b => BooleanAlgebra (a -> b)
 instance booleanAlgebraRecord :: (RL.RowToList row list, BooleanAlgebraRecord list row row) => BooleanAlgebra (Record row)
+instance booleanAlgebraProxy :: BooleanAlgebra (Proxy a)
+instance booleanAlgebraProxy2 :: BooleanAlgebra (Proxy2 a)
+instance booleanAlgebraProxy3 :: BooleanAlgebra (Proxy3 a)
 
 -- | A class for records where all fields have `BooleanAlgebra` instances, used
 -- | to implement the `BooleanAlgebra` instance for records.
+class BooleanAlgebraRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class HeytingAlgebraRecord rowlist row subrow <= BooleanAlgebraRecord rowlist row subrow | rowlist -> subrow
 
 instance booleanAlgebraRecordNil :: BooleanAlgebraRecord RL.Nil row ()

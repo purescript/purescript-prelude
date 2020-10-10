@@ -9,6 +9,7 @@ module Control.Apply
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Function (const)
 import Control.Category (identity)
+import Type.Proxy (Proxy(..))
 
 -- | The `Apply` class provides the `(<*>)` which is used to apply a function
 -- | to an argument under a type constructor.
@@ -53,6 +54,9 @@ instance applyArray :: Apply Array where
   apply = arrayApply
 
 foreign import arrayApply :: forall a b. Array (a -> b) -> Array a -> Array b
+
+instance applyProxy :: Apply Proxy where
+  apply _ _ = Proxy
 
 -- | Combine two effectful actions, keeping only the result of the first.
 applyFirst :: forall a b f. Apply f => f a -> f b -> f a

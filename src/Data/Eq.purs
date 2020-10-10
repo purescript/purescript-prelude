@@ -5,13 +5,13 @@ module Data.Eq
   ) where
 
 import Data.HeytingAlgebra ((&&))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit)
 import Data.Void (Void)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 
 -- | The `Eq` type class represents types which support decidable equality.
 -- |
@@ -62,7 +62,16 @@ instance eqArray :: Eq a => Eq (Array a) where
   eq = eqArrayImpl eq
 
 instance eqRec :: (RL.RowToList row list, EqRecord list row) => Eq (Record row) where
-  eq = eqRecord (RLProxy :: RLProxy list)
+  eq = eqRecord (Proxy :: Proxy list)
+
+instance eqProxy :: Eq (Proxy a) where
+  eq _ _ = true
+
+instance eqProxy2 :: Eq (Proxy2 a) where
+  eq _ _ = true
+
+instance eqProxy3 :: Eq (Proxy3 a) where
+  eq _ _ = true
 
 foreign import eqBooleanImpl :: Boolean -> Boolean -> Boolean
 foreign import eqIntImpl :: Int -> Int -> Boolean
@@ -84,8 +93,9 @@ notEq1 x y = (x `eq1` y) == false
 
 -- | A class for records where all fields have `Eq` instances, used to implement
 -- | the `Eq` instance for records.
+class EqRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row where
-  eqRecord :: RLProxy rowlist -> Record row -> Record row -> Boolean
+  eqRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Boolean
 
 instance eqRowNil :: EqRecord RL.Nil row where
   eqRecord _ _ _ = true
@@ -99,6 +109,6 @@ instance eqRowCons
     => EqRecord (RL.Cons key focus rowlistTail) row where
   eqRecord _ ra rb = (get ra == get rb) && tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       get = unsafeGet key :: Record row -> focus
-      tail = eqRecord (RLProxy :: RLProxy rowlistTail) ra rb
+      tail = eqRecord (Proxy :: Proxy rowlistTail) ra rb

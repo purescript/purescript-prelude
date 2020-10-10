@@ -7,13 +7,12 @@ module Data.Bounded
   ) where
 
 import Data.Ord (class Ord, class OrdRecord, Ordering(..), compare, (<), (<=), (>), (>=))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeSet)
-import Type.Data.Row (RProxy(..))
-import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
 
 -- | The `Bounded` type class represents totally ordered types that have an
 -- | upper and lower boundary.
@@ -62,9 +61,22 @@ instance boundedNumber :: Bounded Number where
   top = topNumber
   bottom = bottomNumber
 
+instance boundedProxy :: Bounded (Proxy a) where
+  bottom = Proxy
+  top = Proxy
+
+instance boundedProxy2 :: Bounded (Proxy2 a) where
+  bottom = Proxy2
+  top = Proxy2
+
+instance boundedProxy3 :: Bounded (Proxy3 a) where
+  bottom = Proxy3
+  top = Proxy3
+
+class BoundedRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class OrdRecord rowlist row <= BoundedRecord rowlist row subrow | rowlist -> subrow where
-  topRecord :: RLProxy rowlist -> RProxy row -> Record subrow
-  bottomRecord :: RLProxy rowlist -> RProxy row -> Record subrow
+  topRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
+  bottomRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
 
 instance boundedRecordNil :: BoundedRecord RL.Nil row () where
   topRecord _ _ = {}
@@ -81,21 +93,21 @@ instance boundedRecordCons
   topRecord _ rowProxy
     = insert top tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      tail = topRecord (RLProxy :: RLProxy rowlistTail) rowProxy
+      tail = topRecord (Proxy :: Proxy rowlistTail) rowProxy
 
   bottomRecord _ rowProxy
     = insert bottom tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      tail = bottomRecord (RLProxy :: RLProxy rowlistTail) rowProxy
+      tail = bottomRecord (Proxy :: Proxy rowlistTail) rowProxy
 
 instance boundedRecord
     :: ( RL.RowToList row list
        , BoundedRecord list row row
        )
     => Bounded (Record row) where
-  top = topRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
-  bottom = bottomRecord (RLProxy :: RLProxy list) (RProxy :: RProxy row)
+  top = topRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
+  bottom = bottomRecord (Proxy :: Proxy list) (Proxy :: Proxy row)

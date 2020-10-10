@@ -15,6 +15,7 @@ import Control.Bind (class Bind, bind, ap, ifM, join, (<=<), (=<<), (>=>), (>>=)
 
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Unit (Unit)
+import Type.Proxy (Proxy)
 
 -- | The `Monad` type class combines the operations of the `Bind` and
 -- | `Applicative` type classes. Therefore, `Monad` instances represent type
@@ -31,6 +32,8 @@ class (Applicative m, Bind m) <= Monad m
 instance monadFn :: Monad ((->) r)
 
 instance monadArray :: Monad Array
+
+instance monadProxy :: Monad Proxy
 
 -- | `liftM1` provides a default implementation of `(<$>)` for any
 -- | [`Monad`](#monad), without using `(<$>)` as provided by the

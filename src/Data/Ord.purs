@@ -16,7 +16,7 @@ module Data.Ord
   ) where
 
 import Data.Eq (class Eq, class Eq1, class EqRecord, (/=))
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Ordering (Ordering(..))
 import Data.Ring (class Ring, zero, one, negate)
 import Data.Unit (Unit)
@@ -24,7 +24,7 @@ import Data.Void (Void)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 
 -- | The `Ord` type class represents types which support comparisons with a
 -- | _total order_.
@@ -56,6 +56,15 @@ instance ordUnit :: Ord Unit where
   compare _ _ = EQ
 
 instance ordVoid :: Ord Void where
+  compare _ _ = EQ
+
+instance ordProxy :: Ord (Proxy a) where
+  compare _ _ = EQ
+
+instance ordProxy2 :: Ord (Proxy2 a) where
+  compare _ _ = EQ
+
+instance ordProxy3 :: Ord (Proxy3 a) where
   compare _ _ = EQ
 
 instance ordArray :: Ord a => Ord (Array a) where
@@ -214,8 +223,9 @@ class Eq1 f <= Ord1 f where
 instance ord1Array :: Ord1 Array where
   compare1 = compare
 
+class OrdRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row <= OrdRecord rowlist row where
-  compareRecord :: RLProxy rowlist -> Record row -> Record row -> Ordering
+  compareRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Ordering
 
 instance ordRecordNil :: OrdRecord RL.Nil row where
   compareRecord _ _ _ = EQ
@@ -230,9 +240,9 @@ instance ordRecordCons
   compareRecord _ ra rb
     = if left /= EQ
         then left
-        else compareRecord (RLProxy :: RLProxy rowlistTail) ra rb
+        else compareRecord (Proxy :: Proxy rowlistTail) ra rb
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       unsafeGet' = unsafeGet :: String -> Record row -> focus
       left = unsafeGet' key ra `compare` unsafeGet' key rb
 
@@ -241,5 +251,4 @@ instance ordRecord
        , OrdRecord list row
        )
     => Ord (Record row) where
-  compare = compareRecord (RLProxy :: RLProxy list)
-
+  compare = compareRecord (Proxy :: Proxy list)

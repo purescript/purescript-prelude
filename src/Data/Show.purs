@@ -3,10 +3,10 @@ module Data.Show
   , class ShowRecordFields, showRecordFields
   ) where
 
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 
 -- | The `Show` type class represents those types which can be converted into
 -- | a human-readable `String` representation.
@@ -36,15 +36,25 @@ instance showString :: Show String where
 instance showArray :: Show a => Show (Array a) where
   show = showArrayImpl show
 
+instance showProxy :: Show (Proxy a) where
+  show _ = "Proxy"
+
+instance showProxy2 :: Show (Proxy2 a) where
+  show _ = "Proxy2"
+
+instance showProxy3 :: Show (Proxy3 a) where
+  show _ = "Proxy3"
+
 instance showRecord :: (RL.RowToList rs ls, ShowRecordFields ls rs) => Show (Record rs) where
-  show record = case showRecordFields (RLProxy :: RLProxy ls) record of
+  show record = case showRecordFields (Proxy :: Proxy ls) record of
     [] -> "{}"
     fields -> join " " ["{", join ", " fields, "}"]
 
 -- | A class for records where all fields have `Show` instances, used to
 -- | implement the `Show` instance for records.
+class ShowRecordFields :: RL.RowList Type -> Row Type -> Constraint
 class ShowRecordFields rowlist row where
-  showRecordFields :: RLProxy rowlist -> Record row -> Array String
+  showRecordFields :: forall rlproxy. rlproxy rowlist -> Record row -> Array String
 
 instance showRecordFieldsNil :: ShowRecordFields RL.Nil row where
   showRecordFields _ _ = []
@@ -58,9 +68,9 @@ instance showRecordFieldsCons
   showRecordFields _ record
     = cons (join ": " [ key, show focus ]) tail
     where
-      key = reflectSymbol (SProxy :: SProxy key)
+      key = reflectSymbol (Proxy :: Proxy key)
       focus = unsafeGet key record :: focus
-      tail = showRecordFields (RLProxy :: RLProxy rowlistTail) record
+      tail = showRecordFields (Proxy :: Proxy rowlistTail) record
 
 foreign import showIntImpl :: Int -> String
 foreign import showNumberImpl :: Number -> String

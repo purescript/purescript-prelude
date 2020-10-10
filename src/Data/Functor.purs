@@ -9,6 +9,7 @@ module Data.Functor
 
 import Data.Function (const, compose)
 import Data.Unit (Unit, unit)
+import Type.Proxy (Proxy(..))
 
 -- | A `Functor` is a type constructor which supports a mapping operation
 -- | `map`.
@@ -41,6 +42,9 @@ instance functorFn :: Functor ((->) r) where
 
 instance functorArray :: Functor Array where
   map = arrayMap
+
+instance functorProxy :: Functor Proxy where
+  map _ _ = Proxy
 
 foreign import arrayMap :: forall a b. (a -> b) -> Array a -> Array b
 
