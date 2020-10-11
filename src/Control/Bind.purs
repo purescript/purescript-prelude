@@ -159,7 +159,7 @@ ifM cond t f = cond >>= \cond' -> if cond' then t else f
 -- | instance applyF :: Apply F where
 -- |   apply = ap
 -- | ```
-ap :: forall m a b. Bind m => m (a -> b) -> m a -> m b
+ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
 ap f a = do
   f' <- f
   map f' a
