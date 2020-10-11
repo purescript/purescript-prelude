@@ -6,7 +6,6 @@ module Control.Bind
   , composeKleisli, (>=>)
   , composeKleisliFlipped, (<=<)
   , ifM
-  , ap
   , module Data.Functor
   , module Control.Apply
   , module Control.Applicative
@@ -149,17 +148,3 @@ infixr 1 composeKleisliFlipped as <=<
 -- | ```
 ifM :: forall a m. Bind m => m Boolean -> m a -> m a -> m a
 ifM cond t f = cond >>= \cond' -> if cond' then t else f
-
--- | `ap` provides a default implementation of `(<*>)` for any `Bind`, without
--- | using `(<*>)` as provided by the `Apply`-`Bind` superclass relationship.
--- |
--- | `ap` can therefore be used to write `Apply` instances as follows:
--- |
--- | ```purescript
--- | instance applyF :: Apply F where
--- |   apply = ap
--- | ```
-ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
-ap f a = do
-  f' <- f
-  map f' a

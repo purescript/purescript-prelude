@@ -3,6 +3,7 @@ module Control.Monad
   , liftM1
   , whenM
   , unlessM
+  , ap
   , module Data.Functor
   , module Control.Apply
   , module Control.Applicative
@@ -64,3 +65,17 @@ unlessM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
 unlessM mb m =  do
   b <- mb
   unless b m
+
+-- | `ap` provides a default implementation of `(<*>)` for any `Bind`, without
+-- | using `(<*>)` as provided by the `Apply`-`Bind` superclass relationship.
+-- |
+-- | `ap` can therefore be used to write `Apply` instances as follows:
+-- |
+-- | ```purescript
+-- | instance applyF :: Apply F where
+-- |   apply = ap
+-- | ```
+ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
+ap f a = do
+  f' <- f
+  map f' a
