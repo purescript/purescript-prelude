@@ -78,4 +78,5 @@ unlessM mb m =  do
 ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
 ap f a = do
   f' <- f
-  map f' a
+  a' <- a
+  pure (f' a')
