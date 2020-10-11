@@ -66,7 +66,7 @@ unlessM mb m =  do
   b <- mb
   unless b m
 
--- | `ap` provides a default implementation of `(<*>)` for any `Bind`, without
+-- | `ap` provides a default implementation of `(<*>)` for any `Monad`, without
 -- | using `(<*>)` as provided by the `Apply`-`Bind` superclass relationship.
 -- |
 -- | `ap` can therefore be used to write `Apply` instances as follows:
