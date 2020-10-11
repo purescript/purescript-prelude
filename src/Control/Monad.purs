@@ -3,6 +3,7 @@ module Control.Monad
   , liftM1
   , whenM
   , unlessM
+  , ap
   , module Data.Functor
   , module Control.Apply
   , module Control.Applicative
@@ -11,7 +12,7 @@ module Control.Monad
 
 import Control.Applicative (class Applicative, liftA1, pure, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
-import Control.Bind (class Bind, bind, ap, ifM, join, (<=<), (=<<), (>=>), (>>=))
+import Control.Bind (class Bind, bind, ifM, join, (<=<), (=<<), (>=>), (>>=))
 
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Unit (Unit)
@@ -64,3 +65,22 @@ unlessM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
 unlessM mb m =  do
   b <- mb
   unless b m
+
+-- | `ap` provides a default implementation of `(<*>)` for any `Monad`, without
+-- | using `(<*>)` as provided by the `Apply`-`Monad` superclass relationship.
+-- |
+-- | `ap` can therefore be used to write `Apply` instances as follows:
+-- |
+-- | ```purescript
+-- | instance applyF :: Apply F where
+-- |   apply = ap
+-- | ```
+-- Note: Only a `Bind` constraint is needed, but this can
+-- produce loops when used with other default implementations
+-- (i.e. `liftA1`).
+-- See https://github.com/purescript/purescript-prelude/issues/232
+ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
+ap f a = do
+  f' <- f
+  a' <- a
+  pure (f' a')
