@@ -38,7 +38,7 @@ import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 -- | laws:
 -- |
 -- | - Associativity: `(x >>= f) >>= g = x >>= (\k -> f k >>= g)`
--- | - Apply Superclass: `apply = ap`
+-- | - Apply Superclass: `apply f x = f >>= \f’ -> map f’ x`
 -- |
 -- | Associativity tells us that we can regroup operations which use `do`
 -- | notation so that we can unambiguously write, for example:
