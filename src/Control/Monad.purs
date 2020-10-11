@@ -75,6 +75,10 @@ unlessM mb m =  do
 -- | instance applyF :: Apply F where
 -- |   apply = ap
 -- | ```
+-- Note: Only a `Bind` constraint is needed, but this can
+-- produce loops when used with other default implementations
+-- (i.e. `liftA1`).
+-- See https://github.com/purescript/purescript-prelude/issues/232
 ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
 ap f a = do
   f' <- f
