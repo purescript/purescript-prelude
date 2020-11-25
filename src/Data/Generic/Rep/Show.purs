@@ -9,7 +9,8 @@ module Data.Generic.Rep.Show
 import Prelude (class Show, show, (<>))
 import Data.Foldable (intercalate)
 import Data.Generic.Rep
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
+import Type.Proxy (Proxy(..))
 
 class GenericShow a where
   genericShow' :: a -> String
@@ -41,7 +42,7 @@ instance genericShowConstructor
         args -> "(" <> intercalate " " ([ctor] <> args) <> ")"
     where
       ctor :: String
-      ctor = reflectSymbol (SProxy :: SProxy name)
+      ctor = reflectSymbol (Proxy :: Proxy name)
 
 instance genericShowArgsArgument :: Show a => GenericShowArgs (Argument a) where
   genericShowArgs (Argument a) = [show a]
