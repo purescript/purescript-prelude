@@ -1,7 +1,7 @@
 /.*
 !/.gitignore
 !/.eslintrc.json
-!/.travis.yml
+!/.github/
 /bower_components/
 /node_modules/
 /output/
