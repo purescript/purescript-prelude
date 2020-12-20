@@ -5,7 +5,7 @@ exports.showIntImpl = function (n) {
 };
 
 exports.showNumberImpl = function (n) {
-  var str = n.toString();
+  var str = n === 0 && 1 / n === -Infinity ? "-0" : n.toString();
   return isNaN(str + ".0") ? str : str + ".0";
 };
 

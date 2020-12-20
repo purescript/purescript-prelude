@@ -19,6 +19,7 @@ exports.testNumberShow = function(showNumber) {
         // Within Int range
         [0.0, "0.0"],
         [1.0, "1.0"],
+        [-0.0, "-0.0"],
         [-1.0, "-1.0"],
         [500.0, "500.0"],
 
