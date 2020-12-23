@@ -36,13 +36,3 @@ newtype Argument a = Argument a
 class Generic a rep | a -> rep where
   to :: rep -> a
   from :: a -> rep
-
-instance genericMaybe
-  :: Generic (Maybe a) (Sum (Constructor "Nothing" NoArguments)
-                            (Constructor "Just" (Argument a))) where
-  to (Inl _) = Nothing
-  to (Inr (Constructor (Argument a))) = Just a
-
-  from Nothing = Inl (Constructor NoArguments)
-  from (Just a) = Inr (Constructor (Argument a))
-
