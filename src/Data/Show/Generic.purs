@@ -7,7 +7,6 @@ module Data.Show.Generic
   ) where
 
 import Prelude (class Show, show, (<>))
-import Data.Foldable (intercalate)
 import Data.Generic.Rep
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Type.Proxy (Proxy(..))
@@ -50,3 +49,5 @@ instance genericShowArgsArgument :: Show a => GenericShowArgs (Argument a) where
 -- | A `Generic` implementation of the `show` member from the `Show` type class.
 genericShow :: forall a rep. Generic a rep => GenericShow rep => a -> String
 genericShow x = genericShow' (from x)
+
+foreign import intercalate :: String -> Array String -> String
