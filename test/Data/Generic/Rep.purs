@@ -10,7 +10,7 @@ import Data.Ord.Generic as GOrd
 import Data.Ring.Generic as GRing
 import Data.Semiring.Generic as GSemiring
 import Data.Show.Generic as GShow
-import Data.HeytingAlgebra (ff, tt)
+import Data.HeytingAlgebra (ff, tt, implies)
 import Test.Utils (AlmostEff, assert)
 
 data List a = Nil | Cons { head :: a, tail :: List a }
