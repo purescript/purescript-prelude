@@ -12,7 +12,6 @@ import Data.Semiring.Generic as GSemiring
 import Data.Show.Generic as GShow
 import Data.HeytingAlgebra (ff, tt)
 import Data.Maybe (Maybe(..))
-import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Effect.Console (log, logShow)
 import Test.Assert (assert)
@@ -77,8 +76,22 @@ instance showPair :: (Show a, Show b) => Show (Pair a b) where
 instance boundedPair :: (Bounded a, Bounded b) => Bounded (Pair a b) where
   bottom = GBounded.genericBottom
   top = GBounded.genericTop
+instance semiringPair :: (Semiring a, Semiring b) => Semiring (Pair a b) where
+  add (Pair x1 y1) (Pair x2 y2) = Pair (add x1 x2) (add y1 y2)
+  one = Pair one one
+  mul (Pair x1 y1) (Pair x2 y2) = Pair (mul x1 x2) (mul y1 y2)
+  zero = Pair zero zero
+instance ringPair :: (Ring a, Ring b) => Ring (Pair a b) where
+  sub (Pair x1 y1) (Pair x2 y2) = Pair (sub x1 x2) (sub y1 y2)
+instance heytingAlgebraPair :: (HeytingAlgebra a, HeytingAlgebra b) => HeytingAlgebra (Pair a b) where
+  tt = Pair tt tt
+  ff = Pair ff ff
+  implies (Pair x1 y1) (Pair x2 y2) = Pair (x1 `implies` x2) (y1 `implies` y2)
+  conj (Pair x1 y1) (Pair x2 y2) = Pair (conj x1 x2) (conj y1 y2)
+  disj (Pair x1 y1) (Pair x2 y2) = Pair (disj x1 x2) (disj y1 y2)
+  not (Pair x y) = Pair (not x) (not y)
 
-data A1 = A1 (Tuple (Tuple Int {a :: Int}) {a :: Int})
+data A1 = A1 (Pair (Pair Int {a :: Int}) {a :: Int})
 derive instance genericA1 :: G.Generic A1 _
 instance eqA1 :: Eq A1 where
   eq a = GEq.genericEq a
@@ -92,7 +105,7 @@ instance semiringA1 :: Semiring A1 where
 instance ringA1 :: Ring A1 where
   sub x y = GRing.genericSub x y
 
-data B1 = B1 (Tuple (Tuple Boolean {a :: Boolean}) {a :: Boolean})
+data B1 = B1 (Pair (Pair Boolean {a :: Boolean}) {a :: Boolean})
 derive instance genericB1 :: G.Generic B1 _
 instance eqB1 :: Eq B1 where
   eq a = GEq.genericEq a
@@ -146,31 +159,31 @@ testGenericRep = do
   assert $ top == (Pair One D :: Pair Bit SimpleBounded)
 
   log "Checking zero"
-  assert $ (zero :: A1) == A1 (Tuple (Tuple 0 {a: 0}) {a: 0})
+  assert $ (zero :: A1) == A1 (Pair (Pair 0 {a: 0}) {a: 0})
 
   log "Checking one"
-  assert $ (one :: A1) == A1 (Tuple (Tuple 1 {a: 1}) {a: 1})
+  assert $ (one :: A1) == A1 (Pair (Pair 1 {a: 1}) {a: 1})
 
   log "Checking add"
-  assert $ A1 (Tuple (Tuple 100 {a: 10}) {a: 20}) + A1 (Tuple (Tuple 50 {a: 30}) {a: 40}) == A1 (Tuple (Tuple 150 {a: 40}) {a: 60})
+  assert $ A1 (Pair (Pair 100 {a: 10}) {a: 20}) + A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 150 {a: 40}) {a: 60})
 
   log "Checking mul"
-  assert $ A1 (Tuple (Tuple 100 {a: 10}) {a: 20}) * A1 (Tuple (Tuple 50 {a: 30}) {a: 40}) == A1 (Tuple (Tuple 5000 {a: 300}) {a: 800})
+  assert $ A1 (Pair (Pair 100 {a: 10}) {a: 20}) * A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 5000 {a: 300}) {a: 800})
 
   log "Checking sub"
-  assert $ A1 (Tuple (Tuple 100 {a: 10}) {a: 20}) - A1 (Tuple (Tuple 50 {a: 30}) {a: 40}) == A1 (Tuple (Tuple 50 {a: -20}) {a: -20})
+  assert $ A1 (Pair (Pair 100 {a: 10}) {a: 20}) - A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 50 {a: -20}) {a: -20})
 
   log "Checking ff"
-  assert $ (ff :: B1) == B1 (Tuple (Tuple false {a: false}) {a: false})
+  assert $ (ff :: B1) == B1 (Pair (Pair false {a: false}) {a: false})
 
   log "Checking tt"
-  assert $ (tt :: B1) == B1 (Tuple (Tuple true {a: true}) {a: true})
+  assert $ (tt :: B1) == B1 (Pair (Pair true {a: true}) {a: true})
 
   log "Checking conj"
-  assert $ (B1 (Tuple (Tuple true {a: false}) {a: true}) && B1 (Tuple (Tuple false {a: false}) {a: true})) == B1 (Tuple (Tuple false { a: false }) { a: true })
+  assert $ (B1 (Pair (Pair true {a: false}) {a: true}) && B1 (Pair (Pair false {a: false}) {a: true})) == B1 (Pair (Pair false { a: false }) { a: true })
 
   log "Checking disj"
-  assert $ (B1 (Tuple (Tuple true {a: false}) {a: true}) || B1 (Tuple (Tuple false {a: false}) {a: true})) == B1 (Tuple (Tuple true { a: false }) { a: true })
+  assert $ (B1 (Pair (Pair true {a: false}) {a: true}) || B1 (Pair (Pair false {a: false}) {a: true})) == B1 (Pair (Pair true { a: false }) { a: true })
 
   log "Checking not"
-  assert $ not B1 (Tuple (Tuple true {a: false}) {a: true}) == B1 (Tuple (Tuple false {a: true}) {a: false})
+  assert $ not B1 (Pair (Pair true {a: false}) {a: true}) == B1 (Pair (Pair false {a: true}) {a: false})
