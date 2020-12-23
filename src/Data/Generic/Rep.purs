@@ -10,8 +10,6 @@ module Data.Generic.Rep
   , Argument(..)
   ) where
 
-import Data.Maybe (Maybe(..))
-
 -- | A representation for types with no constructors.
 data NoConstructors
 
