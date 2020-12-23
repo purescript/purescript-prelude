@@ -3,6 +3,7 @@ module Test.Main where
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
+import Test.Data.Generic.Rep (testGenericRep)
 import Test.Utils (AlmostEff, assert)
 
 main :: AlmostEff
@@ -13,6 +14,7 @@ main = do
     testIntDivMod
     testIntDegree
     testRecordInstances
+    testGenericRep
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 

@@ -11,9 +11,7 @@ import Data.Ring.Generic as GRing
 import Data.Semiring.Generic as GSemiring
 import Data.Show.Generic as GShow
 import Data.HeytingAlgebra (ff, tt)
-import Effect (Effect)
-import Effect.Console (log, logShow)
-import Test.Assert (assert)
+import Test.Utils (AlmostEff, assert)
 
 data List a = Nil | Cons { head :: a, tail :: List a }
 
@@ -120,69 +118,70 @@ instance heytingAlgebraB1 :: HeytingAlgebra B1 where
 
 instance booleanAlgebraB1 :: BooleanAlgebra B1
 
-testGenericRep :: Effect Unit
+testGenericRep :: AlmostEff
 testGenericRep = do
-  logShow (cons 1 (cons 2 Nil))
+  assert "Checking show" $
+    show (cons 1 (cons 2 Nil)) == "(Cons { head: 1, tail: (Cons { head: 2, tail: Nil }) })"
 
-  log "Checking equality"
-  assert $ cons 1 (cons 2 Nil) == cons 1 (cons 2 Nil)
+  assert "Checking equality" $
+    cons 1 (cons 2 Nil) == cons 1 (cons 2 Nil)
 
-  log "Checking inequality"
-  assert $ cons 1 (cons 2 Nil) /= cons 1 Nil
+  assert "Checking inequality" $
+    cons 1 (cons 2 Nil) /= cons 1 Nil
 
-  log "Checking comparison EQ"
-  assert $ (Pair Zero (Some One) `compare` Pair Zero (Some One)) == EQ
+  assert "Checking comparison EQ" $
+    (Pair Zero (Some One) `compare` Pair Zero (Some One)) == EQ
 
-  log "Checking comparison GT"
-  assert $ (Pair (Some One) Zero `compare` Pair (Some Zero) Zero) == GT
+  assert "Checking comparison GT" $
+    (Pair (Some One) Zero `compare` Pair (Some Zero) Zero) == GT
 
-  log "Checking comparison LT"
-  assert $ (Pair Zero One `compare` Pair One One) == LT
+  assert "Checking comparison LT" $
+    (Pair Zero One `compare` Pair One One) == LT
 
-  log "Checking simple bottom"
-  assert $ bottom == A
+  assert "Checking simple bottom" $
+    bottom == A
 
-  log "Checking simple top"
-  assert $ top == D
+  assert "Checking simple top" $
+    top == D
 
-  log "Checking composite bottom"
-  assert $ bottom == (None :: Option SimpleBounded)
+  assert "Checking composite bottom" $
+    bottom == (None :: Option SimpleBounded)
 
-  log "Checking composite top"
-  assert $ top == Some D
+  assert "Checking composite top" $
+    top == Some D
 
-  log "Checking product bottom"
-  assert $ bottom == (Pair Zero A :: Pair Bit SimpleBounded)
+  assert "Checking product bottom" $
+    bottom == (Pair Zero A :: Pair Bit SimpleBounded)
 
-  log "Checking product top"
-  assert $ top == (Pair One D :: Pair Bit SimpleBounded)
+  assert "Checking product top" $
+    top == (Pair One D :: Pair Bit SimpleBounded)
 
-  log "Checking zero"
-  assert $ (zero :: A1) == A1 (Pair (Pair 0 {a: 0}) {a: 0})
+  assert "Checking zero" $
+    (zero :: A1) == A1 (Pair (Pair 0 {a: 0}) {a: 0})
 
-  log "Checking one"
-  assert $ (one :: A1) == A1 (Pair (Pair 1 {a: 1}) {a: 1})
+  assert "Checking one" $
+    (one :: A1) == A1 (Pair (Pair 1 {a: 1}) {a: 1})
 
-  log "Checking add"
-  assert $ A1 (Pair (Pair 100 {a: 10}) {a: 20}) + A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 150 {a: 40}) {a: 60})
+  assert "Checking add" $
+    A1 (Pair (Pair 100 {a: 10}) {a: 20}) + A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 150 {a: 40}) {a: 60})
 
-  log "Checking mul"
-  assert $ A1 (Pair (Pair 100 {a: 10}) {a: 20}) * A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 5000 {a: 300}) {a: 800})
+  assert "Checking mul" $
+    A1 (Pair (Pair 100 {a: 10}) {a: 20}) * A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 5000 {a: 300}) {a: 800})
 
-  log "Checking sub"
-  assert $ A1 (Pair (Pair 100 {a: 10}) {a: 20}) - A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 50 {a: -20}) {a: -20})
+  assert "Checking sub" $
+    A1 (Pair (Pair 100 {a: 10}) {a: 20}) - A1 (Pair (Pair 50 {a: 30}) {a: 40}) == A1 (Pair (Pair 50 {a: -20}) {a: -20})
 
-  log "Checking ff"
-  assert $ (ff :: B1) == B1 (Pair (Pair false {a: false}) {a: false})
+  assert "Checking ff" $
+    (ff :: B1) == B1 (Pair (Pair false {a: false}) {a: false})
 
-  log "Checking tt"
-  assert $ (tt :: B1) == B1 (Pair (Pair true {a: true}) {a: true})
+  assert "Checking tt" $
+    (tt :: B1) == B1 (Pair (Pair true {a: true}) {a: true})
 
-  log "Checking conj"
-  assert $ (B1 (Pair (Pair true {a: false}) {a: true}) && B1 (Pair (Pair false {a: false}) {a: true})) == B1 (Pair (Pair false { a: false }) { a: true })
+  assert "Checking conj" $
+    (B1 (Pair (Pair true {a: false}) {a: true}) && B1 (Pair (Pair false {a: false}) {a: true})) == B1 (Pair (Pair false { a: false }) { a: true })
 
-  log "Checking disj"
-  assert $ (B1 (Pair (Pair true {a: false}) {a: true}) || B1 (Pair (Pair false {a: false}) {a: true})) == B1 (Pair (Pair true { a: false }) { a: true })
+  assert "Checking disj" $
+    (B1 (Pair (Pair true {a: false}) {a: true}) || B1 (Pair (Pair false {a: false}) {a: true})) == B1 (Pair (Pair true { a: false }) { a: true })
 
-  log "Checking not"
-  assert $ not B1 (Pair (Pair true {a: false}) {a: true}) == B1 (Pair (Pair false {a: true}) {a: false})
+  assert "Checking not" $
+    not B1 (Pair (Pair true {a: false}) {a: true}) == B1 (Pair (Pair false {a: true}) {a: false})
