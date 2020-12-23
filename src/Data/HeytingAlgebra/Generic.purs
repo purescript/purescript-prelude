@@ -1,4 +1,4 @@
-module Data.Generic.Rep.HeytingAlgebra where
+module Data.HeytingAlgebra.Generic where
 
 import Prelude
 

@@ -1,4 +1,4 @@
-module Data.Generic.Rep.Semiring where
+module Data.Semiring.Generic where
 
 import Prelude
 

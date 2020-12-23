@@ -1,4 +1,4 @@
-module Data.Generic.Rep.Show
+module Data.Show.Generic
   ( class GenericShow
   , genericShow'
   , genericShow

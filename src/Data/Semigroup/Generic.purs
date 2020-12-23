@@ -1,4 +1,4 @@
-module Data.Generic.Rep.Semigroup
+module Data.Semigroup.Generic
   ( class GenericSemigroup
   , genericAppend'
   , genericAppend

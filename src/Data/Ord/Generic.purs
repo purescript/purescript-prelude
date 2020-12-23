@@ -1,4 +1,4 @@
-module Data.Generic.Rep.Ord
+module Data.Ord.Generic
   ( class GenericOrd
   , genericCompare'
   , genericCompare

@@ -3,13 +3,13 @@ module Test.Main where
 import Prelude
 
 import Data.Generic.Rep as G
-import Data.Generic.Rep.Bounded as GBounded
-import Data.Generic.Rep.Eq as GEq
-import Data.Generic.Rep.HeytingAlgebra as GHeytingAlgebra
-import Data.Generic.Rep.Ord as GOrd
-import Data.Generic.Rep.Ring as GRing
-import Data.Generic.Rep.Semiring as GSemiring
-import Data.Generic.Rep.Show as GShow
+import Data.Bounded.Generic as GBounded
+import Data.Eq.Generic as GEq
+import Data.HeytingAlgebra.Generic as GHeytingAlgebra
+import Data.Ord.Generic as GOrd
+import Data.Ring.Generic as GRing
+import Data.Semiring.Generic as GSemiring
+import Data.Show.Generic as GShow
 import Data.HeytingAlgebra (ff, tt)
 import Data.Maybe (Maybe(..))
 import Data.Tuple (Tuple(..))
@@ -158,7 +158,7 @@ main = do
   assert $ A1 (Tuple (Tuple 100 {a: 10}) {a: 20}) * A1 (Tuple (Tuple 50 {a: 30}) {a: 40}) == A1 (Tuple (Tuple 5000 {a: 300}) {a: 800})
 
   log "Checking sub"
-  assert $ A1 (Tuple (Tuple 100 {a: 10}) {a: 20}) - A1 (Tuple (Tuple 50 {a: 30}) {a: 40}) == A1 (Tuple (Tuple 50 {a: -20}) {a: -20})  
+  assert $ A1 (Tuple (Tuple 100 {a: 10}) {a: 20}) - A1 (Tuple (Tuple 50 {a: 30}) {a: 40}) == A1 (Tuple (Tuple 50 {a: -20}) {a: -20})
 
   log "Checking ff"
   assert $ (ff :: B1) == B1 (Tuple (Tuple false {a: false}) {a: false})

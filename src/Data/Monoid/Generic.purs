@@ -1,4 +1,4 @@
-module Data.Generic.Rep.Monoid
+module Data.Monoid.Generic
   ( class GenericMonoid
   , genericMempty'
   , genericMempty

@@ -1,4 +1,4 @@
-module Data.Generic.Rep.Eq
+module Data.Eq.Generic
   ( class GenericEq
   , genericEq'
   , genericEq

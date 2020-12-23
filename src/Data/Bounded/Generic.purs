@@ -1,4 +1,4 @@
-module Data.Generic.Rep.Bounded
+module Data.Bounded.Generic
   ( class GenericBottom
   , genericBottom'
   , genericBottom

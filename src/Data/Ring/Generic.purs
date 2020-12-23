@@ -1,4 +1,4 @@
-module Data.Generic.Rep.Ring where
+module Data.Ring.Generic where
 
 import Prelude
 
