@@ -11,7 +11,6 @@ import Data.Ring.Generic as GRing
 import Data.Semiring.Generic as GSemiring
 import Data.Show.Generic as GShow
 import Data.HeytingAlgebra (ff, tt)
-import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Console (log, logShow)
 import Test.Assert (assert)
