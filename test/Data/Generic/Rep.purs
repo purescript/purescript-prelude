@@ -108,8 +108,8 @@ instance heytingAlgebraB1 :: HeytingAlgebra B1 where
 
 instance booleanAlgebraB1 :: BooleanAlgebra B1
 
-main :: Effect Unit
-main = do
+testGenericRep :: Effect Unit
+testGenericRep = do
   logShow (cons 1 (cons 2 Nil))
 
   log "Checking equality"
