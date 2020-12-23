@@ -1,4 +1,4 @@
-module Test.Main where
+module Test.Data.Generic.Rep where
 
 import Prelude
 
