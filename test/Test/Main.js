@@ -42,9 +42,3 @@ exports.testNumberShow = function(showNumber) {
       ]);
   };
 };
-
-exports.throwErr = function(msg) {
-  return function() {
-    throw new Error(msg);
-  }
-}
