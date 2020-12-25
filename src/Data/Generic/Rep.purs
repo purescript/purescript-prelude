@@ -38,5 +38,5 @@ class Generic a rep | a -> rep where
   to :: rep -> a
   from :: a -> rep
 
-toRep :: forall from to. Generic from to => Proxy from -> Proxy to
+toRep :: forall a rep. Generic a rep => Proxy a -> Proxy rep
 toRep _ = Proxy
