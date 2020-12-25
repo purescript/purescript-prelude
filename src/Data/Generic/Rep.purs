@@ -2,7 +2,7 @@ module Data.Generic.Rep
   ( class Generic
   , to
   , from
-  , toRep
+  , repOf
   , NoConstructors
   , NoArguments(..)
   , Sum(..)
@@ -38,5 +38,5 @@ class Generic a rep | a -> rep where
   to :: rep -> a
   from :: a -> rep
 
-toRep :: forall a rep. Generic a rep => Proxy a -> Proxy rep
-toRep _ = Proxy
+repOf :: forall a rep. Generic a rep => Proxy a -> Proxy rep
+repOf _ = Proxy
