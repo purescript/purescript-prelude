@@ -2,6 +2,7 @@ module Data.Generic.Rep
   ( class Generic
   , to
   , from
+  , repOf
   , NoConstructors
   , NoArguments(..)
   , Sum(..)
@@ -55,3 +56,6 @@ instance showArgument :: Show a => Show (Argument a) where
 class Generic a rep | a -> rep where
   to :: rep -> a
   from :: a -> rep
+
+repOf :: forall a rep. Generic a rep => Proxy a -> Proxy rep
+repOf _ = Proxy
