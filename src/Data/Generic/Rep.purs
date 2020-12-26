@@ -2,6 +2,7 @@ module Data.Generic.Rep
   ( class Generic
   , to
   , from
+  , repOf
   , NoConstructors
   , NoArguments(..)
   , Sum(..)
@@ -9,6 +10,8 @@ module Data.Generic.Rep
   , Constructor(..)
   , Argument(..)
   ) where
+
+import Type.Proxy (Proxy(..))
 
 -- | A representation for types with no constructors.
 data NoConstructors
@@ -34,3 +37,6 @@ newtype Argument a = Argument a
 class Generic a rep | a -> rep where
   to :: rep -> a
   from :: a -> rep
+
+repOf :: forall a rep. Generic a rep => Proxy a -> Proxy rep
+repOf _ = Proxy
