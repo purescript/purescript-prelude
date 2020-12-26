@@ -124,7 +124,7 @@ testGenericRep = do
     show (cons 1 (cons 2 Nil)) == "(Cons { head: 1, tail: (Cons { head: 2, tail: Nil }) })"
 
   assert "Checking show for generic types" $
-    show (G.from $ cons 1 Nil) == "(Inr (Constructor \"Cons\" (Argument { head: 1, tail: Nil })))"
+    show (G.from $ cons 1 Nil) == "(Inr (Constructor @\"Cons\" (Argument { head: 1, tail: Nil })))"
 
   assert "Checking equality" $
     cons 1 (cons 2 Nil) == cons 1 (cons 2 Nil)

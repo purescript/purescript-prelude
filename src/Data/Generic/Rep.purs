@@ -42,7 +42,7 @@ instance showProduct :: (Show a, Show b) => Show (Product a b) where
 newtype Constructor (name :: Symbol) a = Constructor a
 
 instance showConstructor :: (IsSymbol name, Show a) => Show (Constructor name a) where
-  show (Constructor a) = "(Constructor " <> show (reflectSymbol (Proxy :: Proxy name)) <> " " <> show a <> ")"
+  show (Constructor a) = "(Constructor @" <> show (reflectSymbol (Proxy :: Proxy name)) <> " " <> show a <> ")"
 
 -- | A representation for an argument in a data constructor.
 newtype Argument a = Argument a
