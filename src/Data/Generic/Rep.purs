@@ -10,8 +10,10 @@ module Data.Generic.Rep
   , Argument(..)
   ) where
 
+import Data.Void (Void)
+
 -- | A representation for types with no constructors.
-data NoConstructors
+newtype NoConstructors = NoConstructors Void
 
 -- | A representation for constructors with no arguments.
 data NoArguments = NoArguments
