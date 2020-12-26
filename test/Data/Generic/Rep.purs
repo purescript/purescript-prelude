@@ -123,8 +123,14 @@ testGenericRep = do
   assert "Checking show" $
     show (cons 1 (cons 2 Nil)) == "(Cons { head: 1, tail: (Cons { head: 2, tail: Nil }) })"
 
-  assert "Checking show for generic types" $
+  assert "Checking show for generic types: Inl, NoArguments" $
+    show (G.from (Nil :: List Int)) == "(Inl (Constructor @\"Nil\" NoArguments))"
+
+  assert "Checking show for generic types: Inr, Constructor, and Single Argument" $
     show (G.from $ cons 1 Nil) == "(Inr (Constructor @\"Cons\" (Argument { head: 1, tail: Nil })))"
+
+  assert "Checking show for generic types: Product" $
+    show (G.from $ Pair 1 2) == "(Constructor @\"Pair\" (Product (Argument 1) (Argument 2)))"
 
   assert "Checking equality" $
     cons 1 (cons 2 Nil) == cons 1 (cons 2 Nil)
