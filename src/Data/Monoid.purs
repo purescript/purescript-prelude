@@ -72,6 +72,14 @@ instance monoidRecord :: (RL.RowToList row list, MonoidRecord list row row) => M
 -- | n` cancels with `power x (-n)`, i.e. `power x n <> power x (-n) = mempty`.
 -- | For that, we would additionally need the ability to invert elements, i.e.
 -- | a Group.
+-- |
+-- | ```purescript
+-- | power [1,2] 3    == [1,2,1,2,1,2]
+-- | power [1,2] 1    == [1,2]
+-- | power [1,2] 0    == []
+-- | power [1,2] (-3) == []
+-- | ```
+-- |
 power :: forall m. Monoid m => m -> Int -> m
 power x = go
   where
