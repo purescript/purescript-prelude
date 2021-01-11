@@ -12,6 +12,32 @@ Bugfixes:
 
 Other improvements:
 
+## [v5.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.0) - 2021-MONTH-DATE
+
+Breaking changes:
+- Make library compile on `v0.14.0` (#206)
+- `purescript-proxy` was ported to this repo (#230)
+- `purescript-generics-rep` was ported to this repo (#235)
+
+New features:
+- Added `Bounded` instance for records (#208)
+- Added `Show` instances to `Data.Generics.Rep` types (#250)
+
+Bugfixes:
+- No longer use reference equality check in `Array`'s `Eq` instance because it breaks referential transparency (#187).
+- Fix Ring laws (#228)
+
+Other improvements:
+- Added `lift2` example using `Maybe` (#213)
+- Added `const` example (#214)
+- Added `power` example (#253)
+- Improve documentation in various things (#217)
+    - Clarify `Array`'s `do notation`
+    - Clarify purpose of `Monoid` and `Semigroup` newtypes
+- Clarify `Unit` representation in FFI code (#223)
+- Migrated to GitHub Actions (#234)
+- Added a `CHANGELOG.md` file and PR template (#254)
+
 ## [v4.1.0](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.0) - 2018-07-17
 
 - Added `Ord` instance for records
@@ -160,4 +186,3 @@ This release works with versions 0.7.\* of the PureScript compiler. It will not 
 ## [v0.1.0-rc.1](https://github.com/purescript/purescript-prelude/releases/tag/v0.1.0-rc.1) - 2015-06-06
 
 Initial release candidate.
-
