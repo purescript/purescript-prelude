@@ -40,6 +40,9 @@ Other improvements:
 
 ## [v4.1.1](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.1) - 2019-04-20
 
+- Added documentation fixes/improvements to `Data.Monoid.Conj` and other `Data.Monoid` newtypes (#191, #192)
+- Made `Eq` and `Ord` instances for primitive types less JavaScript-specific (#183)
+
 ## [v4.1.0](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.0) - 2018-07-17
 
 - Added `Ord` instance for records
