@@ -38,6 +38,8 @@ Other improvements:
 - Migrated to GitHub Actions (#234)
 - Added a `CHANGELOG.md` file and PR template (#254)
 
+## [v4.1.1](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.1) - 2019-04-20
+
 ## [v4.1.0](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.0) - 2018-07-17
 
 - Added `Ord` instance for records
