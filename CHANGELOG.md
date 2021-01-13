@@ -20,6 +20,7 @@ Breaking changes:
 - `purescript-generics-rep` was ported to this repo (#235)
 - Move the `Applicative` Superclass law from `Monad` to `Bind` and rename it
 to the `Apply` Superclass law (#229)
+- Removed `unsafeCompare` (#257)
 
 New features:
 - Added `Bounded` instance for records (#208)
