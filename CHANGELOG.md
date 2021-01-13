@@ -34,7 +34,7 @@ Other improvements:
 - Added `const` example (#214)
 - Added `power` example (#253)
 - Improve documentation in various things (#217)
-    - Clarify `Array`'s `do notation`
+    - Clarify `Array`'s "do notation"
     - Clarify purpose of `Monoid` and `Semigroup` newtypes
 - Clarify `Unit` representation in FFI code (#223)
 - Migrated to GitHub Actions (#234)
