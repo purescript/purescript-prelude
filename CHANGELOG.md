@@ -36,6 +36,7 @@ Documentation improvements:
 - Added `power` example (#253)
 - Clarify `Array`'s do notation and the purposes of `Monoid` and `Semigroup` newtypes (#217)
 - Clarify `Unit` representation in FFI code (#223)
+- Fix typo: 'ommitted' -> 'omitted' (#220)
 
 Other improvements:
 - Migrated to GitHub Actions (#234)
