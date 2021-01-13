@@ -34,9 +34,7 @@ Documentation improvements:
 - Added `lift2` example using `Maybe` (#213)
 - Added `const` example (#214)
 - Added `power` example (#253)
-- Improve documentation in various things (#217)
-    - Clarify `Array`'s "do notation"
-    - Clarify purpose of `Monoid` and `Semigroup` newtypes
+- Clarify `Array`'s do notation and the purposes of `Monoid` and `Semigroup` newtypes (#217)
 - Clarify `Unit` representation in FFI code (#223)
 
 Other improvements:
