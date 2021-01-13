@@ -15,7 +15,7 @@ Other improvements:
 ## [v5.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.0) - 2021-MONTH-DATE
 
 Breaking changes:
-- Make library compile on `v0.14.0` (#206)
+- Support compiler version `v0.14.0`, and drop support for previous versions (#206)
 - `purescript-proxy` was ported to this repo (#230)
 - `purescript-generics-rep` was ported to this repo (#235)
 - Move the `Applicative` Superclass law from `Monad` to `Bind` and rename it
