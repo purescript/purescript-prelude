@@ -29,7 +29,7 @@ Bugfixes:
 - No longer use reference equality check in `Array`'s `Eq` instance because it breaks referential transparency (#187).
 - Fix Ring laws (#228)
 
-Other improvements:
+Documentation improvements:
 - Added `lift2` example using `Maybe` (#213)
 - Added `const` example (#214)
 - Added `power` example (#253)
@@ -37,6 +37,8 @@ Other improvements:
     - Clarify `Array`'s "do notation"
     - Clarify purpose of `Monoid` and `Semigroup` newtypes
 - Clarify `Unit` representation in FFI code (#223)
+
+Other improvements:
 - Migrated to GitHub Actions (#234)
 - Added a `CHANGELOG.md` file and PR template (#254)
 
