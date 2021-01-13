@@ -24,6 +24,7 @@ to the `Apply` Superclass law (#229)
 New features:
 - Added `Bounded` instance for records (#208)
 - Added `Show` instances to `Data.Generics.Rep` types (#250)
+- Added `toRep` (#238)
 
 Bugfixes:
 - No longer use reference equality check in `Array`'s `Eq` instance because it breaks referential transparency (#187).
