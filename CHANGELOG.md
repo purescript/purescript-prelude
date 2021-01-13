@@ -12,6 +12,41 @@ Bugfixes:
 
 Other improvements:
 
+## [Unreleased] - YEAR-MONTH-DATE
+
+Breaking changes:
+- Support compiler version `v0.14.0`, and drop support for previous versions (#206, #226)
+- `purescript-proxy` was ported to this repo (#230)
+- `purescript-generics-rep` was ported to this repo (#235)
+- Move the `Applicative` Superclass law from `Monad` to `Bind` and rename it
+to the `Apply` Superclass law (#229)
+
+New features:
+- Added `Bounded` instance for records (#208)
+- Added `Show` instances to `Data.Generics.Rep` types (#250)
+- Added `toRep` (#238)
+
+Bugfixes:
+- No longer use reference equality check in `Array`'s `Eq` instance because it breaks referential transparency (#187).
+- Fix Ring laws (#228)
+
+Documentation improvements:
+- Added `lift2` example using `Maybe` (#213)
+- Added `const` example (#214)
+- Added `power` example (#253)
+- Clarify `Array`'s do notation and the purposes of `Monoid` and `Semigroup` newtypes (#217)
+- Clarify `Unit` representation in FFI code (#223)
+- Fix typo: 'ommitted' -> 'omitted' (#220)
+
+Other improvements:
+- Migrated to GitHub Actions (#234)
+- Added a `CHANGELOG.md` file and PR template (#254)
+
+## [v4.1.1](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.1) - 2019-04-20
+
+- Added documentation fixes/improvements to `Data.Monoid.Conj` and other `Data.Monoid` newtypes (#191, #192)
+- Made `Eq` and `Ord` instances for primitive types less JavaScript-specific (#183)
+
 ## [v4.1.0](https://github.com/purescript/purescript-prelude/releases/tag/v4.1.0) - 2018-07-17
 
 - Added `Ord` instance for records
@@ -160,4 +195,3 @@ This release works with versions 0.7.\* of the PureScript compiler. It will not 
 ## [v0.1.0-rc.1](https://github.com/purescript/purescript-prelude/releases/tag/v0.1.0-rc.1) - 2015-06-06
 
 Initial release candidate.
-
