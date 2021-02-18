@@ -12,7 +12,7 @@ Bugfixes:
 
 Other improvements:
 
-## [Unreleased] - YEAR-MONTH-DATE
+## [v5.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.0) - 2021-02-26
 
 Breaking changes:
 - Support compiler version `v0.14.0`, and drop support for previous versions (#206, #226)
