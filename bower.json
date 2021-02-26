@@ -5,7 +5,7 @@
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "git://github.com/purescript/purescript-prelude.git"
+    "url": "https://github.com/purescript/purescript-prelude.git"
   },
   "ignore": [
     "**/.*",
