@@ -19,8 +19,8 @@ instance genericOrdNoArguments :: GenericOrd NoArguments where
 instance genericOrdSum :: (GenericOrd a, GenericOrd b) => GenericOrd (Sum a b) where
   genericCompare' (Inl a1) (Inl a2) = genericCompare' a1 a2
   genericCompare' (Inr b1) (Inr b2) = genericCompare' b1 b2
-  genericCompare' (Inl b1) (Inr b2) = LT
-  genericCompare' (Inr b1) (Inl b2) = GT
+  genericCompare' (Inl _) (Inr _) = LT
+  genericCompare' (Inr _) (Inl _) = GT
 
 instance genericOrdProduct :: (GenericOrd a, GenericOrd b) => GenericOrd (Product a b) where
   genericCompare' (Product a1 b1) (Product a2 b2) =
