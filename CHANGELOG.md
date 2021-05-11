@@ -11,7 +11,11 @@ New features:
 Bugfixes:
 
 Other improvements:
-- Fix warnings revealed by `v0.14.1` PS release (#262)
+
+## [v5.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.1) - 2021-05-11
+
+Other improvements:
+- Fix warnings revealed by `v0.14.1` PS release (#262 by @JordanMartinez)
 
 ## [v5.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.0) - 2021-02-26
 
