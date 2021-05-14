@@ -5,6 +5,7 @@ import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
 import Test.Data.Generic.Rep (testGenericRep)
 import Test.Utils (AlmostEff, assert)
+import Data.Ring.Extra (fromInt)
 
 main :: AlmostEff
 main = do
@@ -15,6 +16,7 @@ main = do
     testIntDegree
     testRecordInstances
     testGenericRep
+    testFromInt
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 
@@ -151,3 +153,9 @@ testRecordInstances = do
   assert "Record top" $
     (top :: { a :: Boolean }).a
     == top
+
+testFromInt :: AlmostEff
+testFromInt = do
+  assert "Zero" $ fromInt 0 == 0.0
+  assert "Negative" $ fromInt (-1) == (-1.0)
+  assert "Positive" $ fromInt 1 == 1.0
