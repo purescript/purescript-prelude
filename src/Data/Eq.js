@@ -6,13 +6,13 @@ var refEq = function (r1) {
   };
 };
 
-exports.eqBooleanImpl = refEq;
-exports.eqIntImpl = refEq;
-exports.eqNumberImpl = refEq;
-exports.eqCharImpl = refEq;
-exports.eqStringImpl = refEq;
+export var eqBooleanImpl = refEq;
+export var eqIntImpl = refEq;
+export var eqNumberImpl = refEq;
+export var eqCharImpl = refEq;
+export var eqStringImpl = refEq;
 
-exports.eqArrayImpl = function (f) {
+export var eqArrayImpl = function (f) {
   return function (xs) {
     return function (ys) {
       if (xs.length !== ys.length) return false;

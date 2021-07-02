@@ -1,18 +1,18 @@
 "use strict";
 
-exports.unsafeHas = function (label) {
+export var unsafeHas = function (label) {
   return function (rec) {
     return {}.hasOwnProperty.call(rec, label);
   };
 };
 
-exports.unsafeGet = function (label) {
+export var unsafeGet = function (label) {
   return function (rec) {
     return rec[label];
   };
 };
 
-exports.unsafeSet = function (label) {
+export var unsafeSet = function (label) {
   return function (value) {
     return function (rec) {
       var copy = {};
@@ -27,7 +27,7 @@ exports.unsafeSet = function (label) {
   };
 };
 
-exports.unsafeDelete = function (label) {
+export var unsafeDelete = function (label) {
   return function (rec) {
     var copy = {};
     for (var key in rec) {

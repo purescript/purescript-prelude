@@ -1,15 +1,15 @@
 "use strict";
 
-exports.showIntImpl = function (n) {
+export var showIntImpl = function (n) {
   return n.toString();
 };
 
-exports.showNumberImpl = function (n) {
+export var showNumberImpl = function (n) {
   var str = n.toString();
   return isNaN(str + ".0") ? str : str + ".0";
 };
 
-exports.showCharImpl = function (c) {
+export var showCharImpl = function (c) {
   var code = c.charCodeAt(0);
   if (code < 0x20 || code === 0x7F) {
     switch (c) {
@@ -26,7 +26,7 @@ exports.showCharImpl = function (c) {
   return c === "'" || c === "\\" ? "'\\" + c + "'" : "'" + c + "'";
 };
 
-exports.showStringImpl = function (s) {
+export var showStringImpl = function (s) {
   var l = s.length;
   return "\"" + s.replace(
     /[\0-\x1F\x7F"\\]/g, // eslint-disable-line no-control-regex
@@ -50,7 +50,7 @@ exports.showStringImpl = function (s) {
   ) + "\"";
 };
 
-exports.showArrayImpl = function (f) {
+export var showArrayImpl = function (f) {
   return function (xs) {
     var ss = [];
     for (var i = 0, l = xs.length; i < l; i++) {
@@ -60,13 +60,13 @@ exports.showArrayImpl = function (f) {
   };
 };
 
-exports.cons = function (head) {
+export var cons = function (head) {
   return function (tail) {
     return [head].concat(tail);
   };
 };
 
-exports.join = function (separator) {
+export var join = function (separator) {
   return function (xs) {
     return xs.join(separator);
   };

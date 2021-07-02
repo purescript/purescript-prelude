@@ -12,13 +12,13 @@ var unsafeCompareImpl = function (lt) {
   };
 };
 
-exports.ordBooleanImpl = unsafeCompareImpl;
-exports.ordIntImpl = unsafeCompareImpl;
-exports.ordNumberImpl = unsafeCompareImpl;
-exports.ordStringImpl = unsafeCompareImpl;
-exports.ordCharImpl = unsafeCompareImpl;
+export var ordBooleanImpl = unsafeCompareImpl;
+export var ordIntImpl = unsafeCompareImpl;
+export var ordNumberImpl = unsafeCompareImpl;
+export var ordStringImpl = unsafeCompareImpl;
+export var ordCharImpl = unsafeCompareImpl;
 
-exports.ordArrayImpl = function (f) {
+export var ordArrayImpl = function (f) {
   return function (xs) {
     return function (ys) {
       var i = 0;
