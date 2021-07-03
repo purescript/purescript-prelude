@@ -39,7 +39,7 @@ const a _ = a
 -- | `($)` which allows parentheses to be omitted in some cases, or as a
 -- | natural way to apply a chain of composed functions to a value.
 apply :: forall a b. (a -> b) -> a -> b
-apply f x = f x
+apply f = f
 
 -- | Applies a function to an argument: the reverse of `(#)`.
 -- |
