@@ -11,6 +11,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Changed `unit`'s FFI representation from `{}` to `undefined` (#267 by @JordanMartinez)
 
 ## [v5.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.1) - 2021-05-11
 

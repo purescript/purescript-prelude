@@ -1,3 +1,3 @@
 "use strict";
 
-exports.unit = {};
+exports.unit = undefined;
