@@ -1,6 +1,8 @@
 module Test.Main where
 
 import Prelude
+
+import Data.Functor (mapRecord)
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
 import Test.Data.Generic.Rep (testGenericRep)
@@ -151,3 +153,15 @@ testRecordInstances = do
   assert "Record top" $
     (top :: { a :: Boolean }).a
     == top
+
+  assert "mapRecord" $
+    mapRecord (_ + 1) { a: [ 1 ], b: [ 2 ] }
+    == { a: [ 2 ], b: [ 3 ] }
+
+  assert "mapRecord" $
+    mapRecord (_ + 1) { a: [ 1 ], b: Box 2 }
+    == { a: [ 2 ], b: Box 3 }
+
+data Box a = Box a
+derive instance (Eq a) => Eq (Box a)
+derive instance Functor Box

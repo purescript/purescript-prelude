@@ -7,6 +7,12 @@ Notable changes to this project are documented in this file. The format is based
 Breaking changes:
 
 New features:
+- Added `mapRecord` to simulate a `Functor` instance for `Record` (#268 by @JordanMartinez)
+
+  A `Record`'s kind signature (`Row Type -> Type`) does not satisfy the kind signature requirements
+  of `Functor`, so we can't define a `Functor` type class instance for `Record`, even if it
+  otherwise satisfies it. Although this could be done via a Newtype, it involves
+  a lot more type-level machinery to make it work.
 
 Bugfixes:
 
