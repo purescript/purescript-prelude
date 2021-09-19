@@ -4,6 +4,7 @@ module Data.Show
   ) where
 
 import Data.Symbol (class IsSymbol, reflectSymbol)
+import Prim.Row (class Nub)
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
 import Type.Proxy (Proxy(..), Proxy2, Proxy3)
@@ -45,7 +46,7 @@ instance showProxy2 :: Show (Proxy2 a) where
 instance showProxy3 :: Show (Proxy3 a) where
   show _ = "Proxy3"
 
-instance showRecord :: (RL.RowToList rs ls, ShowRecordFields ls rs) => Show (Record rs) where
+instance showRecord :: (Nub rs rs', RL.RowToList rs' ls, ShowRecordFields ls rs') => Show (Record rs) where
   show record = case showRecordFields (Proxy :: Proxy ls) record of
     [] -> "{}"
     fields -> join " " ["{", join ", " fields, "}"]
