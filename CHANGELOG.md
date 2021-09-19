@@ -9,6 +9,7 @@ Breaking changes:
 New features:
 
 Bugfixes:
+- Fix Record's `Show` instance when it has duplicate labels (#269 by @JordanMartinez)
 
 Other improvements:
 - Changed `unit`'s FFI representation from `{}` to `undefined` (#267 by @JordanMartinez)
