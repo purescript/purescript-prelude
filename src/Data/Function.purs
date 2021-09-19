@@ -18,6 +18,10 @@ import Data.Ring ((-))
 -- |
 -- | ```purescript
 -- | flip append "1" "2" == append "2" "1" == "21"
+-- |
+-- | const 1 "two" == 1
+-- |
+-- | flip const 1 "two" == const "two" 1 == "two"
 -- | ```
 flip :: forall a b c. (a -> b -> c) -> b -> a -> c
 flip f b a = f a b
