@@ -26,13 +26,13 @@ import Data.Monoid (power)
 import Data.Set (Set)
 import Data.Set as Set
 import Data.String as String
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Prim.Row as Row
 import Record (get, delete)
 import Prim.RowList (class RowToList, RowList, Nil, Cons)
-import Type.Data.RowList (RLProxy(..))
+import Type.Proxy (Proxy(..))
 
 -- | Ideally, all types of kind `Type` should have an instance of this class.
 -- | If you are defining a type where it's difficult/impossible to do anything
@@ -86,7 +86,7 @@ instance debugFunction :: Debug (a -> b) where
 -- | it is not intended to be used directly.
 class DebugRowList :: RowList Type -> Row Type -> Constraint
 class DebugRowList list row | list -> row where
-  debugRowList :: RLProxy list -> Record row -> List (Tuple String D.Repr)
+  debugRowList :: Proxy list -> Record row -> List (Tuple String D.Repr)
 
 instance debugRowListNil :: DebugRowList Nil () where
   debugRowList _ _ = Nil
@@ -102,9 +102,9 @@ instance debugRowListCons ::
   debugRowList _ rec =
     Tuple (reflectSymbol key) (debug val) : rest
     where
-    key = SProxy :: SProxy key
+    key = Proxy :: Proxy key
     val = get key rec
-    rest = debugRowList (RLProxy :: RLProxy listRest) (delete key rec)
+    rest = debugRowList (Proxy :: Proxy listRest) (delete key rec)
 
 instance debugRecord ::
   ( RowToList row list
@@ -113,7 +113,7 @@ instance debugRecord ::
   debug r =
     D.record (Array.fromFoldable (debugRowList prx r))
     where
-    prx = RLProxy :: RLProxy list
+    prx = Proxy :: Proxy list
 
 -------------------------------------------------------------------------------
 -- Prelude

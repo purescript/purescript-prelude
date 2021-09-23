@@ -25,7 +25,8 @@ import Prelude
 import Data.Debug.Class (class Debug, debug)
 import Data.Debug.Type as D
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from)
-import Data.Symbol (class IsSymbol, SProxy(..), reflectSymbol)
+import Data.Symbol (class IsSymbol, reflectSymbol)
+import Type.Proxy (Proxy(..))
 
 -- | A generic implementation of the `Debug` type class.
 genericDebug :: forall a rep.
@@ -46,7 +47,7 @@ instance genericDebugConstructor
   :: (GenericDebugArgs a, IsSymbol name) => GenericDebug (Constructor name a) where
   genericDebug' (Constructor a) =
     D.constructor
-      (reflectSymbol (SProxy :: SProxy name))
+      (reflectSymbol (Proxy :: Proxy name))
       (genericDebugArgs a)
 
 instance genericDebugSum :: (GenericDebug a, GenericDebug b) => GenericDebug (Sum a b) where
