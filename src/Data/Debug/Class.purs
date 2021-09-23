@@ -31,7 +31,7 @@ import Data.Tuple (Tuple(..))
 import Effect (Effect)
 import Prim.Row as Row
 import Record (get, delete)
-import Prim.RowList (class RowToList, kind RowList, Nil, Cons)
+import Prim.RowList (class RowToList, RowList, Nil, Cons)
 import Type.Data.RowList (RLProxy(..))
 
 -- | Ideally, all types of kind `Type` should have an instance of this class.
@@ -45,6 +45,7 @@ import Type.Data.RowList (RLProxy(..))
 -- | ```purescript
 -- | x /= y `implies` debug x /= debug y
 -- | ```
+class Debug :: Type -> Constraint
 class Debug a where
   debug :: a -> D.Repr
 
@@ -83,7 +84,8 @@ instance debugFunction :: Debug (a -> b) where
 
 -- | This class is part of the machinery for the `Debug (Record r)` instance;
 -- | it is not intended to be used directly.
-class DebugRowList (list :: RowList) (row :: # Type) | list -> row where
+class DebugRowList :: RowList Type -> Row Type -> Constraint
+class DebugRowList list row | list -> row where
   debugRowList :: RLProxy list -> Record row -> List (Tuple String D.Repr)
 
 instance debugRowListNil :: DebugRowList Nil () where
