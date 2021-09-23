@@ -86,7 +86,7 @@ instance debugFunction :: Debug (a -> b) where
 -- | it is not intended to be used directly.
 class DebugRowList :: RowList Type -> Row Type -> Constraint
 class DebugRowList list row | list -> row where
-  debugRowList :: Proxy list -> Record row -> List (Tuple String D.Repr)
+  debugRowList :: Proxy list -> Record row -> List { key :: String, value :: D.Repr }
 
 instance debugRowListNil :: DebugRowList Nil () where
   debugRowList _ _ = Nil
@@ -100,7 +100,7 @@ instance debugRowListCons ::
   , IsSymbol key
   ) => DebugRowList (Cons key a listRest) rowFull where
   debugRowList _ rec =
-    Tuple (reflectSymbol key) (debug val) : rest
+    { key: reflectSymbol key, value: debug val } : rest
     where
     key = Proxy :: Proxy key
     val = get key rec
@@ -146,7 +146,7 @@ instance debugTuple :: (Debug a, Debug b) => Debug (Tuple a b) where
 instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
   debug m =
     D.assoc "Map"
-      (map (bimap debug debug) (Map.toUnfoldable m))
+      (map (\(Tuple k v) -> { key: debug k, value: debug v }) (Map.toUnfoldable m))
 
 instance debugEffect :: Debug (Effect a) where
   debug _ = D.opaque_ "Effect"

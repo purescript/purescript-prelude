@@ -43,7 +43,6 @@ import Data.Foldable (foldMap, all, elem)
 import Data.Maybe (Maybe(..), maybe)
 import Data.Newtype (unwrap)
 import Data.String as String
-import Data.Tuple (Tuple(..))
 import Math as Math
 
 -------------------------------------------------------------------------------
@@ -221,15 +220,15 @@ array = Repr <<< Node Array <<< map unRepr
 -- | Create a `Repr` for a `Record`, given its fields. This function should
 -- | only be used to construct `Repr` values for values of the type `Record r`;
 -- | other record-like types may use the `assoc` function.
-record :: Array (Tuple String Repr) -> Repr
+record :: Array { key :: String, value :: Repr } -> Repr
 record =
   Repr <<< Node Record <<< makeProps
 
-makeProps :: Array (Tuple String Repr) -> Array (Tree Label)
+makeProps :: Array { key :: String, value :: Repr } -> Array (Tree Label)
 makeProps = map unwrapProp
   where
-  unwrapProp :: Tuple String Repr -> Tree Label
-  unwrapProp (Tuple name (Repr val)) =
+  unwrapProp :: { key :: String, value :: Repr } -> Tree Label
+  unwrapProp { key: name, value: Repr val } =
     Node (Prop name) [val]
 
 -- | Create a `Repr` for a value constructed by a data constructor. For
@@ -271,12 +270,12 @@ collection name contents =
 
 -- | Create a `Repr` for a type representing a mapping of keys to values, such
 -- | as `Map`. The first argument is the type name, the second is the contents.
-assoc :: String -> Array (Tuple Repr Repr) -> Repr
+assoc :: String -> Array { key :: Repr, value :: Repr } -> Repr
 assoc name contents =
   Repr (Node (Assoc name) (map makeAssocProp contents))
   where
-  makeAssocProp :: Tuple Repr Repr -> Tree Label
-  makeAssocProp (Tuple (Repr k) (Repr v)) = Node AssocProp [k, v]
+  makeAssocProp :: { key :: Repr, value :: Repr } -> Tree Label
+  makeAssocProp { key: Repr k, value: Repr v } = Node AssocProp [k, v]
 
 -- | Should a label be considered as adding depth (from the perspective of
 -- | only pretty-printing to a certain depth)?
