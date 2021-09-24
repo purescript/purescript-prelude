@@ -1,6 +1,9 @@
 module Data.Debug.Type.InternalRoseTree where
 
-import Prelude
+import Data.Eq (class Eq)
+import Data.Ord (class Ord, max)
+import Data.Functor (class Functor, map)
+import Data.Ring ((-))
 
 -------------------------------------------------------------------------------
 -- BASIC DATA TYPES -----------------------------------------------------------
