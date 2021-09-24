@@ -11,7 +11,6 @@ module Data.Debug.Class
 import Prelude
 
 import Data.Array as Array
-import Data.Bifunctor (bimap)
 import Data.Date (Date, day, month, year)
 import Data.Debug.Type as D
 import Data.Either (Either(..))
