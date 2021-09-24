@@ -22,7 +22,6 @@ module Data.Debug.Generic
 
 import Control.Semigroupoid ((<<<))
 import Data.Semigroup ((<>))
-
 import Data.Debug.Class (class Debug, debug)
 import Data.Debug.Type as D
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), NoConstructors, Product(..), Sum(..), from)
