@@ -7,10 +7,13 @@ module Data.Debug.Class
   , debugRowList
   ) where
 
-import Prelude
-
+import Control.Semigroupoid ((<<<))
+import Data.Functor (map)
 import Data.Debug.Type as D
+import Data.Ordering (Ordering(..))
 import Data.Symbol (class IsSymbol, reflectSymbol)
+import Data.Unit (Unit)
+import Data.Void (Void, absurd)
 import Prim.Row as Row
 import Prim.RowList (class RowToList, RowList, Nil, Cons)
 import Record.Unsafe (unsafeDelete, unsafeGet)
