@@ -10,12 +10,11 @@ module Data.Debug.Class
 
 import Prelude
 
-import Data.Array as Array
 import Data.Date (Date, day, month, year)
 import Data.Debug.Type as D
 import Data.Either (Either(..))
 import Data.Enum (fromEnum)
-import Data.List (List(..), (:))
+import Data.List (List)
 import Data.List as List
 import Data.List.Lazy as LazyList
 import Data.Map (Map)
@@ -85,10 +84,10 @@ instance debugFunction :: Debug (a -> b) where
 -- | it is not intended to be used directly.
 class DebugRowList :: RowList Type -> Row Type -> Constraint
 class DebugRowList list row | list -> row where
-  debugRowList :: Proxy list -> Record row -> List { key :: String, value :: D.Repr }
+  debugRowList :: Proxy list -> Record row -> Array { key :: String, value :: D.Repr }
 
 instance debugRowListNil :: DebugRowList Nil () where
-  debugRowList _ _ = Nil
+  debugRowList _ _ = []
 
 instance debugRowListCons ::
   ( Debug a
@@ -99,7 +98,7 @@ instance debugRowListCons ::
   , IsSymbol key
   ) => DebugRowList (Cons key a listRest) rowFull where
   debugRowList _ rec =
-    { key: reflectSymbol key, value: debug val } : rest
+    cons { key: reflectSymbol key, value: debug val } rest
     where
     key = Proxy :: Proxy key
     val = get key rec
@@ -110,7 +109,7 @@ instance debugRecord ::
   , DebugRowList list row
   ) => Debug (Record row) where
   debug r =
-    D.record (Array.fromFoldable (debugRowList prx r))
+    D.record (debugRowList prx r)
     where
     prx = Proxy :: Proxy list
 
@@ -173,3 +172,5 @@ instance debugRepr :: Debug D.Repr where
 
 instance debugReprDelta :: Debug D.ReprDelta where
   debug _ = D.opaque_ "ReprDelta"
+
+foreign import cons :: forall a. a -> Array a -> Array a
