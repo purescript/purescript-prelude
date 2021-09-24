@@ -3,7 +3,6 @@
 module Data.Debug.Class
   ( class Debug
   , debug
-  , diff
   , class DebugRowList
   , debugRowList
   ) where
@@ -31,15 +30,6 @@ import Type.Proxy (Proxy(..))
 class Debug :: Type -> Constraint
 class Debug a where
   debug :: a -> D.Repr
-
--- | Compare two values using the specified options, and record the results as
--- | a `ReprDelta` structure.
-diffWith :: forall a. Debug a => D.DiffOptions -> a -> a -> D.ReprDelta
-diffWith opts x y = D.diffReprWith opts (debug x) (debug y)
-
--- | Compare two values using the default options.
-diff :: forall a. Debug a => a -> a -> D.ReprDelta
-diff = diffWith D.defaultDiffOptions
 
 -------------------------------------------------------------------------------
 -- Prim

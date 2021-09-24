@@ -4,6 +4,6 @@ module Data.Debug
   , module Data.Debug.Generic
   ) where
 
-import Data.Debug.Type (DiffOptions, PrettyPrintOptions, Repr, ReprDelta, array, assoc, boolean, char, collection, constructor, defaultDiffOptions, defaultPrettyPrintOptions, diffRepr, diffReprWith, int, number, opaque, opaqueLiteral, opaque_, prettyPrint, prettyPrintDelta, prettyPrintDeltaWith, prettyPrintWith, record, string)
-import Data.Debug.Class (class Debug, class DebugRowList, debug, debugRowList, diff)
+import Data.Debug.Type (Repr, array, assoc, boolean, char, collection, constructor, int, number, opaque, opaqueLiteral, opaque_, record, string)
+import Data.Debug.Class (class Debug, class DebugRowList, debug, debugRowList)
 import Data.Debug.Generic (class GenericDebug, class GenericDebugArgs, genericDebug, genericDebug', genericDebugArgs)
