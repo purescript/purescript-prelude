@@ -23,9 +23,11 @@ module Data.Debug.Type
   , unRepr
   ) where
 
-import Prelude
-
+import Data.Eq (class Eq)
 import Data.Debug.Type.InternalRoseTree (InternalRoseTree(..))
+import Data.Ord (class Ord)
+import Data.Functor (map)
+import Control.Semigroupoid ((<<<))
 
 -------------------------------------------------------------------------------
 -- THE REPR TYPE & CONSTRUCTORS -----------------------------------------------
