@@ -10,23 +10,8 @@ module Data.Debug.Class
 
 import Prelude
 
-import Data.Date (Date, day, month, year)
 import Data.Debug.Type as D
-import Data.Either (Either(..))
-import Data.Enum (fromEnum)
-import Data.List (List)
-import Data.List as List
-import Data.List.Lazy as LazyList
-import Data.Map (Map)
-import Data.Map as Map
-import Data.Maybe (Maybe(..))
-import Data.Monoid (power)
-import Data.Set (Set)
-import Data.Set as Set
-import Data.String as String
 import Data.Symbol (class IsSymbol, reflectSymbol)
-import Data.Tuple (Tuple(..))
-import Effect (Effect)
 import Prim.Row as Row
 import Record (get, delete)
 import Prim.RowList (class RowToList, RowList, Nil, Cons)
@@ -126,51 +111,5 @@ instance debugUnit :: Debug Unit where
 
 instance debugVoid :: Debug Void where
   debug = absurd
-
--------------------------------------------------------------------------------
--- Core
-
-instance debugMaybe :: Debug a => Debug (Maybe a) where
-  debug (Just x) = D.constructor "Just" [debug x]
-  debug Nothing = D.constructor "Nothing" []
-
-instance debugEither :: (Debug a, Debug b) => Debug (Either a b) where
-  debug (Right x) = D.constructor "Right" [debug x]
-  debug (Left x) = D.constructor "Left" [debug x]
-
-instance debugTuple :: (Debug a, Debug b) => Debug (Tuple a b) where
-  debug (Tuple x y) = D.constructor "Tuple" [debug x, debug y]
-
-instance debugMap :: (Debug k, Debug v) => Debug (Map k v) where
-  debug m =
-    D.assoc "Map"
-      (map (\(Tuple k v) -> { key: debug k, value: debug v }) (Map.toUnfoldable m))
-
-instance debugEffect :: Debug (Effect a) where
-  debug _ = D.opaque_ "Effect"
-
-instance debugList :: Debug a => Debug (List a) where
-  debug xs = D.collection "List" (map debug (List.toUnfoldable xs))
-
-instance debugLazyList :: Debug a => Debug (LazyList.List a) where
-  debug xs = D.collection "List.Lazy" (map debug (LazyList.toUnfoldable xs))
-
-instance debugSet :: Debug a => Debug (Set a) where
-  debug s = D.collection "Set" (map debug (Set.toUnfoldable s))
-
-instance debugDate :: Debug Date where
-  debug d = D.opaqueLiteral "Date"
-    (ljust0 4 (show (fromEnum (year d))) <> "-" <>
-     ljust0 2 (show (fromEnum (month d))) <> "-" <>
-     ljust0 2 (show (fromEnum (day d))))
-    where
-    ljust0 n str =
-      power "0" (n - String.length str) <> str
-
-instance debugRepr :: Debug D.Repr where
-  debug r = D.opaque "Repr" r
-
-instance debugReprDelta :: Debug D.ReprDelta where
-  debug _ = D.opaque_ "ReprDelta"
 
 foreign import cons :: forall a. a -> Array a -> Array a
