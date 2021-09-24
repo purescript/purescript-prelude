@@ -7,6 +7,7 @@ Notable changes to this project are documented in this file. The format is based
 Breaking changes:
 
 New features:
+- Ported the `Debug` type class from `purescript-debugged` into `purescript-prelude` (#273 by @JordanMartinez)
 
 Bugfixes:
 
