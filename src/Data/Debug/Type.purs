@@ -1,7 +1,8 @@
 -- | This module provides the basic building blocks which the `Debug` type
 -- | class makes use of. It provides the `Repr` type and functions for
--- | constructing values of this type, the `ReprDelta` type for representing
--- | differences between two `Repr` values, and pretty-printing functions.
+-- | constructing values of this type. It does not provide
+-- | values for representing differences between two `Repr` values,
+-- | nor pretty-printing functions.
 module Data.Debug.Type
   -- Data type and construction
   ( Label(..)

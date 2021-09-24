@@ -1,3 +1,5 @@
+-- | This module provides the `ReprDelta` type for representing
+-- | differences between two `Repr` values, and pretty-printing functions.
 module Data.Debug.PrettyPrinter
   -- diffing
   ( diff
