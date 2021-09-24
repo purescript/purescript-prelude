@@ -49,30 +49,32 @@ import Math as Math
 -- BASIC DATA TYPES -----------------------------------------------------------
 
 -- | A strict rose tree type. Based on Data.Tree in Haskell's `containers`.
-data Tree a
-  = Node a (Array (Tree a))
+-- | This type is intended to be used only by `Data.Debug.Type (Repr)`
+-- | and pretty-printers that print the `Repr` values.
+data InternalRoseTree a
+  = Node a (Array (InternalRoseTree a))
 
-rootLabel :: forall a. Tree a -> a
+rootLabel :: forall a. InternalRoseTree a -> a
 rootLabel (Node r _) = r
 
-subtrees :: forall a. Tree a -> Array (Tree a)
+subtrees :: forall a. InternalRoseTree a -> Array (InternalRoseTree a)
 subtrees (Node _ xs) = xs
 
-isLeaf :: forall a. Tree a -> Boolean
+isLeaf :: forall a. InternalRoseTree a -> Boolean
 isLeaf (Node _ []) = true
 isLeaf _ = false
 
-derive instance eqTree :: Eq a => Eq (Tree a)
-derive instance ordTree :: Ord a => Ord (Tree a)
-derive instance functorTree :: Functor Tree
+derive instance eqInternalRoseTree :: Eq a => Eq (InternalRoseTree a)
+derive instance ordInternalRoseTree :: Ord a => Ord (InternalRoseTree a)
+derive instance functorInternalRoseTree :: Functor InternalRoseTree
 
--- | Fold a tree bottom-up; the function `foldTree f` applies `f []` to each of
+-- | Fold an InternalRoseTree bottom-up; the function `foldTree f` applies `f []` to each of
 -- | the leaf nodes, and then works its way up the internal nodes, applying `f`
 -- | to:
 -- | - the label at the current node, and
 -- | - the result of applying `f` to each child,
 -- | finishing at the root.
-foldTree :: forall a b. (a -> Array b -> b) -> Tree a -> b
+foldTree :: forall a b. (a -> Array b -> b) -> InternalRoseTree a -> b
 foldTree f = go
   where
   go (Node x ts) = f x (map go ts)
@@ -83,7 +85,7 @@ foldTree f = go
 -- | - a function which tells us whether to count the current node as
 -- |   contributing to the depth of the subtree
 -- | - the depth to preserve.
-prune :: forall a. a -> (a -> Boolean) -> Int -> Tree a -> Tree a
+prune :: forall a. a -> (a -> Boolean) -> Int -> InternalRoseTree a -> InternalRoseTree a
 prune replacement counts depth = go (max 1 depth)
   where
   -- If we've reached a leaf anyway, just print it
@@ -103,15 +105,15 @@ prune replacement counts depth = go (max 1 depth)
 -- | A debugging representation of some PureScript value. It is often possible
 -- | to reconstruct the original value from this representation, but not
 -- | always; notable counterexamples are `Effect`, `Ref`, and `(->)`.
-newtype Repr = Repr (Tree Label)
+newtype Repr = Repr (InternalRoseTree Label)
 
 derive newtype instance eqRepr :: Eq Repr
 derive newtype instance ordRepr :: Ord Repr
 
-unRepr :: Repr -> Tree Label
+unRepr :: Repr -> InternalRoseTree Label
 unRepr (Repr tree) = tree
 
--- | Labels for a tree which encodes a debugging representation of some
+-- | Labels for an InternalRoseTree which encodes a debugging representation of some
 -- | PureScript value.
 data Label
   -- Note that Repr trees are not correct-by-construction by default; whether
@@ -224,10 +226,10 @@ record :: Array { key :: String, value :: Repr } -> Repr
 record =
   Repr <<< Node Record <<< makeProps
 
-makeProps :: Array { key :: String, value :: Repr } -> Array (Tree Label)
+makeProps :: Array { key :: String, value :: Repr } -> Array (InternalRoseTree Label)
 makeProps = map unwrapProp
   where
-  unwrapProp :: { key :: String, value :: Repr } -> Tree Label
+  unwrapProp :: { key :: String, value :: Repr } -> InternalRoseTree Label
   unwrapProp { key: name, value: Repr val } =
     Node (Prop name) [val]
 
@@ -274,7 +276,7 @@ assoc :: String -> Array { key :: Repr, value :: Repr } -> Repr
 assoc name contents =
   Repr (Node (Assoc name) (map makeAssocProp contents))
   where
-  makeAssocProp :: { key :: Repr, value :: Repr } -> Tree Label
+  makeAssocProp :: { key :: Repr, value :: Repr } -> InternalRoseTree Label
   makeAssocProp { key: Repr k, value: Repr v } = Node AssocProp [k, v]
 
 -- | Should a label be considered as adding depth (from the perspective of
@@ -363,9 +365,9 @@ defaultDiffOptions =
 diff' :: forall a.
   (a -> a -> Boolean) ->
   (a -> Boolean) ->
-  Tree a ->
-  Tree a ->
-  Tree (Delta a)
+  InternalRoseTree a ->
+  InternalRoseTree a ->
+  InternalRoseTree (Delta a)
 diff' labelEq isUnimportantLabel = go
   where
   go left@(Node x xs) right@(Node y ys) =
@@ -382,7 +384,7 @@ diff' labelEq isUnimportantLabel = go
       else
         Node Different [map Subtree left, map Subtree right]
 
-  goChildren :: Array (Tree a) -> Array (Tree a) -> Array (Tree (Delta a))
+  goChildren :: Array (InternalRoseTree a) -> Array (InternalRoseTree a) -> Array (InternalRoseTree (Delta a))
   goChildren xs ys =
     let
       xlen = Array.length xs
@@ -397,10 +399,10 @@ diff' labelEq isUnimportantLabel = go
         GT ->
           begin <> map (extra Extra2) (Array.drop ylen xs)
 
-  extra :: Delta a -> Tree a -> Tree (Delta a)
+  extra :: Delta a -> InternalRoseTree a -> InternalRoseTree (Delta a)
   extra ctor subtree = Node ctor [map Subtree subtree]
 
-  differing :: Tree (Delta a) -> Boolean
+  differing :: InternalRoseTree (Delta a) -> Boolean
   differing (Node root _) =
     case root of
       Same _ ->
@@ -427,9 +429,9 @@ diffRepr = diffReprWith defaultDiffOptions
 -- | A delta between two `Repr` values; describes the differences between two
 -- | values. Useful for testing, as this type can show you exactly where an
 -- | expected and an actual value differ.
-newtype ReprDelta = ReprDelta (Tree (Delta Label))
+newtype ReprDelta = ReprDelta (InternalRoseTree (Delta Label))
 
-unReprDelta :: ReprDelta -> Tree (Delta Label)
+unReprDelta :: ReprDelta -> InternalRoseTree (Delta Label)
 unReprDelta (ReprDelta tree) = tree
 
 derive newtype instance eqReprDelta :: Eq ReprDelta
