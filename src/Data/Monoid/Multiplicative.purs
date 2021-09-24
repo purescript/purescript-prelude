@@ -2,6 +2,7 @@ module Data.Monoid.Multiplicative where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
 import Data.Eq (class Eq1)
 import Data.Ord (class Ord1)
 
@@ -23,6 +24,9 @@ derive newtype instance boundedMultiplicative :: Bounded a => Bounded (Multiplic
 
 instance showMultiplicative :: Show a => Show (Multiplicative a) where
   show (Multiplicative a) = "(Multiplicative " <> show a <> ")"
+
+instance debugMultiplicative :: Debug a => Debug (Multiplicative a) where
+  debug (Multiplicative a) = D.constructor "Multiplicative" [ debug a ]
 
 derive instance functorMultiplicative :: Functor Multiplicative
 

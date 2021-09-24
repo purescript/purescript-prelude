@@ -2,6 +2,7 @@ module Data.Semigroup.Last where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
 import Data.Eq (class Eq1)
 import Data.Ord (class Ord1)
 
@@ -22,6 +23,9 @@ derive newtype instance boundedLast :: Bounded a => Bounded (Last a)
 
 instance showLast :: Show a => Show (Last a) where
   show (Last a) = "(Last " <> show a <> ")"
+
+instance debugLast :: Debug a => Debug (Last a) where
+  debug (Last a) = D.constructor "Last" [ debug a ]
 
 derive instance functorLast :: Functor Last
 

@@ -2,6 +2,8 @@ module Data.Monoid.Endo where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
+
 -- | Monoid and semigroup for category endomorphisms.
 -- |
 -- | When `c` is instantiated with `->` this composes functions of type
@@ -22,6 +24,9 @@ derive newtype instance boundedEndo :: Bounded (c a a) => Bounded (Endo c a)
 
 instance showEndo :: Show (c a a) => Show (Endo c a) where
   show (Endo x) = "(Endo " <> show x <> ")"
+
+instance debugEndo :: Debug a => Debug (Endo a) where
+  debug (Endo a) = D.constructor "Endo" [ debug a ]
 
 instance semigroupEndo :: Semigroupoid c => Semigroup (Endo c a) where
   append (Endo a) (Endo b) = Endo (a <<< b)

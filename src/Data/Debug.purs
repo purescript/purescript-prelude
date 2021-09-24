@@ -105,4 +105,7 @@ instance debugUnit :: Debug Unit where
 instance debugVoid :: Debug Void where
   debug = absurd
 
+instance debugProxy :: Debug (Proxy a) where
+  debug _ = D.opaque_ "Proxy"
+
 foreign import cons :: forall a. a -> Array a -> Array a

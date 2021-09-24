@@ -2,6 +2,7 @@ module Data.Monoid.Additive where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
 import Data.Eq (class Eq1)
 import Data.Ord (class Ord1)
 
@@ -23,6 +24,9 @@ derive newtype instance boundedAdditive :: Bounded a => Bounded (Additive a)
 
 instance showAdditive :: Show a => Show (Additive a) where
   show (Additive a) = "(Additive " <> show a <> ")"
+
+instance debugAdditive :: Debug a => Debug (Additive a) where
+  debug (Additive a) = D.constructor "Additive" [ debug a ]
 
 derive instance functorAdditive :: Functor Additive
 

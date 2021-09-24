@@ -2,6 +2,7 @@ module Data.Monoid.Conj where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
 import Data.Eq (class Eq1)
 import Data.HeytingAlgebra (ff, tt)
 import Data.Ord (class Ord1)
@@ -24,6 +25,9 @@ derive newtype instance boundedConj :: Bounded a => Bounded (Conj a)
 
 instance showConj :: (Show a) => Show (Conj a) where
   show (Conj a) = "(Conj " <> show a <> ")"
+
+instance debugConj :: Debug a => Debug (Conj a) where
+  debug (Conj a) = D.constructor "Conj" [ debug a ]
 
 derive instance functorConj :: Functor Conj
 

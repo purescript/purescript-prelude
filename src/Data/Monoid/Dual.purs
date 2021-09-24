@@ -2,6 +2,7 @@ module Data.Monoid.Dual where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
 import Data.Eq (class Eq1)
 import Data.Ord (class Ord1)
 
@@ -23,6 +24,9 @@ derive newtype instance boundedDual :: Bounded a => Bounded (Dual a)
 
 instance showDual :: Show a => Show (Dual a) where
   show (Dual a) = "(Dual " <> show a <> ")"
+
+instance debugDual :: Debug a => Debug (Dual a) where
+  debug (Dual a) = D.constructor "Dual" [ debug a ]
 
 derive instance functorDual :: Functor Dual
 

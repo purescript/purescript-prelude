@@ -2,6 +2,7 @@ module Data.Monoid.Disj where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
 import Data.Eq (class Eq1)
 import Data.HeytingAlgebra (ff, tt)
 import Data.Ord (class Ord1)
@@ -24,6 +25,9 @@ derive newtype instance boundedDisj :: Bounded a => Bounded (Disj a)
 
 instance showDisj :: Show a => Show (Disj a) where
   show (Disj a) = "(Disj " <> show a <> ")"
+
+instance debugDisj :: Debug a => Debug (Disj a) where
+  debug (Disj a) = D.constructor "Disj" [ debug a ]
 
 derive instance functorDisj :: Functor Disj
 

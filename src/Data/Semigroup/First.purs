@@ -2,6 +2,7 @@ module Data.Semigroup.First where
 
 import Prelude
 
+import Data.Debug (class Debug, debug)
 import Data.Eq (class Eq1)
 import Data.Ord (class Ord1)
 
@@ -22,6 +23,9 @@ derive newtype instance boundedFirst :: Bounded a => Bounded (First a)
 
 instance showFirst :: Show a => Show (First a) where
   show (First a) = "(First " <> show a <> ")"
+
+instance debugFirst :: Debug a => Debug (First a) where
+  debug (First a) = D.constructor "First" [ debug a ]
 
 derive instance functorFirst :: Functor First
 
