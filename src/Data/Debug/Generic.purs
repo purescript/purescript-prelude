@@ -20,7 +20,8 @@ module Data.Debug.Generic
   , genericDebugArgs
   ) where
 
-import Prelude
+import Control.Semigroupoid ((<<<))
+import Data.Semigroup ((<>))
 
 import Data.Debug.Class (class Debug, debug)
 import Data.Debug.Type as D
