@@ -23,7 +23,7 @@ module Data.Debug.PrettyPrinter
 import Prelude
 
 import Data.Array as Array
-import Data.Debug.Class (class Debug, debug)
+import Data.Debug (class Debug, debug)
 import Data.Debug.PrettyPrinter.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
 import Data.Debug.Type (Label(..), Repr, unRepr)
 import Data.Debug.Type.InternalRoseTree (InternalRoseTree(..), foldTree, prune)

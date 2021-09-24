@@ -1,6 +1,6 @@
 -- | This module provides the `Debug` type class, for converting values into
 -- | their `Debug` representations.
-module Data.Debug.Class
+module Data.Debug
   ( class Debug
   , debug
   , class DebugRowList

@@ -14,7 +14,7 @@ import Prelude
 
 import Effect (Effect)
 import Effect.Console (log)
-import Data.Debug.Class (class Debug, debug)
+import Data.Debug (class Debug, debug)
 import Data.Debug.PrettyPrinter (prettyPrint)
 
 -- | The `Eval` class captures those types which can be evaluated in the REPL.
