@@ -38,7 +38,7 @@ module Data.Debug.Type
 import Prelude
 
 import Data.Array as Array
-import Data.Debug.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
+import Data.Debug.PrettyPrinter.PrettyPrinter (Content, commaSeq, compact, emptyContent, indent, leaf, noParens, noWrap, parens, printContent, surround, verbatim, wrap)
 import Data.Debug.Type.InternalRoseTree (InternalRoseTree(..), foldTree, prune)
 import Data.Foldable (foldMap, all, elem)
 import Data.Maybe (Maybe(..), maybe)
