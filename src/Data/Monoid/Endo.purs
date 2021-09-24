@@ -3,6 +3,7 @@ module Data.Monoid.Endo where
 import Prelude
 
 import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 
 -- | Monoid and semigroup for category endomorphisms.
 -- |

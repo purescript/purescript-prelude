@@ -3,6 +3,7 @@ module Data.Monoid.Additive where
 import Prelude
 
 import Data.Debug (class Debug, debug)
+import Data.Debug.Type as D
 import Data.Eq (class Eq1)
 import Data.Ord (class Ord1)
 
