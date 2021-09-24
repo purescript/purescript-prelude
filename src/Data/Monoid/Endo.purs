@@ -26,7 +26,7 @@ derive newtype instance boundedEndo :: Bounded (c a a) => Bounded (Endo c a)
 instance showEndo :: Show (c a a) => Show (Endo c a) where
   show (Endo x) = "(Endo " <> show x <> ")"
 
-instance debugEndo :: Debug a => Debug (Endo a) where
+instance debugEndo :: Debug (c a a) => Debug (Endo c a) where
   debug (Endo a) = D.constructor "Endo" [ debug a ]
 
 instance semigroupEndo :: Semigroupoid c => Semigroup (Endo c a) where
