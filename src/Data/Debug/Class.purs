@@ -12,8 +12,8 @@ import Prelude
 import Data.Debug.Type as D
 import Data.Symbol (class IsSymbol, reflectSymbol)
 import Prim.Row as Row
-import Record (get, delete)
 import Prim.RowList (class RowToList, RowList, Nil, Cons)
+import Record.Unsafe (unsafeDelete, unsafeGet)
 import Type.Proxy (Proxy(..))
 
 -- | Ideally, all types of kind `Type` should have an instance of this class.
@@ -73,11 +73,11 @@ instance debugRowListCons ::
   , IsSymbol key
   ) => DebugRowList (Cons key a listRest) rowFull where
   debugRowList _ rec =
-    cons { key: reflectSymbol key, value: debug val } rest
+    cons { key, value: debug val } rest
     where
-    key = Proxy :: Proxy key
-    val = get key rec
-    rest = debugRowList (Proxy :: Proxy listRest) (delete key rec)
+    key = reflectSymbol (Proxy :: Proxy key)
+    val = unsafeGet key rec :: a
+    rest = debugRowList (Proxy :: Proxy listRest) (unsafeDelete key rec)
 
 instance debugRecord ::
   ( RowToList row list
