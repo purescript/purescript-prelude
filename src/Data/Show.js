@@ -66,7 +66,7 @@ exports.cons = function (head) {
   };
 };
 
-exports.join = function (separator) {
+exports.intercalate = function (separator) {
   return function (xs) {
     return xs.join(separator);
   };
