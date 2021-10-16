@@ -3,7 +3,7 @@ module Data.Void (Void, absurd) where
 import Data.Show (class Show)
 
 -- | An uninhabited data type. In other words, one can never create
--- | a runtime value of type `Void` becaue no such value exists.
+-- | a runtime value of type `Void` because no such value exists.
 -- |
 -- | `Void` is useful to eliminate the possibility of a value being created.
 -- | For example, a value of type `Either Void Boolean` can never have
