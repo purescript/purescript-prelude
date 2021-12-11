@@ -119,7 +119,7 @@ testIntDegree = do
 testRecordUnsafe :: AlmostEff
 testRecordUnsafe = do
   assert "Record unsafeHas true" $ Record.unsafeHas "b" { a: 1, b: "foo" }
-  assert "Record unsafeHas false" $ Record.unsafeHas "c" { a: 1, b: "foo" }
+  assert "Record unsafeHas false" $ Record.unsafeHas "c" { a: 1, b: "foo" } == false
   assert "Record unsafeGet" $ Record.unsafeGet "b" { a: 1, b: "foo" } == "foo"
   let r = { a: 1, b: "foo" }
   assert "Record unsafeSet" $ Record.unsafeSet "b" "bar" r == { a: 1, b: "bar" }
