@@ -14,6 +14,7 @@ main = do
   testIntDivMod
   testIntDegree
   testRecordInstances
+  testArrayInstances
   testGenericRep
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
@@ -151,3 +152,17 @@ testRecordInstances = do
   assert "Record top" $
     (top :: { a :: Boolean }).a
     == top
+
+testArrayInstances :: AlmostEff
+testArrayInstances = do
+  assert "Functor" $ map (_ + 1) [1, 2, 3] == [2, 3, 4]
+  assert "Functor empty" $ map (_ + 1) [] == []
+  assert "Semigroup" $ append [1, 2] [3, 4] == [1, 2, 3, 4]
+  assert "Semigroup empty left" $ append [] [3, 4] == [3, 4]
+  assert "Semigroup emtpy right" $ append [1, 2] [] == [1, 2]
+  assert "Apply" $ apply [(_ + 1), (_ * 2)] [1, 2, 3] == [2, 3, 4, 2, 4, 6]
+  assert "Apply empty left" $ apply ([] :: Array (Int -> Int)) [1, 2, 3] == []
+  assert "Apply empty right" $ apply [(_ + 1), (_ * 2)] [] == []
+  assert "Bind" $ bind [1, 2, 3] (\a -> [a, a]) == [1, 1, 2, 2, 3, 3]
+  assert "Bind empty left" $ bind ([] :: Array Int) (\a -> [a, a]) == []
+  assert "Bind empty right" $ bind [1, 2, 3] (\_ -> ([] :: Array Int)) == []
