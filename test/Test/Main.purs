@@ -3,6 +3,7 @@ module Test.Main where
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
+import Record.Unsafe as Record
 import Test.Data.Generic.Rep (testGenericRep)
 import Test.Utils (AlmostEff, assert)
 
@@ -16,6 +17,7 @@ main = do
   testRecordInstances
   testArrayInstances
   testGenericRep
+  testRecordUnsafe
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 
@@ -113,6 +115,17 @@ testIntDegree = do
   assert "degree returns absolute integers" $ degree 4 == 4
   assert "degree returns absolute integers" $ degree bot >= 0
   assert "degree does not return out-of-bounds integers" $ degree bot <= top
+
+testRecordUnsafe :: AlmostEff
+testRecordUnsafe = do
+  assert "Record unsafeHas true" $ Record.unsafeHas "b" { a: 1, b: "foo" }
+  assert "Record unsafeHas false" $ Record.unsafeHas "c" { a: 1, b: "foo" }
+  assert "Record unsafeGet" $ Record.unsafeGet "b" { a: 1, b: "foo" } == "foo"
+  let r = { a: 1, b: "foo" }
+  assert "Record unsafeSet" $ Record.unsafeSet "b" "bar" r == { a: 1, b: "bar" }
+  assert "Record unsafeSet immutable" $ r == { a: 1, b: "foo" }
+  assert "Record unsafeDelete" $ Record.unsafeDelete "b" { a: 1, b: "foo" } == { a: 1 }
+  assert "Record unsafeDelete immutable" $ r == { a: 1, b: "foo" }
 
 testRecordInstances :: AlmostEff
 testRecordInstances = do
