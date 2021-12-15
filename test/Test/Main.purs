@@ -122,7 +122,8 @@ testRecordUnsafe = do
   assert "Record unsafeHas false" $ Record.unsafeHas "c" { a: 1, b: "foo" } == false
   assert "Record unsafeGet" $ Record.unsafeGet "b" { a: 1, b: "foo" } == "foo"
   let r = { a: 1, b: "foo" }
-  assert "Record unsafeSet" $ Record.unsafeSet "b" "bar" r == { a: 1, b: "bar" }
+  assert "Record unsafeSet(update)" $ Record.unsafeSet "b" "bar" r == { a: 1, b: "bar" }
+  assert "Record unsafeSet(insert)" $ Record.unsafeSet "c" true r == { a: 1, b: "foo", c: true }
   assert "Record unsafeSet immutable" $ r == { a: 1, b: "foo" }
   assert "Record unsafeDelete" $ Record.unsafeDelete "b" { a: 1, b: "foo" } == { a: 1 }
   assert "Record unsafeDelete immutable" $ r == { a: 1, b: "foo" }
