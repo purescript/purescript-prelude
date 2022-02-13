@@ -214,10 +214,12 @@ between low hi x
 abs :: forall a. Ord a => Ring a => a -> a
 abs x = if x >= zero then x else negate x
 
--- | The sign function; always evaluates to either `one` or `negate one`. For
--- | any `x`, we should have `signum x * abs x == x`.
+-- | The sign function; always evaluates to `negate one`, `zero` or `one`.
 signum :: forall a. Ord a => Ring a => a -> a
-signum x = if x >= zero then one else negate one
+signum x
+  | x < zero = negate one
+  | x > zero = one
+  | otherwise = zero
 
 -- | The `Ord1` type class represents totally ordered type constructors.
 class Eq1 f <= Ord1 f where
