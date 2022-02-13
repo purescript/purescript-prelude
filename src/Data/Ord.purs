@@ -216,10 +216,10 @@ abs x = if x >= zero then x else negate x
 
 -- | The sign function; always evaluates to `negate one`, `zero` or `one`.
 signum :: forall a. Ord a => Ring a => a -> a
-signum x
-  | x < zero = negate one
-  | x > zero = one
-  | otherwise = zero
+signum x =
+  if x < zero then negate one
+  else if x > zero then one
+  else zero
 
 -- | The `Ord1` type class represents totally ordered type constructors.
 class Eq1 f <= Ord1 f where
