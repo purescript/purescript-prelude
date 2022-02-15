@@ -12,7 +12,7 @@ import Data.Void (Void, absurd)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
-import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
+import Type.Proxy (Proxy(..))
 
 -- | The `Semigroup` type class identifies an associative operation on a type.
 -- |
@@ -53,12 +53,6 @@ instance semigroupArray :: Semigroup (Array a) where
 
 instance semigroupProxy :: Semigroup (Proxy a) where
   append _ _ = Proxy
-
-instance semigroupProxy2 :: Semigroup (Proxy2 a) where
-  append _ _ = Proxy2
-
-instance semigroupProxy3 :: Semigroup (Proxy3 a) where
-  append _ _ = Proxy3
 
 instance semigroupRecord :: (RL.RowToList row list, SemigroupRecord list row row) => Semigroup (Record row) where
   append = appendRecord (Proxy :: Proxy list)

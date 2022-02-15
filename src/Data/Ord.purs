@@ -32,7 +32,7 @@ import Data.Void (Void)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Proxy (Proxy(..), Proxy2, Proxy3)
+import Type.Proxy (Proxy(..))
 
 -- | The `Ord` type class represents types which support comparisons with a
 -- | _total order_.
@@ -70,12 +70,6 @@ instance ordVoid :: Ord Void where
   compare _ _ = EQ
 
 instance ordProxy :: Ord (Proxy a) where
-  compare _ _ = EQ
-
-instance ordProxy2 :: Ord (Proxy2 a) where
-  compare _ _ = EQ
-
-instance ordProxy3 :: Ord (Proxy3 a) where
   compare _ _ = EQ
 
 instance ordArray :: Ord a => Ord (Array a) where
