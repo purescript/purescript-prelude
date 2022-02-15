@@ -1,7 +1,11 @@
 module Data.Ring
-  ( class Ring, sub, negate, (-)
+  ( class Ring
+  , sub
+  , negate
+  , (-)
   , module Data.Semiring
-  , class RingRecord, subRecord
+  , class RingRecord
+  , subRecord
   ) where
 
 import Data.Semiring (class Semiring, class SemiringRecord, add, mul, one, zero, (*), (+))
@@ -60,21 +64,21 @@ foreign import numSub :: Number -> Number -> Number
 -- | implement the `Ring` instance for records.
 class RingRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemiringRecord rowlist row subrow <= RingRecord rowlist row subrow | rowlist -> subrow where
-  subRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
+  subRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
 
 instance ringRecordNil :: RingRecord RL.Nil row () where
   subRecord _ _ _ = {}
 
-instance ringRecordCons
-    :: ( IsSymbol key
-       , Row.Cons key focus subrowTail subrow
-       , RingRecord rowlistTail row subrowTail
-       , Ring focus
-       )
-    => RingRecord (RL.Cons key focus rowlistTail) row subrow where
+instance ringRecordCons ::
+  ( IsSymbol key
+  , Row.Cons key focus subrowTail subrow
+  , RingRecord rowlistTail row subrowTail
+  , Ring focus
+  ) =>
+  RingRecord (RL.Cons key focus rowlistTail) row subrow where
   subRecord _ ra rb = insert (get ra - get rb) tail
     where
-      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      key = reflectSymbol (Proxy :: Proxy key)
-      get = unsafeGet key :: Record row -> focus
-      tail = subRecord (Proxy :: Proxy rowlistTail) ra rb
+    insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+    key = reflectSymbol (Proxy :: Proxy key)
+    get = unsafeGet key :: Record row -> focus
+    tail = subRecord (Proxy :: Proxy rowlistTail) ra rb
