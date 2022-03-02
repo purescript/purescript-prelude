@@ -13,7 +13,7 @@ jobs:
 
       - uses: purescript-contrib/setup-purescript@main
         with:
-          purescript: "0.15.0-alpha-01"
+          purescript: "unstable"
 
       - uses: actions/setup-node@v1
         with:
