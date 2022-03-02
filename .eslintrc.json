@@ -1,16 +1,23 @@
 {
   "parserOptions": {
-    "ecmaVersion": 5
+    "ecmaVersion": 6,
+    "sourceType": "module"
   },
   "extends": "eslint:recommended",
   "env": {
-    "commonjs": true
+    "es6": true
   },
   "rules": {
-    "strict": [2, "global"],
+    "strict": [
+      2,
+      "global"
+    ],
     "block-scoped-var": 2,
     "consistent-return": 2,
-    "eqeqeq": [2, "smart"],
+    "eqeqeq": [
+      2,
+      "smart"
+    ],
     "guard-for-in": 2,
     "no-caller": 2,
     "no-extend-native": 2,
@@ -20,9 +27,24 @@
     "no-return-assign": 2,
     "no-unused-expressions": 2,
     "no-use-before-define": 2,
-    "radix": [2, "always"],
-    "indent": [2, 2, { "SwitchCase": 1 }],
-    "quotes": [2, "double"],
-    "semi": [2, "always"]
+    "radix": [
+      2,
+      "always"
+    ],
+    "indent": [
+      2,
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "quotes": [
+      2,
+      "double"
+    ],
+    "semi": [
+      2,
+      "always"
+    ]
   }
 }
