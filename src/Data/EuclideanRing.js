@@ -1,5 +1,3 @@
-
-
 export const intDegree = function (x) {
   return Math.min(Math.abs(x), 2147483647);
 };

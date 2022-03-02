@@ -1,5 +1,3 @@
-
-
 export const intercalate = function (separator) {
   return function (xs) {
     var len = xs.length;

@@ -1,5 +1,3 @@
-
-
 export const showIntImpl = function (n) {
   return n.toString();
 };

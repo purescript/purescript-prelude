@@ -1,5 +1,3 @@
-
-
 export const intSub = function (x) {
   return function (y) {
     /* jshint bitwise: false */

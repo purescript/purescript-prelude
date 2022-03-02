@@ -1,5 +1,3 @@
-
-
 export const arrayApply = function (fs) {
   return function (xs) {
     var l = fs.length;

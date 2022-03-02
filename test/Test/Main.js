@@ -1,5 +1,3 @@
-
-
 export function testNumberShow(showNumber) {
   return function() {
     function testAll(cases) {

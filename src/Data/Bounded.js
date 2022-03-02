@@ -1,5 +1,3 @@
-
-
 export const topInt = 2147483647;
 export const bottomInt = -2147483648;
 

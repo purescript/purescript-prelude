@@ -1,5 +1,3 @@
-
-
 export const arrayBind = function (arr) {
   return function (f) {
     var result = [];

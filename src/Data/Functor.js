@@ -1,5 +1,3 @@
-
-
 export const arrayMap = function (f) {
   return function (arr) {
     var l = arr.length;

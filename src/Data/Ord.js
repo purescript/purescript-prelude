@@ -1,5 +1,3 @@
-
-
 var unsafeCompareImpl = function (lt) {
   return function (eq) {
     return function (gt) {

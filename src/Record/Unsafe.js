@@ -1,5 +1,3 @@
-
-
 export const unsafeHas = function (label) {
   return function (rec) {
     return {}.hasOwnProperty.call(rec, label);

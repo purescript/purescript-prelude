@@ -1,5 +1,3 @@
-
-
 export const intAdd = function (x) {
   return function (y) {
     /* jshint bitwise: false */
