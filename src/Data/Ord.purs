@@ -34,6 +34,9 @@ import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 -- | - Reflexivity: `a <= a`
 -- | - Antisymmetry: if `a <= b` and `b <= a` then `a = b`
 -- | - Transitivity: if `a <= b` and `b <= c` then `a <= c`
+-- |
+-- | **Note:** The `Number` type is not an entirely law abiding member of this
+-- | class due to the presence of `NaN`, since `NaN <= NaN` evaluates to `false`
 class Eq a <= Ord a where
   compare :: a -> a -> Ordering
 

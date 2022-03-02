@@ -1,3 +1,1 @@
-
-
-export const unit = {};
+exports.unit = undefined;
