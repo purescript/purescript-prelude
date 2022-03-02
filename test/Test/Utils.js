@@ -1,7 +1,7 @@
-"use strict";
 
-exports.throwErr = function(msg) {
+
+export function throwErr(msg) {
   return function() {
     throw new Error(msg);
   };
-};
+}

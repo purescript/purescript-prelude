@@ -1,6 +1,6 @@
-"use strict";
 
-exports.testNumberShow = function(showNumber) {
+
+export function testNumberShow(showNumber) {
   return function() {
     function testAll(cases) {
       cases.forEach(function(c) {
@@ -41,4 +41,4 @@ exports.testNumberShow = function(showNumber) {
         [-Infinity, "-Infinity"],
       ]);
   };
-};
+}

@@ -1,6 +1,6 @@
-"use strict";
 
-export var arrayBind = function (arr) {
+
+export const arrayBind = function (arr) {
   return function (f) {
     var result = [];
     for (var i = 0, l = arr.length; i < l; i++) {

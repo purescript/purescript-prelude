@@ -1,17 +1,17 @@
-"use strict";
 
-export var boolConj = function (b1) {
+
+export const boolConj = function (b1) {
   return function (b2) {
     return b1 && b2;
   };
 };
 
-export var boolDisj = function (b1) {
+export const boolDisj = function (b1) {
   return function (b2) {
     return b1 || b2;
   };
 };
 
-export var boolNot = function (b) {
+export const boolNot = function (b) {
   return !b;
 };
