@@ -155,10 +155,7 @@ testRecordInstances = do
 
 testSignum :: AlmostEff
 testSignum = do
-  assert "signum positive zero" $ objectIs (signum 0.0) 0.0
-  assert "signum negative zero" $ objectIs (signum (-0.0)) (-0.0)
-
--- Seems to be only way to check whether zero is `-0.0` or `0.0`
--- See "Case 2" in
--- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#using_object.is
-foreign import objectIs :: Number -> Number -> Boolean
+  assert "Clarifies what 'signum positive zero' test is doing" $ show (1.0/0.0) == "Infinity"
+  assert "signum positive zero" $ show (1.0/(signum 0.0)) == "Infinity"
+  assert "Clarifies what 'signum negative zero' test is doing" $ show (1.0/(-0.0)) == "-Infinity"
+  assert "signum negative zero" $ show (1.0/(signum (-0.0))) == "-Infinity"
