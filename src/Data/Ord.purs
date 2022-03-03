@@ -214,7 +214,7 @@ between low hi x
 abs :: forall a. Ord a => Ring a => a -> a
 abs x = if x >= zero then x else negate x
 
--- | The sign function; always evaluates to `negate one`, `zero` or `one`.
+-- | The sign function; returns `one` if the argument is positive, `negate one` if the argument is negative, or `zero` if the argument is `zero`. For any `x`, we should have `signum x * abs x == x`.
 signum :: forall a. Ord a => Ring a => a -> a
 signum x =
   if x < zero then negate one

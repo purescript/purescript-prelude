@@ -5,7 +5,7 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
-- Fix `signum` to return `one` when `x > zero` (#280 by @JordanMartinez)
+- Fix `signum zero` to return `zero` (#280 by @JordanMartinez)
 
 New features:
 
