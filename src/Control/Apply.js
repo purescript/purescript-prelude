@@ -1,4 +1,4 @@
-export const arrayApply = function (fs) {
+export var arrayApply = function (fs) {
   return function (xs) {
     var l = fs.length;
     var k = xs.length;

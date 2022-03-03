@@ -1,4 +1,4 @@
-export const arrayMap = function (f) {
+export var arrayMap = function (f) {
   return function (arr) {
     var l = arr.length;
     var result = new Array(l);
