@@ -219,7 +219,7 @@ signum :: forall a. Ord a => Ring a => a -> a
 signum x =
   if x < zero then negate one
   else if x > zero then one
-  else zero
+  else x
 
 -- | The `Ord1` type class represents totally ordered type constructors.
 class Eq1 f <= Ord1 f where
