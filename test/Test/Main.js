@@ -42,3 +42,9 @@ exports.testNumberShow = function(showNumber) {
       ]);
   };
 };
+
+exports.objectIs = function(l) {
+  return function(r) {
+    return Object.is(l, r);
+  };
+};
