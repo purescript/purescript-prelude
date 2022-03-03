@@ -217,7 +217,7 @@ abs x = if x >= zero then x else negate x
 -- | The sign function; returns `one` if the argument is positive,
 -- | `negate one` if the argument is negative, or `zero` if the argument is `zero`.
 -- | For floating point numbers with signed zeroes, when called with a zero,
--- | this function returns the argument in order to preserve the sign
+-- | this function returns the argument in order to preserve the sign.
 -- | For any `x`, we should have `signum x * abs x == x`.
 signum :: forall a. Ord a => Ring a => a -> a
 signum x =
