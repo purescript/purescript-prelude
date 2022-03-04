@@ -1,16 +1,16 @@
-export var unsafeHas = function (label) {
+export const unsafeHas = function (label) {
   return function (rec) {
     return {}.hasOwnProperty.call(rec, label);
   };
 };
 
-export var unsafeGet = function (label) {
+export const unsafeGet = function (label) {
   return function (rec) {
     return rec[label];
   };
 };
 
-export var unsafeSet = function (label) {
+export const unsafeSet = function (label) {
   return function (value) {
     return function (rec) {
       var copy = {};
@@ -25,7 +25,7 @@ export var unsafeSet = function (label) {
   };
 };
 
-export var unsafeDelete = function (label) {
+export const unsafeDelete = function (label) {
   return function (rec) {
     var copy = {};
     for (var key in rec) {
