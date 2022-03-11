@@ -5,6 +5,7 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+- Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
 
 New features:
 
@@ -13,6 +14,9 @@ Bugfixes:
 
 Other improvements:
 - Changed `unit`'s FFI representation from `{}` to `undefined` (#267 by @JordanMartinez)
+- Added clearer docs for Prelude module (#270 by @JordanMartinez)
+- Clarify docs for `flip` (#271 by @JordanMartinez)
+- Add comment that `Number` is not a fully law abiding instance of `Ord` (#277 by @JamieBallingall)
 
 ## [v5.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.1) - 2021-05-11
 
