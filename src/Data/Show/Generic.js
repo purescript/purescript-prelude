@@ -1,6 +1,4 @@
-"use strict";
-
-exports.intercalate = function (separator) {
+export const intercalate = function (separator) {
   return function (xs) {
     var len = xs.length;
     if (len === 0) return "";
