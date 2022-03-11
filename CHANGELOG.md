@@ -6,6 +6,7 @@ Notable changes to this project are documented in this file. The format is based
 
 Breaking changes:
 - Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
+- Fix `Show` instance on records with duplicate labels by adding `Nub` constraint (#269 by @JordanMartinez)
 
 New features:
 
