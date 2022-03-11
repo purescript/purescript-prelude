@@ -3,72 +3,75 @@ module Test.Main where
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
+import Record.Unsafe as Record
 import Test.Data.Generic.Rep (testGenericRep)
 import Test.Utils (AlmostEff, assert)
 
 main :: AlmostEff
 main = do
-    testNumberShow show
-    testOrderings
-    testOrdUtils
-    testIntDivMod
-    testIntDegree
-    testRecordInstances
-    testGenericRep
+  testNumberShow show
+  testOrderings
+  testOrdUtils
+  testIntDivMod
+  testIntDegree
+  testRecordInstances
+  testArrayInstances
+  testGenericRep
+  testRecordUnsafe
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 
 testOrd :: forall a. Ord a => Show a => a -> a -> Ordering -> AlmostEff
 testOrd x y ord =
-    assert
-        ("(compare " <> show x <> " " <> show y <> " ) is not equal to " <> show ord)
-        $ (compare x y) == ord
-
-nan :: Number
-nan = 0.0/0.0
-
-plusInfinity :: Number
-plusInfinity = 1.0/0.0
-
-minusInfinity :: Number
-minusInfinity = -1.0/0.0
+  assert
+    ("(compare " <> show x <> " " <> show y <> " ) is not equal to " <> show ord)
+    $ (compare x y) == ord
 
 testOrderings :: AlmostEff
 testOrderings = do
-    assert "NaN shouldn't be equal to itself" $ nan /= nan
-    assert "NaN shouldn't be equal to itself" $ (compare nan nan) /= EQ
-    testOrd 1.0    2.0 LT
-    testOrd 2.0    1.0 GT
-    testOrd 1.0    (-2.0) GT
-    testOrd (-2.0) 1.0 LT
-    testOrd minusInfinity plusInfinity LT
-    testOrd minusInfinity 0.0 LT
-    testOrd plusInfinity  0.0 GT
-    testOrd plusInfinity  minusInfinity GT
-    testOrd 1.0 nan GT
-    testOrd nan 1.0 GT
-    testOrd nan plusInfinity GT
-    testOrd plusInfinity nan GT
-    assert "1 > NaN should be false" $ (1.0 > nan) == false
-    assert "1 < NaN should be false" $ (1.0 < nan) == false
-    assert "NaN > 1 should be false" $ (nan > 1.0) == false
-    assert "NaN < 1 should be false" $ (nan < 1.0) == false
-    assert "NaN == 1 should be false" $ nan /= 1.0
-    testOrd (1 / 0) 0 EQ
-    testOrd (mod 1 0) 0 EQ
-    testOrd 'a' 'b' LT
-    testOrd 'b' 'A' GT
-    testOrd "10" "0" GT
-    testOrd "10" "2" LT
-    testOrd true  true EQ
-    testOrd false false EQ
-    testOrd false true LT
-    testOrd true  false GT
-    testOrd ([] :: Array Int) [] EQ
-    testOrd [1, 0]  [1] GT
-    testOrd [1]     [1, 0] LT
-    testOrd [1, 1]  [1, 0] GT
-    testOrd [1, -1] [1, 0] LT
+  assert "NaN shouldn't be equal to itself" $ nan /= nan
+  assert "NaN shouldn't be equal to itself" $ (compare nan nan) /= EQ
+  testOrd 1.0    2.0 LT
+  testOrd 2.0    1.0 GT
+  testOrd 1.0    (-2.0) GT
+  testOrd (-2.0) 1.0 LT
+  testOrd minusInfinity plusInfinity LT
+  testOrd minusInfinity 0.0 LT
+  testOrd plusInfinity  0.0 GT
+  testOrd plusInfinity  minusInfinity GT
+  testOrd 1.0 nan GT
+  testOrd nan 1.0 GT
+  testOrd nan plusInfinity GT
+  testOrd plusInfinity nan GT
+  assert "1 > NaN should be false" $ (1.0 > nan) == false
+  assert "1 < NaN should be false" $ (1.0 < nan) == false
+  assert "NaN > 1 should be false" $ (nan > 1.0) == false
+  assert "NaN < 1 should be false" $ (nan < 1.0) == false
+  assert "NaN == 1 should be false" $ nan /= 1.0
+  testOrd (1 / 0) 0 EQ
+  testOrd (mod 1 0) 0 EQ
+  testOrd 'a' 'b' LT
+  testOrd 'b' 'A' GT
+  testOrd "10" "0" GT
+  testOrd "10" "2" LT
+  testOrd true  true EQ
+  testOrd false false EQ
+  testOrd false true LT
+  testOrd true  false GT
+  testOrd ([] :: Array Int) [] EQ
+  testOrd [1, 0]  [1] GT
+  testOrd [1]     [1, 0] LT
+  testOrd [1, 1]  [1, 0] GT
+  testOrd [1, -1] [1, 0] LT
+  where
+    nan :: Number
+    nan = 0.0/0.0
+
+    plusInfinity :: Number
+    plusInfinity = 1.0/0.0
+
+    minusInfinity :: Number
+    minusInfinity = -1.0/0.0
 
 testOrdUtils :: AlmostEff
 testOrdUtils = do
@@ -107,11 +110,23 @@ testIntDivMod = do
 
 testIntDegree :: AlmostEff
 testIntDegree = do
-    let bot = bottom :: Int
-    assert "degree returns absolute integers" $ degree (-4) == 4
-    assert "degree returns absolute integers" $ degree 4 == 4
-    assert "degree returns absolute integers" $ degree bot >= 0
-    assert "degree does not return out-of-bounds integers" $ degree bot <= top
+  let bot = bottom :: Int
+  assert "degree returns absolute integers" $ degree (-4) == 4
+  assert "degree returns absolute integers" $ degree 4 == 4
+  assert "degree returns absolute integers" $ degree bot >= 0
+  assert "degree does not return out-of-bounds integers" $ degree bot <= top
+
+testRecordUnsafe :: AlmostEff
+testRecordUnsafe = do
+  assert "Record unsafeHas true" $ Record.unsafeHas "b" { a: 1, b: "foo" }
+  assert "Record unsafeHas false" $ Record.unsafeHas "c" { a: 1, b: "foo" } == false
+  assert "Record unsafeGet" $ Record.unsafeGet "b" { a: 1, b: "foo" } == "foo"
+  let r = { a: 1, b: "foo" }
+  assert "Record unsafeSet(update)" $ Record.unsafeSet "b" "bar" r == { a: 1, b: "bar" }
+  assert "Record unsafeSet(insert)" $ Record.unsafeSet "c" true r == { a: 1, b: "foo", c: true }
+  assert "Record unsafeSet immutable" $ r == { a: 1, b: "foo" }
+  assert "Record unsafeDelete" $ Record.unsafeDelete "b" { a: 1, b: "foo" } == { a: 1 }
+  assert "Record unsafeDelete immutable" $ r == { a: 1, b: "foo" }
 
 testRecordInstances :: AlmostEff
 testRecordInstances = do
@@ -151,3 +166,17 @@ testRecordInstances = do
   assert "Record top" $
     (top :: { a :: Boolean }).a
     == top
+
+testArrayInstances :: AlmostEff
+testArrayInstances = do
+  assert "Functor" $ map (_ + 1) [1, 2, 3] == [2, 3, 4]
+  assert "Functor empty" $ map (_ + 1) [] == []
+  assert "Semigroup" $ append [1, 2] [3, 4] == [1, 2, 3, 4]
+  assert "Semigroup empty left" $ append [] [3, 4] == [3, 4]
+  assert "Semigroup emtpy right" $ append [1, 2] [] == [1, 2]
+  assert "Apply" $ apply [(_ + 1), (_ * 2)] [1, 2, 3] == [2, 3, 4, 2, 4, 6]
+  assert "Apply empty left" $ apply ([] :: Array (Int -> Int)) [1, 2, 3] == []
+  assert "Apply empty right" $ apply [(_ + 1), (_ * 2)] [] == []
+  assert "Bind" $ bind [1, 2, 3] (\a -> [a, a]) == [1, 1, 2, 2, 3, 3]
+  assert "Bind empty left" $ bind ([] :: Array Int) (\a -> [a, a]) == []
+  assert "Bind empty right" $ bind [1, 2, 3] (\_ -> ([] :: Array Int)) == []
