@@ -5,6 +5,7 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+- Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
 - Fix `signum zero` to return `zero` (#280 by @JordanMartinez)
 
 New features:
