@@ -1,6 +1,4 @@
-"use strict";
-
-exports.arrayApply = function (fs) {
+export const arrayApply = function (fs) {
   return function (xs) {
     var l = fs.length;
     var k = xs.length;
