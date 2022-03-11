@@ -1,6 +1,4 @@
-"use strict";
-
-exports.arrayMap = function (f) {
+export const arrayMap = function (f) {
   return function (arr) {
     var l = arr.length;
     var result = new Array(l);
