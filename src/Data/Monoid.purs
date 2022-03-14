@@ -99,7 +99,7 @@ guard false _ = mempty
 -- | implement the `Monoid` instance for records.
 class MonoidRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemigroupRecord rowlist row subrow <= MonoidRecord rowlist row subrow | rowlist -> row subrow where
-  memptyRecord :: forall rlproxy. rlproxy rowlist -> Record subrow
+  memptyRecord :: Proxy rowlist -> Record subrow
 
 instance monoidRecordNil :: MonoidRecord RL.Nil row () where
   memptyRecord _ = {}

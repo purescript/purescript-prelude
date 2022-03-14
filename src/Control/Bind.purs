@@ -18,7 +18,7 @@ import Control.Category (identity)
 import Data.Function (flip)
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Unit (Unit)
-import Type.Proxy (Proxy(..), Proxy2, Proxy3)
+import Type.Proxy (Proxy(..))
 
 -- | The `Bind` type class extends the [`Apply`](#apply) type class with a
 -- | "bind" operation `(>>=)` which composes computations in sequence, using
@@ -105,12 +105,6 @@ instance discardUnit :: Discard Unit where
   discard = bind
 
 instance discardProxy :: Discard (Proxy a) where
-  discard = bind
-
-instance discardProxy2 :: Discard (Proxy2 a) where
-  discard = bind
-
-instance discardProxy3 :: Discard (Proxy3 a) where
   discard = bind
 
 -- | Collapse two applications of a monadic type constructor into one.

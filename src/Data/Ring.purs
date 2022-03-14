@@ -10,7 +10,7 @@ import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
-import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
+import Type.Proxy (Proxy(..))
 
 -- | The `Ring` class is for types that support addition, multiplication,
 -- | and subtraction operations.
@@ -40,12 +40,6 @@ instance ringFn :: Ring b => Ring (a -> b) where
 instance ringProxy :: Ring (Proxy a) where
   sub _ _ = Proxy
 
-instance ringProxy2 :: Ring (Proxy2 a) where
-  sub _ _ = Proxy2
-
-instance ringProxy3 :: Ring (Proxy3 a) where
-  sub _ _ = Proxy3
-
 instance ringRecord :: (RL.RowToList row list, RingRecord list row row) => Ring (Record row) where
   sub = subRecord (Proxy :: Proxy list)
 
@@ -60,7 +54,7 @@ foreign import numSub :: Number -> Number -> Number
 -- | implement the `Ring` instance for records.
 class RingRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemiringRecord rowlist row subrow <= RingRecord rowlist row subrow | rowlist -> subrow where
-  subRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
+  subRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
 
 instance ringRecordNil :: RingRecord RL.Nil row () where
   subRecord _ _ _ = {}

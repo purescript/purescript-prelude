@@ -11,7 +11,7 @@ import Data.Void (Void)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Proxy (Proxy(..), Proxy2, Proxy3)
+import Type.Proxy (Proxy(..))
 
 -- | The `Eq` type class represents types which support decidable equality.
 -- |
@@ -67,12 +67,6 @@ instance eqRec :: (RL.RowToList row list, EqRecord list row) => Eq (Record row) 
 instance eqProxy :: Eq (Proxy a) where
   eq _ _ = true
 
-instance eqProxy2 :: Eq (Proxy2 a) where
-  eq _ _ = true
-
-instance eqProxy3 :: Eq (Proxy3 a) where
-  eq _ _ = true
-
 foreign import eqBooleanImpl :: Boolean -> Boolean -> Boolean
 foreign import eqIntImpl :: Int -> Int -> Boolean
 foreign import eqNumberImpl :: Number -> Number -> Boolean
@@ -95,7 +89,7 @@ notEq1 x y = (x `eq1` y) == false
 -- | the `Eq` instance for records.
 class EqRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row where
-  eqRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Boolean
+  eqRecord :: Proxy rowlist -> Record row -> Record row -> Boolean
 
 instance eqRowNil :: EqRecord RL.Nil row where
   eqRecord _ _ _ = true

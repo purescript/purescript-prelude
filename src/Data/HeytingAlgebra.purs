@@ -8,7 +8,7 @@ import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet, unsafeSet)
-import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
+import Type.Proxy (Proxy(..))
 
 -- | The `HeytingAlgebra` type class represents types that are bounded lattices with
 -- | an implication operator such that the following laws hold:
@@ -78,22 +78,6 @@ instance heytingAlgebraProxy :: HeytingAlgebra (Proxy a) where
   not _ = Proxy
   tt = Proxy
 
-instance heytingAlgebraProxy2 :: HeytingAlgebra (Proxy2 a) where
-  conj _ _ = Proxy2
-  disj _ _ = Proxy2
-  implies _ _ = Proxy2
-  ff = Proxy2
-  not _ = Proxy2
-  tt = Proxy2
-
-instance heytingAlgebraProxy3 :: HeytingAlgebra (Proxy3 a) where
-  conj _ _ = Proxy3
-  disj _ _ = Proxy3
-  implies _ _ = Proxy3
-  ff = Proxy3
-  not _ = Proxy3
-  tt = Proxy3
-
 instance heytingAlgebraRecord :: (RL.RowToList row list, HeytingAlgebraRecord list row row) => HeytingAlgebra (Record row) where
   ff = ffRecord  (Proxy :: Proxy list) (Proxy :: Proxy row)
   tt = ttRecord  (Proxy :: Proxy list) (Proxy :: Proxy row)
@@ -110,12 +94,12 @@ foreign import boolNot :: Boolean -> Boolean
 -- | to implement the `HeytingAlgebra` instance for records.
 class HeytingAlgebraRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class HeytingAlgebraRecord rowlist row subrow | rowlist -> subrow where
-  ffRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
-  ttRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
-  impliesRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
-  disjRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
-  conjRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Record subrow
-  notRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record subrow
+  ffRecord :: Proxy rowlist -> Proxy row -> Record subrow
+  ttRecord :: Proxy rowlist -> Proxy row -> Record subrow
+  impliesRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
+  disjRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
+  conjRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
+  notRecord :: Proxy rowlist -> Record row -> Record subrow
 
 instance heytingAlgebraRecordNil :: HeytingAlgebraRecord RL.Nil row () where
   conjRecord _ _ _ = {}

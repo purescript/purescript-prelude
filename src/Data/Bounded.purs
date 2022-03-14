@@ -12,7 +12,7 @@ import Data.Unit (Unit, unit)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeSet)
-import Type.Proxy (Proxy(..), Proxy2(..), Proxy3(..))
+import Type.Proxy (Proxy(..))
 
 -- | The `Bounded` type class represents totally ordered types that have an
 -- | upper and lower boundary.
@@ -65,18 +65,10 @@ instance boundedProxy :: Bounded (Proxy a) where
   bottom = Proxy
   top = Proxy
 
-instance boundedProxy2 :: Bounded (Proxy2 a) where
-  bottom = Proxy2
-  top = Proxy2
-
-instance boundedProxy3 :: Bounded (Proxy3 a) where
-  bottom = Proxy3
-  top = Proxy3
-
 class BoundedRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class OrdRecord rowlist row <= BoundedRecord rowlist row subrow | rowlist -> subrow where
-  topRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
-  bottomRecord :: forall rlproxy rproxy. rlproxy rowlist -> rproxy row -> Record subrow
+  topRecord :: Proxy rowlist -> Proxy row -> Record subrow
+  bottomRecord :: Proxy rowlist -> Proxy row -> Record subrow
 
 instance boundedRecordNil :: BoundedRecord RL.Nil row () where
   topRecord _ _ = {}
