@@ -6,6 +6,7 @@ Notable changes to this project are documented in this file. The format is based
 
 Breaking changes:
 - Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
+- Replaced polymorphic proxies with monomorphic `Proxy` (#287 by @kl0tl and @JordanMartinez)
 
 New features:
 
