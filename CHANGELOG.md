@@ -6,6 +6,7 @@ Notable changes to this project are documented in this file. The format is based
 
 Breaking changes:
 - Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
+- Change Generic Rep's `NoConstructors` to newtype `Void` (#282 by @JordanMartinez)
 - Replace `forall proxy. proxy k` workaound with `Proxy k` (#281 by @JordanMartinez)
 - Drop all kind-specific Proxy types (e.g. `Proxy2`, `Proxy3`) (#281 by @JordanMartinez)
 
