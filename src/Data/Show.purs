@@ -48,7 +48,7 @@ instance showRecord :: (RL.RowToList rs ls, ShowRecordFields ls rs) => Show (Rec
 -- | implement the `Show` instance for records.
 class ShowRecordFields :: RL.RowList Type -> Row Type -> Constraint
 class ShowRecordFields rowlist row where
-  showRecordFields :: forall rlproxy. rlproxy rowlist -> Record row -> Array String
+  showRecordFields :: Proxy rowlist -> Record row -> Array String
 
 instance showRecordFieldsNil :: ShowRecordFields RL.Nil row where
   showRecordFields _ _ = []
