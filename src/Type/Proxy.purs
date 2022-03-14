@@ -51,12 +51,3 @@ module Type.Proxy where
 -- | Proxy type for all `kind`s.
 data Proxy :: forall k. k -> Type
 data Proxy a = Proxy
-
--- | Value proxy for kind `Type -> Type` types.
--- | **Deprecated as of v0.14.0 PureScript release**: use `Proxy` instead.
-data Proxy2 :: (Type -> Type) -> Type
-data Proxy2 f = Proxy2
-
--- | Value proxy for kind `Type -> Type -> Type` types.
--- | **Deprecated as of v0.14.0 PureScript release**: use `Proxy` instead.
-data Proxy3 (a :: Type -> Type -> Type) = Proxy3
