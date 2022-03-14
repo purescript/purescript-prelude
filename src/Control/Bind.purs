@@ -1,10 +1,16 @@
 module Control.Bind
-  ( class Bind, bind, (>>=)
-  , bindFlipped, (=<<)
-  , class Discard, discard
+  ( class Bind
+  , bind
+  , (>>=)
+  , bindFlipped
+  , (=<<)
+  , class Discard
+  , discard
   , join
-  , composeKleisli, (>=>)
-  , composeKleisliFlipped, (<=<)
+  , composeKleisli
+  , (>=>)
+  , composeKleisliFlipped
+  , (<=<)
   , ifM
   , module Data.Functor
   , module Control.Apply

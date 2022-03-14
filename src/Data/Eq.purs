@@ -1,7 +1,14 @@
 module Data.Eq
-  ( class Eq, eq, (==), notEq, (/=)
-  , class Eq1, eq1, notEq1
-  , class EqRecord, eqRecord
+  ( class Eq
+  , eq
+  , (==)
+  , notEq
+  , (/=)
+  , class Eq1
+  , eq1
+  , notEq1
+  , class EqRecord
+  , eqRecord
   ) where
 
 import Data.HeytingAlgebra ((&&))
@@ -94,15 +101,15 @@ class EqRecord rowlist row where
 instance eqRowNil :: EqRecord RL.Nil row where
   eqRecord _ _ _ = true
 
-instance eqRowCons
-    :: ( EqRecord rowlistTail row
-       , Row.Cons key focus rowTail row
-       , IsSymbol key
-       , Eq focus
-       )
-    => EqRecord (RL.Cons key focus rowlistTail) row where
+instance eqRowCons ::
+  ( EqRecord rowlistTail row
+  , Row.Cons key focus rowTail row
+  , IsSymbol key
+  , Eq focus
+  ) =>
+  EqRecord (RL.Cons key focus rowlistTail) row where
   eqRecord _ ra rb = (get ra == get rb) && tail
     where
-      key = reflectSymbol (Proxy :: Proxy key)
-      get = unsafeGet key :: Record row -> focus
-      tail = eqRecord (Proxy :: Proxy rowlistTail) ra rb
+    key = reflectSymbol (Proxy :: Proxy key)
+    get = unsafeGet key :: Record row -> focus
+    tail = eqRecord (Proxy :: Proxy rowlistTail) ra rb

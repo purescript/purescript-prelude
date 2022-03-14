@@ -1,6 +1,9 @@
 module Data.Semigroup
-  ( class Semigroup, append, (<>)
-  , class SemigroupRecord, appendRecord
+  ( class Semigroup
+  , append
+  , (<>)
+  , class SemigroupRecord
+  , appendRecord
   ) where
 
 import Data.Symbol (class IsSymbol, reflectSymbol)
@@ -59,23 +62,23 @@ foreign import concatArray :: forall a. Array a -> Array a -> Array a
 
 -- | A class for records where all fields have `Semigroup` instances, used to
 -- | implement the `Semigroup` instance for records.
-class SemigroupRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint  
+class SemigroupRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemigroupRecord rowlist row subrow | rowlist -> subrow where
   appendRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
 
 instance semigroupRecordNil :: SemigroupRecord RL.Nil row () where
   appendRecord _ _ _ = {}
 
-instance semigroupRecordCons
-    :: ( IsSymbol key
-       , Row.Cons key focus subrowTail subrow
-       , SemigroupRecord rowlistTail row subrowTail
-       , Semigroup focus
-       )
-    => SemigroupRecord (RL.Cons key focus rowlistTail) row subrow where
+instance semigroupRecordCons ::
+  ( IsSymbol key
+  , Row.Cons key focus subrowTail subrow
+  , SemigroupRecord rowlistTail row subrowTail
+  , Semigroup focus
+  ) =>
+  SemigroupRecord (RL.Cons key focus rowlistTail) row subrow where
   appendRecord _ ra rb = insert (get ra <> get rb) tail
     where
-      key = reflectSymbol (Proxy :: Proxy key)
-      get = unsafeGet key :: Record row -> focus
-      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      tail = appendRecord (Proxy :: Proxy rowlistTail) ra rb
+    key = reflectSymbol (Proxy :: Proxy key)
+    get = unsafeGet key :: Record row -> focus
+    insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+    tail = appendRecord (Proxy :: Proxy rowlistTail) ra rb

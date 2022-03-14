@@ -35,10 +35,10 @@ class RingRecord rowlist row subrow <= CommutativeRingRecord rowlist row subrow 
 
 instance commutativeRingRecordNil :: CommutativeRingRecord RL.Nil row ()
 
-instance commutativeRingRecordCons
-    :: ( IsSymbol key
-       , Row.Cons key focus subrowTail subrow
-       , CommutativeRingRecord rowlistTail row subrowTail
-       , CommutativeRing focus
-       )
-    => CommutativeRingRecord (RL.Cons key focus rowlistTail) row subrow
+instance commutativeRingRecordCons ::
+  ( IsSymbol key
+  , Row.Cons key focus subrowTail subrow
+  , CommutativeRingRecord rowlistTail row subrowTail
+  , CommutativeRing focus
+  ) =>
+  CommutativeRingRecord (RL.Cons key focus rowlistTail) row subrow

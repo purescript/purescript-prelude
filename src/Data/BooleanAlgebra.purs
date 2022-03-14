@@ -34,10 +34,10 @@ class HeytingAlgebraRecord rowlist row subrow <= BooleanAlgebraRecord rowlist ro
 
 instance booleanAlgebraRecordNil :: BooleanAlgebraRecord RL.Nil row ()
 
-instance booleanAlgebraRecordCons
-    :: ( IsSymbol key
-       , Row.Cons key focus subrowTail subrow
-       , BooleanAlgebraRecord rowlistTail row subrowTail
-       , BooleanAlgebra focus
-       )
-    => BooleanAlgebraRecord (RL.Cons key focus rowlistTail) row subrow
+instance booleanAlgebraRecordCons ::
+  ( IsSymbol key
+  , Row.Cons key focus subrowTail subrow
+  , BooleanAlgebraRecord rowlistTail row subrowTail
+  , BooleanAlgebra focus
+  ) =>
+  BooleanAlgebraRecord (RL.Cons key focus rowlistTail) row subrow

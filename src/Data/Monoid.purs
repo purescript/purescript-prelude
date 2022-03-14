@@ -1,9 +1,11 @@
 module Data.Monoid
-  ( class Monoid, mempty
+  ( class Monoid
+  , mempty
   , power
   , guard
   , module Data.Semigroup
-  , class MonoidRecord, memptyRecord
+  , class MonoidRecord
+  , memptyRecord
   ) where
 
 import Data.Boolean (otherwise)
@@ -104,16 +106,15 @@ class SemigroupRecord rowlist row subrow <= MonoidRecord rowlist row subrow | ro
 instance monoidRecordNil :: MonoidRecord RL.Nil row () where
   memptyRecord _ = {}
 
-instance monoidRecordCons
-    :: ( IsSymbol key
-       , Monoid focus
-       , Row.Cons key focus subrowTail subrow
-       , MonoidRecord rowlistTail row subrowTail
-       )
-    => MonoidRecord (RL.Cons key focus rowlistTail) row subrow where
-  memptyRecord _
-    = insert mempty tail
+instance monoidRecordCons ::
+  ( IsSymbol key
+  , Monoid focus
+  , Row.Cons key focus subrowTail subrow
+  , MonoidRecord rowlistTail row subrowTail
+  ) =>
+  MonoidRecord (RL.Cons key focus rowlistTail) row subrow where
+  memptyRecord _ = insert mempty tail
     where
-      key = reflectSymbol (Proxy :: Proxy key)
-      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      tail = memptyRecord (Proxy :: Proxy rowlistTail)
+    key = reflectSymbol (Proxy :: Proxy key)
+    insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+    tail = memptyRecord (Proxy :: Proxy rowlistTail)

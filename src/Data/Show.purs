@@ -1,6 +1,8 @@
 module Data.Show
-  ( class Show, show
-  , class ShowRecordFields, showRecordFields
+  ( class Show
+  , show
+  , class ShowRecordFields
+  , showRecordFields
   ) where
 
 import Data.Symbol (class IsSymbol, reflectSymbol)
@@ -42,7 +44,7 @@ instance showProxy :: Show (Proxy a) where
 instance showRecord :: (RL.RowToList rs ls, ShowRecordFields ls rs) => Show (Record rs) where
   show record = case showRecordFields (Proxy :: Proxy ls) record of
     [] -> "{}"
-    fields -> join " " ["{", join ", " fields, "}"]
+    fields -> join " " [ "{", join ", " fields, "}" ]
 
 -- | A class for records where all fields have `Show` instances, used to
 -- | implement the `Show` instance for records.
@@ -53,18 +55,17 @@ class ShowRecordFields rowlist row where
 instance showRecordFieldsNil :: ShowRecordFields RL.Nil row where
   showRecordFields _ _ = []
 
-instance showRecordFieldsCons
-    :: ( IsSymbol key
-       , ShowRecordFields rowlistTail row
-       , Show focus
-       )
-    => ShowRecordFields (RL.Cons key focus rowlistTail) row where
-  showRecordFields _ record
-    = cons (join ": " [ key, show focus ]) tail
+instance showRecordFieldsCons ::
+  ( IsSymbol key
+  , ShowRecordFields rowlistTail row
+  , Show focus
+  ) =>
+  ShowRecordFields (RL.Cons key focus rowlistTail) row where
+  showRecordFields _ record = cons (join ": " [ key, show focus ]) tail
     where
-      key = reflectSymbol (Proxy :: Proxy key)
-      focus = unsafeGet key record :: focus
-      tail = showRecordFields (Proxy :: Proxy rowlistTail) record
+    key = reflectSymbol (Proxy :: Proxy key)
+    focus = unsafeGet key record :: focus
+    tail = showRecordFields (Proxy :: Proxy rowlistTail) record
 
 foreign import showIntImpl :: Int -> String
 foreign import showNumberImpl :: Number -> String

@@ -1,18 +1,26 @@
 module Data.Ord
-  ( class Ord, compare
-  , class Ord1, compare1
-  , lessThan, (<)
-  , lessThanOrEq, (<=)
-  , greaterThan, (>)
-  , greaterThanOrEq, (>=)
+  ( class Ord
+  , compare
+  , class Ord1
+  , compare1
+  , lessThan
+  , (<)
+  , lessThanOrEq
+  , (<=)
+  , greaterThan
+  , (>)
+  , greaterThanOrEq
+  , (>=)
   , comparing
-  , min, max
+  , min
+  , max
   , clamp
   , between
   , abs
   , signum
   , module Data.Ordering
-  , class OrdRecord, compareRecord
+  , class OrdRecord
+  , compareRecord
   ) where
 
 import Data.Eq (class Eq, class Eq1, class EqRecord, (/=))
@@ -119,10 +127,10 @@ instance ordOrdering :: Ord Ordering where
   compare LT LT = EQ
   compare EQ EQ = EQ
   compare GT GT = EQ
-  compare LT _  = LT
+  compare LT _ = LT
   compare EQ LT = GT
   compare EQ GT = LT
-  compare GT _  = GT
+  compare GT _ = GT
 
 -- | Test whether one value is _strictly less than_ another.
 lessThan :: forall a. Ord a => a -> a -> Boolean
@@ -227,25 +235,24 @@ class EqRecord rowlist row <= OrdRecord rowlist row where
 instance ordRecordNil :: OrdRecord RL.Nil row where
   compareRecord _ _ _ = EQ
 
-instance ordRecordCons
-    :: ( OrdRecord rowlistTail row
-       , Row.Cons key focus rowTail row
-       , IsSymbol key
-       , Ord focus
-       )
-    => OrdRecord (RL.Cons key focus rowlistTail) row where
-  compareRecord _ ra rb
-    = if left /= EQ
-        then left
-        else compareRecord (Proxy :: Proxy rowlistTail) ra rb
+instance ordRecordCons ::
+  ( OrdRecord rowlistTail row
+  , Row.Cons key focus rowTail row
+  , IsSymbol key
+  , Ord focus
+  ) =>
+  OrdRecord (RL.Cons key focus rowlistTail) row where
+  compareRecord _ ra rb =
+    if left /= EQ then left
+    else compareRecord (Proxy :: Proxy rowlistTail) ra rb
     where
-      key = reflectSymbol (Proxy :: Proxy key)
-      unsafeGet' = unsafeGet :: String -> Record row -> focus
-      left = unsafeGet' key ra `compare` unsafeGet' key rb
+    key = reflectSymbol (Proxy :: Proxy key)
+    unsafeGet' = unsafeGet :: String -> Record row -> focus
+    left = unsafeGet' key ra `compare` unsafeGet' key rb
 
-instance ordRecord
-    :: ( RL.RowToList row list
-       , OrdRecord list row
-       )
-    => Ord (Record row) where
+instance ordRecord ::
+  ( RL.RowToList row list
+  , OrdRecord list row
+  ) =>
+  Ord (Record row) where
   compare = compareRecord (Proxy :: Proxy list)

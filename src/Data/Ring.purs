@@ -1,7 +1,11 @@
 module Data.Ring
-  ( class Ring, sub, negate, (-)
+  ( class Ring
+  , sub
+  , negate
+  , (-)
   , module Data.Semiring
-  , class RingRecord, subRecord
+  , class RingRecord
+  , subRecord
   ) where
 
 import Data.Semiring (class Semiring, class SemiringRecord, add, mul, one, zero, (*), (+))
@@ -59,16 +63,16 @@ class SemiringRecord rowlist row subrow <= RingRecord rowlist row subrow | rowli
 instance ringRecordNil :: RingRecord RL.Nil row () where
   subRecord _ _ _ = {}
 
-instance ringRecordCons
-    :: ( IsSymbol key
-       , Row.Cons key focus subrowTail subrow
-       , RingRecord rowlistTail row subrowTail
-       , Ring focus
-       )
-    => RingRecord (RL.Cons key focus rowlistTail) row subrow where
+instance ringRecordCons ::
+  ( IsSymbol key
+  , Row.Cons key focus subrowTail subrow
+  , RingRecord rowlistTail row subrowTail
+  , Ring focus
+  ) =>
+  RingRecord (RL.Cons key focus rowlistTail) row subrow where
   subRecord _ ra rb = insert (get ra - get rb) tail
     where
-      insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-      key = reflectSymbol (Proxy :: Proxy key)
-      get = unsafeGet key :: Record row -> focus
-      tail = subRecord (Proxy :: Proxy rowlistTail) ra rb
+    insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
+    key = reflectSymbol (Proxy :: Proxy key)
+    get = unsafeGet key :: Record row -> focus
+    tail = subRecord (Proxy :: Proxy rowlistTail) ra rb
