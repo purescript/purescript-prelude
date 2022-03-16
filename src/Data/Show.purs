@@ -43,9 +43,8 @@ instance showProxy :: Show (Proxy a) where
   show _ = "Proxy"
 
 instance showRecord ::
-  ( Nub rs rs'
-  , Nub rs' rs
-  , RL.RowToList rs' ls
+  ( Nub rs rs
+  , RL.RowToList rs ls
   , ShowRecordFields ls rs
   ) => Show (Record rs) where
   show record = case showRecordFields (Proxy :: Proxy ls) record of
