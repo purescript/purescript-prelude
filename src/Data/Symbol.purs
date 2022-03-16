@@ -2,15 +2,9 @@ module Data.Symbol
   ( class IsSymbol
   , reflectSymbol
   , reifySymbol
-  , SProxy(..)
   ) where
 
 import Type.Proxy (Proxy(..))
-
--- | A value-level proxy for a type-level symbol.
--- | **Deprecated as of v0.14.0 PureScript release**: use `Type.Proxy` instead.
-data SProxy :: Symbol -> Type
-data SProxy sym = SProxy
 
 -- | A class for known symbols
 class IsSymbol (sym :: Symbol) where
