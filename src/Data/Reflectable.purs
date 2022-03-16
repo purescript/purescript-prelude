@@ -5,7 +5,7 @@ module Data.Reflectable
   , reifyType
   ) where
 
-import Prim.Ordering (Ordering)
+import Data.Ord (Ordering)
 import Type.Proxy (Proxy(..))
 
 -- | A type-class for reflectable types.
