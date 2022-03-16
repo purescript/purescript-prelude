@@ -39,7 +39,7 @@ foreign import unsafeCoerce :: forall a b. a -> b
 -- | function constrained by the `Reflectable` type class. For
 -- | example:
 -- |
--- | ```hs
+-- | ```purs
 -- | twiceFromType :: forall v. Reflectable v Int => Proxy v -> Int
 -- | twiceFromType = (_ * 2) <<< reflectType
 -- |
