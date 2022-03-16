@@ -10,6 +10,7 @@ Breaking changes:
 - Replaced polymorphic proxies with monomorphic `Proxy` (#281, #288 by @JordanMartinez)
 
 New features:
+- Added the `Data.Reflectable` module for type reflection (#289 by @PureFunctor)
 
 Bugfixes:
 
