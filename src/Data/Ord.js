@@ -1,5 +1,3 @@
-"use strict";
-
 var unsafeCompareImpl = function (lt) {
   return function (eq) {
     return function (gt) {
@@ -12,13 +10,13 @@ var unsafeCompareImpl = function (lt) {
   };
 };
 
-exports.ordBooleanImpl = unsafeCompareImpl;
-exports.ordIntImpl = unsafeCompareImpl;
-exports.ordNumberImpl = unsafeCompareImpl;
-exports.ordStringImpl = unsafeCompareImpl;
-exports.ordCharImpl = unsafeCompareImpl;
+export const ordBooleanImpl = unsafeCompareImpl;
+export const ordIntImpl = unsafeCompareImpl;
+export const ordNumberImpl = unsafeCompareImpl;
+export const ordStringImpl = unsafeCompareImpl;
+export const ordCharImpl = unsafeCompareImpl;
 
-exports.ordArrayImpl = function (f) {
+export const ordArrayImpl = function (f) {
   return function (xs) {
     return function (ys) {
       var i = 0;

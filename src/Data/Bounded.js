@@ -1,10 +1,8 @@
-"use strict";
+export const topInt = 2147483647;
+export const bottomInt = -2147483648;
 
-exports.topInt = 2147483647;
-exports.bottomInt = -2147483648;
+export const topChar = String.fromCharCode(65535);
+export const bottomChar = String.fromCharCode(0);
 
-exports.topChar = String.fromCharCode(65535);
-exports.bottomChar = String.fromCharCode(0);
-
-exports.topNumber = Number.POSITIVE_INFINITY;
-exports.bottomNumber = Number.NEGATIVE_INFINITY;
+export const topNumber = Number.POSITIVE_INFINITY;
+export const bottomNumber = Number.NEGATIVE_INFINITY;

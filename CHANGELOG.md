@@ -5,6 +5,9 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+- Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
+- Change Generic Rep's `NoConstructors` to newtype `Void` (#282 by @JordanMartinez)
+- Replaced polymorphic proxies with monomorphic `Proxy` (#281, #288 by @JordanMartinez)
 
 New features:
 
@@ -14,6 +17,7 @@ Other improvements:
 - Changed `unit`'s FFI representation from `{}` to `undefined` (#267 by @JordanMartinez)
 - Added clearer docs for Prelude module (#270 by @JordanMartinez)
 - Clarify docs for `flip` (#271 by @JordanMartinez)
+- Add comment that `Number` is not a fully law abiding instance of `Ord` (#277 by @JamieBallingall)
 - The internal FFI function `join` in `Data.Show` has been renamed to `intercalate` to
   match the same function in `Data.Show.Generic` (#274 by @cdepillabout)
 

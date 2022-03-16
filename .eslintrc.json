@@ -1,11 +1,9 @@
 {
   "parserOptions": {
-    "ecmaVersion": 5
+    "ecmaVersion": 6,
+    "sourceType": "module"
   },
   "extends": "eslint:recommended",
-  "env": {
-    "commonjs": true
-  },
   "rules": {
     "strict": [2, "global"],
     "block-scoped-var": 2,

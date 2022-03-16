@@ -14,10 +14,11 @@ module Data.Generic.Rep
 import Data.Semigroup ((<>))
 import Data.Show (class Show, show)
 import Data.Symbol (class IsSymbol, reflectSymbol)
+import Data.Void (Void)
 import Type.Proxy (Proxy(..))
 
 -- | A representation for types with no constructors.
-data NoConstructors
+newtype NoConstructors = NoConstructors Void
 
 -- | A representation for constructors with no arguments.
 data NoArguments = NoArguments
