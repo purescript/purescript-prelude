@@ -2,7 +2,7 @@ module Test.Main where
 
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
-import Data.Ord (abs)
+import Data.Ord (abs, signum)
 import Test.Data.Generic.Rep (testGenericRep)
 import Test.Utils (AlmostEff, assert)
 
@@ -15,6 +15,7 @@ main = do
     testIntDegree
     testRecordInstances
     testGenericRep
+    testSignum
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 
@@ -151,3 +152,10 @@ testRecordInstances = do
   assert "Record top" $
     (top :: { a :: Boolean }).a
     == top
+
+testSignum :: AlmostEff
+testSignum = do
+  assert "Clarifies what 'signum positive zero' test is doing" $ show (1.0/0.0) == "Infinity"
+  assert "signum positive zero" $ show (1.0/(signum 0.0)) == "Infinity"
+  assert "Clarifies what 'signum negative zero' test is doing" $ show (1.0/(-0.0)) == "-Infinity"
+  assert "signum negative zero" $ show (1.0/(signum (-0.0))) == "-Infinity"

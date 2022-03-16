@@ -8,6 +8,7 @@ Breaking changes:
 - Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
 - Change Generic Rep's `NoConstructors` to newtype `Void` (#282 by @JordanMartinez)
 - Replaced polymorphic proxies with monomorphic `Proxy` (#281, #288 by @JordanMartinez)
+- Fix `signum zero` to return `zero` (#280 by @JordanMartinez)
 
 New features:
 
