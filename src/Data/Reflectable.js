@@ -1,7 +1,5 @@
-"use strict";
-
 // module Data.Reflectable
 
-export function unsafeCoerce(arg) {
+export const unsafeCoerce = function (arg) {
   return arg;
-}
+};

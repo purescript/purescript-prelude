@@ -49,8 +49,9 @@ foreign import unsafeCoerce :: forall a b. a -> b
 reifyType :: forall t r. Reifiable t => t -> (forall v. Reflectable v t => Proxy v -> r) -> r
 reifyType s f = coerce f { reflectType: \_ -> s } Proxy
   where
-  coerce :: (forall v. Reflectable v t => Proxy v -> r)
-         -> { reflectType :: Proxy _ -> t }
-         -> Proxy _
-         -> r
+  coerce
+    :: (forall v. Reflectable v t => Proxy v -> r)
+    -> { reflectType :: Proxy _ -> t }
+    -> Proxy _
+    -> r
   coerce = unsafeCoerce
