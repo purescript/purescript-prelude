@@ -3,8 +3,12 @@ module Test.Main where
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs)
+import Data.Reflectable (reflectType, reifyType)
+import Prim.Boolean (True, False)
+import Prim.Ordering (LT, GT, EQ)
 import Test.Data.Generic.Rep (testGenericRep)
 import Test.Utils (AlmostEff, assert)
+import Type.Proxy (Proxy(..))
 
 main :: AlmostEff
 main = do
@@ -15,6 +19,8 @@ main = do
     testIntDegree
     testRecordInstances
     testGenericRep
+    testReflectType
+    testReifyType
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 
@@ -151,3 +157,33 @@ testRecordInstances = do
   assert "Record top" $
     (top :: { a :: Boolean }).a
     == top
+
+testReflectType :: AlmostEff
+testReflectType = do
+  assert "reflect string" $
+    reflectType (Proxy :: _ "erin!") == "erin!"
+  assert "reflect bool" $
+    reflectType (Proxy :: _ True) == true
+      && reflectType (Proxy :: _ False) == false
+  assert "reflect ord" $
+    reflectType (Proxy :: _ LT) == LT
+      && reflectType (Proxy :: _ GT) == GT
+      && reflectType (Proxy :: _ EQ) == EQ
+  assert "reflect int" $
+    reflectType (Proxy :: _ 42) == 42
+      && reflectType (Proxy :: _ (-42)) == -42
+
+testReifyType :: AlmostEff
+testReifyType = do
+  assert "reify string" $
+    reifyType "erin!" reflectType == "erin!"
+  assert "reify bool" $
+    reifyType true reflectType == true
+      && reifyType false reflectType == false
+  assert "reify ord" $
+    reifyType LT reflectType == LT
+      && reifyType GT reflectType == GT
+      && reifyType EQ reflectType == EQ
+  assert "reify int" $
+    reifyType 42 reflectType == 42
+      && reifyType (-42) reflectType == -42
