@@ -4,7 +4,7 @@ import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
 import Data.Ord (abs, signum)
 import Test.Data.Generic.Rep (testGenericRep)
-import Test.Utils (AlmostEff, assert)
+import Test.Utils (AlmostEff, assert, recordUnion)
 
 main :: AlmostEff
 main = do
@@ -119,6 +119,7 @@ testRecordInstances = do
   assert "Record equality" $ { a: 1 } == { a: 1 }
   assert "Record inequality" $ { a: 2 } /= { a: 1 }
   assert "Record show" $ show { a: 1 } == "{ a: 1 }"
+  testDuplicateLabelRecordShow
   assert "Record +" $ ({ a: 1, b: 2.0 } + { a: 0, b: (-2.0) }) == { a: 1, b: 0.0 }
   assert "Record *" $ ({ a: 1, b: 2.0 } * { a: 0, b: (-2.0) }) == { a: 0, b: -4.0 }
   assert "Record one" $ one == { a: 1, b: 1.0 }
@@ -152,6 +153,10 @@ testRecordInstances = do
   assert "Record top" $
     (top :: { a :: Boolean }).a
     == top
+  where
+  testDuplicateLabelRecordShow = assert "Record with duplicate labels show" $ show duplicateLabels == "{ a: 1 }"
+    where
+    duplicateLabels = recordUnion { a: 1 } { a: "2" }
 
 testSignum :: AlmostEff
 testSignum = do
