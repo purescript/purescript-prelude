@@ -19,6 +19,8 @@ Other improvements:
 - Added clearer docs for Prelude module (#270 by @JordanMartinez)
 - Clarify docs for `flip` (#271 by @JordanMartinez)
 - Add comment that `Number` is not a fully law abiding instance of `Ord` (#277 by @JamieBallingall)
+- The internal FFI function `join` in `Data.Show` has been renamed to `intercalate` to
+  match the same function in `Data.Show.Generic` (#274 by @cdepillabout)
 
 ## [v5.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.1) - 2021-05-11
 

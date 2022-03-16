@@ -64,7 +64,7 @@ export const cons = function (head) {
   };
 };
 
-export const join = function (separator) {
+export const intercalate = function (separator) {
   return function (xs) {
     return xs.join(separator);
   };
