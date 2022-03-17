@@ -12,6 +12,7 @@ Breaking changes:
 - Fix `Show` instance on records with duplicate labels by adding `Nub` constraint (#269 by @JordanMartinez)
 
 New features:
+- Added the `Data.Reflectable` module for type reflection (#289 by @PureFunctor)
 
 Bugfixes:
 
