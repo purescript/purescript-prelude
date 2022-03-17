@@ -2,7 +2,7 @@ module Test.Main where
 
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
-import Data.Ord (abs)
+import Data.Ord (abs, signum)
 import Data.Reflectable (reflectType, reifyType)
 import Prim.Boolean (True, False)
 import Prim.Ordering (LT, GT, EQ)
@@ -21,6 +21,7 @@ main = do
     testGenericRep
     testReflectType
     testReifyType
+    testSignum
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 
@@ -179,3 +180,10 @@ testReifyType = do
   assert "reifyType: Ordering -> Ordering, EQ" $ reifyType EQ reflectType == EQ
   assert "reifyType: Int -> Int, 42" $ reifyType 42 reflectType == 42
   assert "reifyType: Int -> Int, -42" $ reifyType (-42) reflectType == -42
+
+testSignum :: AlmostEff
+testSignum = do
+  assert "Clarifies what 'signum positive zero' test is doing" $ show (1.0/0.0) == "Infinity"
+  assert "signum positive zero" $ show (1.0/(signum 0.0)) == "Infinity"
+  assert "Clarifies what 'signum negative zero' test is doing" $ show (1.0/(-0.0)) == "-Infinity"
+  assert "signum negative zero" $ show (1.0/(signum (-0.0))) == "-Infinity"

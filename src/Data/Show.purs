@@ -6,6 +6,7 @@ module Data.Show
   ) where
 
 import Data.Symbol (class IsSymbol, reflectSymbol)
+import Prim.Row (class Nub)
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
 import Type.Proxy (Proxy(..))
@@ -41,10 +42,14 @@ instance showArray :: Show a => Show (Array a) where
 instance showProxy :: Show (Proxy a) where
   show _ = "Proxy"
 
-instance showRecord :: (RL.RowToList rs ls, ShowRecordFields ls rs) => Show (Record rs) where
+instance showRecord ::
+  ( Nub rs rs
+  , RL.RowToList rs ls
+  , ShowRecordFields ls rs
+  ) => Show (Record rs) where
   show record = case showRecordFields (Proxy :: Proxy ls) record of
     [] -> "{}"
-    fields -> join " " [ "{", join ", " fields, "}" ]
+    fields -> intercalate " " ["{", intercalate ", " fields, "}"]
 
 -- | A class for records where all fields have `Show` instances, used to
 -- | implement the `Show` instance for records.
@@ -61,7 +66,7 @@ instance showRecordFieldsCons ::
   , Show focus
   ) =>
   ShowRecordFields (RL.Cons key focus rowlistTail) row where
-  showRecordFields _ record = cons (join ": " [ key, show focus ]) tail
+  showRecordFields _ record = cons (intercalate ": " [ key, show focus ]) tail
     where
     key = reflectSymbol (Proxy :: Proxy key)
     focus = unsafeGet key record :: focus
@@ -73,4 +78,4 @@ foreign import showCharImpl :: Char -> String
 foreign import showStringImpl :: String -> String
 foreign import showArrayImpl :: forall a. (a -> String) -> Array a -> String
 foreign import cons :: forall a. a -> Array a -> Array a
-foreign import join :: String -> Array String -> String
+foreign import intercalate :: String -> Array String -> String
