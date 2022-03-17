@@ -160,30 +160,22 @@ testRecordInstances = do
 
 testReflectType :: AlmostEff
 testReflectType = do
-  assert "reflect string" $
-    reflectType (Proxy :: _ "erin!") == "erin!"
-  assert "reflect bool" $
-    reflectType (Proxy :: _ True) == true
-      && reflectType (Proxy :: _ False) == false
-  assert "reflect ord" $
-    reflectType (Proxy :: _ LT) == LT
-      && reflectType (Proxy :: _ GT) == GT
-      && reflectType (Proxy :: _ EQ) == EQ
-  assert "reflect int" $
-    reflectType (Proxy :: _ 42) == 42
-      && reflectType (Proxy :: _ (-42)) == -42
+  assert "reflectType: Symbol -> String" $ reflectType (Proxy :: _ "erin!") == "erin!"
+  assert "reflectType: Boolean -> Boolean, True" $ reflectType (Proxy :: _ True) == true
+  assert "reflectType: Boolean -> Boolean, False" $ reflectType (Proxy :: _ False) == false
+  assert "reflectType: Ordering -> Ordering, LT" $ reflectType (Proxy :: _ LT) == LT
+  assert "reflectType: Ordering -> Ordering, GT" $ reflectType (Proxy :: _ GT) == GT
+  assert "reflectType: Ordering -> Ordering, EQ" $ reflectType (Proxy :: _ EQ) == EQ
+  assert "reflectType: Int -> Int, 42" $ reflectType (Proxy :: _ 42) == 42
+  assert "reflectType: Int -> Int, -42" $ reflectType (Proxy :: _ (-42)) == -42
 
 testReifyType :: AlmostEff
 testReifyType = do
-  assert "reify string" $
-    reifyType "erin!" reflectType == "erin!"
-  assert "reify bool" $
-    reifyType true reflectType == true
-      && reifyType false reflectType == false
-  assert "reify ord" $
-    reifyType LT reflectType == LT
-      && reifyType GT reflectType == GT
-      && reifyType EQ reflectType == EQ
-  assert "reify int" $
-    reifyType 42 reflectType == 42
-      && reifyType (-42) reflectType == -42
+  assert "reifyType: String -> Symbol" $ reifyType "erin!" reflectType == "erin!"
+  assert "reifyType: Boolean -> Boolean, true" $ reifyType true reflectType == true
+  assert "reifyType: Boolean -> Boolean, false" $ reifyType false reflectType == false
+  assert "reifyType: Ordering -> Ordering, LT" $ reifyType LT reflectType == LT
+  assert "reifyType: Ordering -> Ordering, GT" $ reifyType GT reflectType == GT
+  assert "reifyType: Ordering -> Ordering, EQ" $ reifyType EQ reflectType == EQ
+  assert "reifyType: Int -> Int, 42" $ reifyType 42 reflectType == 42
+  assert "reifyType: Int -> Int, -42" $ reifyType (-42) reflectType == -42
