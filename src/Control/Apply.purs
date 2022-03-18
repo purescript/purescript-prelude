@@ -42,7 +42,7 @@ import Type.Proxy (Proxy(..))
 -- | - Associative composition: `(<<<) <$> f <*> g <*> h = f <*> (g <*> h)`
 -- |
 -- | Formally, `Apply` represents a strong lax semi-monoidal endofunctor.
-class Functor f <= Apply f where
+class Functor f <= Apply @f where
   apply :: forall a b. f (a -> b) -> f a -> f b
 
 infixl 4 apply as <*>
@@ -59,13 +59,13 @@ instance applyProxy :: Apply Proxy where
   apply _ _ = Proxy
 
 -- | Combine two effectful actions, keeping only the result of the first.
-applyFirst :: forall a b f. Apply f => f a -> f b -> f a
+applyFirst :: forall @f @a @b. Apply f => f a -> f b -> f a
 applyFirst a b = const <$> a <*> b
 
 infixl 4 applyFirst as <*
 
 -- | Combine two effectful actions, keeping only the result of the second.
-applySecond :: forall a b f. Apply f => f a -> f b -> f b
+applySecond :: forall @f @a @b. Apply f => f a -> f b -> f b
 applySecond a b = const identity <$> a <*> b
 
 infixl 4 applySecond as *>
@@ -78,20 +78,20 @@ infixl 4 applySecond as *>
 -- | lift2 add Nothing (Just 2) == Nothing
 -- |```
 -- |
-lift2 :: forall a b c f. Apply f => (a -> b -> c) -> f a -> f b -> f c
+lift2 :: forall @f @a @b @c. Apply f => (a -> b -> c) -> f a -> f b -> f c
 lift2 f a b = f <$> a <*> b
 
 -- | Lift a function of three arguments to a function which accepts and returns
 -- | values wrapped with the type constructor `f`.
-lift3 :: forall a b c d f. Apply f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
+lift3 :: forall @f @a @b @c @d. Apply f => (a -> b -> c -> d) -> f a -> f b -> f c -> f d
 lift3 f a b c = f <$> a <*> b <*> c
 
 -- | Lift a function of four arguments to a function which accepts and returns
 -- | values wrapped with the type constructor `f`.
-lift4 :: forall a b c d e f. Apply f => (a -> b -> c -> d -> e) -> f a -> f b -> f c -> f d -> f e
+lift4 :: forall @f @a @b @c @d @e. Apply f => (a -> b -> c -> d -> e) -> f a -> f b -> f c -> f d -> f e
 lift4 f a b c d = f <$> a <*> b <*> c <*> d
 
 -- | Lift a function of five arguments to a function which accepts and returns
 -- | values wrapped with the type constructor `f`.
-lift5 :: forall a b c d e f g. Apply f => (a -> b -> c -> d -> e -> g) -> f a -> f b -> f c -> f d -> f e -> f g
+lift5 :: forall @f @a @b @c @d @e @g. Apply f => (a -> b -> c -> d -> e -> g) -> f a -> f b -> f c -> f d -> f e -> f g
 lift5 f a b c d e = f <$> a <*> b <*> c <*> d <*> e

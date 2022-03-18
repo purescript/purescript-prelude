@@ -43,7 +43,7 @@ import Type.Proxy (Proxy(..))
 -- |
 -- | In the above ambiguous situation, we could use `Additive`
 -- | for the first situation or `Multiplicative` for the second one.
-class Semigroup m <= Monoid m where
+class Semigroup m <= Monoid @m where
   mempty :: m
 
 instance monoidUnit :: Monoid Unit where
@@ -82,7 +82,7 @@ instance monoidRecord :: (RL.RowToList row list, MonoidRecord list row row) => M
 -- | power [1,2] (-3) == []
 -- | ```
 -- |
-power :: forall m. Monoid m => m -> Int -> m
+power :: forall @m. Monoid m => m -> Int -> m
 power x = go
   where
   go :: Int -> m
@@ -93,14 +93,14 @@ power x = go
     | otherwise = let x' = go (p / 2) in x' <> x' <> x
 
 -- | Allow or "truncate" a Monoid to its `mempty` value based on a condition.
-guard :: forall m. Monoid m => Boolean -> m -> m
+guard :: forall @m. Monoid m => Boolean -> m -> m
 guard true a = a
 guard false _ = mempty
 
 -- | A class for records where all fields have `Monoid` instances, used to
 -- | implement the `Monoid` instance for records.
 class MonoidRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
-class SemigroupRecord rowlist row subrow <= MonoidRecord rowlist row subrow | rowlist -> row subrow where
+class SemigroupRecord rowlist row subrow <= MonoidRecord @rowlist @row @subrow | rowlist -> row subrow where
   memptyRecord :: Proxy rowlist -> Record subrow
 
 instance monoidRecordNil :: MonoidRecord RL.Nil row () where

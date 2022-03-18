@@ -41,7 +41,7 @@ import Type.Proxy (Proxy(..))
 -- | members of this class hierarchy due to the potential for arithmetic
 -- | overflows, and in the case of `Number`, the presence of `NaN` and
 -- | `Infinity` values. The behaviour is unspecified in these cases.
-class Semiring a where
+class Semiring @a where
   add :: a -> a -> a
   zero :: a
   mul :: a -> a -> a
@@ -94,7 +94,7 @@ foreign import numMul :: Number -> Number -> Number
 -- | A class for records where all fields have `Semiring` instances, used to
 -- | implement the `Semiring` instance for records.
 class SemiringRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
-class SemiringRecord rowlist row subrow | rowlist -> subrow where
+class SemiringRecord @rowlist @row @subrow | rowlist -> subrow where
   addRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
   mulRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
   oneRecord :: Proxy rowlist -> Proxy row -> Record subrow

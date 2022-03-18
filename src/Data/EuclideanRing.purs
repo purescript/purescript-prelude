@@ -60,7 +60,7 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- | instance used truncating division. As of 4.x, the `EuclideanRing Int`
 -- | instance uses Euclidean division. Additional functions `quot` and `rem` are
 -- | supplied if truncating division is desired.
-class CommutativeRing a <= EuclideanRing a where
+class CommutativeRing a <= EuclideanRing @a where
   degree :: a -> Int
   div :: a -> a -> a
   mod :: a -> a -> a
@@ -84,14 +84,14 @@ foreign import intMod :: Int -> Int -> Int
 foreign import numDiv :: Number -> Number -> Number
 
 -- | The *greatest common divisor* of two values.
-gcd :: forall a. Eq a => EuclideanRing a => a -> a -> a
+gcd :: forall @a. Eq a => EuclideanRing a => a -> a -> a
 gcd a b =
   if b == zero
     then a
     else gcd b (a `mod` b)
 
 -- | The *least common multiple* of two values.
-lcm :: forall a. Eq a => EuclideanRing a => a -> a -> a
+lcm :: forall @a. Eq a => EuclideanRing a => a -> a -> a
 lcm a b =
   if a == zero || b == zero
     then zero

@@ -16,7 +16,7 @@ import Type.Proxy (Proxy(..))
 -- | * Ordering
 -- | * Symbol
 class Reflectable :: forall k. k -> Type -> Constraint
-class Reflectable v t | v -> t where
+class Reflectable @v @t | v -> t where
   -- | Reflect a type `v` to its term-level representation.
   reflectType :: Proxy v -> t
 
@@ -25,7 +25,7 @@ class Reflectable v t | v -> t where
 -- | Instances of this type class correspond to the `t` synthesized
 -- | by the compiler when solving the `Reflectable` type class.
 class Reifiable :: Type -> Constraint
-class Reifiable t
+class Reifiable @t
 
 instance Reifiable Boolean
 instance Reifiable Int
@@ -46,7 +46,7 @@ foreign import unsafeCoerce :: forall a b. a -> b
 -- | twiceOfTerm :: Int
 -- | twiceOfTerm = reifyType 21 twiceFromType
 -- | ```
-reifyType :: forall t r. Reifiable t => t -> (forall v. Reflectable v t => Proxy v -> r) -> r
+reifyType :: forall @t r. Reifiable t => t -> (forall v. Reflectable v t => Proxy v -> r) -> r
 reifyType s f = coerce f { reflectType: \_ -> s } Proxy
   where
   coerce

@@ -11,7 +11,7 @@ import Data.Ord (class Ord1)
 -- | Additive x <> Additive y == Additive (x + y)
 -- | (mempty :: Additive _) == Additive zero
 -- | ```
-newtype Additive a = Additive a
+newtype Additive @a = Additive a
 
 derive newtype instance eqAdditive :: Eq a => Eq (Additive a)
 derive instance eq1Additive :: Eq1 Additive

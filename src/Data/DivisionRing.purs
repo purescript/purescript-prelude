@@ -26,7 +26,7 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- |
 -- | If a type has both `DivisionRing` and `CommutativeRing` instances, then
 -- | it is a field and should have a `Field` instance.
-class Ring a <= DivisionRing a where
+class Ring a <= DivisionRing @a where
   recip :: a -> a
 
 -- | Left division, defined as `leftDiv a b = recip b * a`. Left and right
@@ -37,7 +37,7 @@ class Ring a <= DivisionRing a where
 -- | equivalent to `div` from the `EuclideanRing` class. When working
 -- | abstractly, `div` should generally be preferred, unless you know that you
 -- | need your code to work with noncommutative rings.
-leftDiv :: forall a. DivisionRing a => a -> a -> a
+leftDiv :: forall @a. DivisionRing a => a -> a -> a
 leftDiv a b = recip b * a
 
 -- | Right division, defined as `rightDiv a b = a * recip b`. Left and right
@@ -48,7 +48,7 @@ leftDiv a b = recip b * a
 -- | equivalent to `div` from the `EuclideanRing` class. When working
 -- | abstractly, `div` should generally be preferred, unless you know that you
 -- | need your code to work with noncommutative rings.
-rightDiv :: forall a. DivisionRing a => a -> a -> a
+rightDiv :: forall @a. DivisionRing a => a -> a -> a
 rightDiv a b = a * recip b
 
 instance divisionringNumber :: DivisionRing Number where

@@ -53,7 +53,7 @@ import Type.Proxy (Proxy(..))
 -- |    y <- m2 x
 -- |    m3 x y
 -- | ```
-class Apply m <= Bind m where
+class Apply m <= Bind @m where
   bind :: forall a b. m a -> (a -> m b) -> m b
 
 infixl 1 bind as >>=
@@ -63,7 +63,7 @@ infixl 1 bind as >>=
 -- | ```purescript
 -- | print =<< random
 -- | ```
-bindFlipped :: forall m a b. Bind m => (a -> m b) -> m a -> m b
+bindFlipped :: forall @m @a @b. Bind m => (a -> m b) -> m a -> m b
 bindFlipped = flip bind
 
 infixr 1 bindFlipped as =<<
@@ -104,8 +104,8 @@ instance bindProxy :: Bind Proxy where
 -- |
 -- | An example is the `Unit` type, since there is only one
 -- | possible value which can be returned.
-class Discard a where
-  discard :: forall f b. Bind f => f a -> (a -> f b) -> f b
+class Discard @a where
+  discard :: forall @f @b. Bind f => f a -> (a -> f b) -> f b
 
 instance discardUnit :: Discard Unit where
   discard = bind
@@ -114,7 +114,7 @@ instance discardProxy :: Discard (Proxy a) where
   discard = bind
 
 -- | Collapse two applications of a monadic type constructor into one.
-join :: forall a m. Bind m => m (m a) -> m a
+join :: forall @m a. Bind m => m (m a) -> m a
 join m = m >>= identity
 
 -- | Forwards Kleisli composition.
@@ -126,13 +126,13 @@ join m = m >>= identity
 -- |
 -- | third = tail >=> tail >=> head
 -- | ```
-composeKleisli :: forall a b c m. Bind m => (a -> m b) -> (b -> m c) -> a -> m c
+composeKleisli :: forall @m @a @b @c. Bind m => (a -> m b) -> (b -> m c) -> a -> m c
 composeKleisli f g a = f a >>= g
 
 infixr 1 composeKleisli as >=>
 
 -- | Backwards Kleisli composition.
-composeKleisliFlipped :: forall a b c m. Bind m => (b -> m c) -> (a -> m b) -> a -> m c
+composeKleisliFlipped :: forall @m @a @b @c. Bind m => (b -> m c) -> (a -> m b) -> a -> m c
 composeKleisliFlipped f g a = f =<< g a
 
 infixr 1 composeKleisliFlipped as <=<
@@ -146,5 +146,5 @@ infixr 1 composeKleisliFlipped as <=<
 -- |          (trace "Heads")
 -- |          (trace "Tails")
 -- | ```
-ifM :: forall a m. Bind m => m Boolean -> m a -> m a -> m a
+ifM :: forall @m @a. Bind m => m Boolean -> m a -> m a -> m a
 ifM cond t f = cond >>= \cond' -> if cond' then t else f

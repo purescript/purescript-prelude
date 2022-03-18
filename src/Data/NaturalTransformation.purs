@@ -15,6 +15,6 @@ module Data.NaturalTransformation where
 -- | enforced here; that the types are of kind `k -> Type` is enough for our
 -- | purposes.
 type NaturalTransformation :: forall k. (k -> Type) -> (k -> Type) -> Type
-type NaturalTransformation f g = forall a. f a -> g a
+type NaturalTransformation @f @g = forall a. f a -> g a
 
 infixr 4 type NaturalTransformation as ~>

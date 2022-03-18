@@ -28,7 +28,7 @@ import Type.Proxy (Proxy)
 -- |
 -- | - Left Identity: `pure x >>= f = f x`
 -- | - Right Identity: `x >>= pure = x`
-class (Applicative m, Bind m) <= Monad m
+class (Applicative m, Bind m) <= Monad @m
 
 instance monadFn :: Monad ((->) r)
 
@@ -47,21 +47,21 @@ instance monadProxy :: Monad Proxy
 -- | instance functorF :: Functor F where
 -- |   map = liftM1
 -- | ```
-liftM1 :: forall m a b. Monad m => (a -> b) -> m a -> m b
+liftM1 :: forall @m @a @b. Monad m => (a -> b) -> m a -> m b
 liftM1 f a = do
   a' <- a
   pure (f a')
 
 -- | Perform a monadic action when a condition is true, where the conditional
 -- | value is also in a monadic context.
-whenM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
+whenM :: forall @m. Monad m => m Boolean -> m Unit -> m Unit
 whenM mb m = do
   b <- mb
   when b m
 
 -- | Perform a monadic action unless a condition is true, where the conditional
 -- | value is also in a monadic context.
-unlessM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
+unlessM :: forall @m. Monad m => m Boolean -> m Unit -> m Unit
 unlessM mb m =  do
   b <- mb
   unless b m
@@ -79,7 +79,7 @@ unlessM mb m =  do
 -- produce loops when used with other default implementations
 -- (i.e. `liftA1`).
 -- See https://github.com/purescript/purescript-prelude/issues/232
-ap :: forall m a b. Monad m => m (a -> b) -> m a -> m b
+ap :: forall @m @a @b. Monad m => m (a -> b) -> m a -> m b
 ap f a = do
   f' <- f
   a' <- a

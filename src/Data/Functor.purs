@@ -22,7 +22,7 @@ import Type.Proxy (Proxy(..))
 -- |
 -- | - Identity: `map identity = identity`
 -- | - Composition: `map (f <<< g) = map f <<< map g`
-class Functor f where
+class Functor @f where
   map :: forall a b. (a -> b) -> f a -> f b
 
 infixl 4 map as <$>
@@ -32,7 +32,7 @@ infixl 4 map as <$>
 -- | ```purescript
 -- | [1, 2, 3] <#> \n -> n * n
 -- | ```
-mapFlipped :: forall f a b. Functor f => f a -> (a -> b) -> f b
+mapFlipped :: forall @f a b. Functor f => f a -> (a -> b) -> f b
 mapFlipped fa f = f <$> fa
 
 infixl 1 mapFlipped as <#>
@@ -60,18 +60,18 @@ foreign import arrayMap :: forall a b. (a -> b) -> Array a -> Array b
 -- |   print n
 -- |   print (n * n)
 -- | ```
-void :: forall f a. Functor f => f a -> f Unit
+void :: forall @f a. Functor f => f a -> f Unit
 void = map (const unit)
 
 -- | Ignore the return value of a computation, using the specified return value
 -- | instead.
-voidRight :: forall f a b. Functor f => a -> f b -> f a
+voidRight :: forall @f a b. Functor f => a -> f b -> f a
 voidRight x = map (const x)
 
 infixl 4 voidRight as <$
 
 -- | A version of `voidRight` with its arguments flipped.
-voidLeft :: forall f a b. Functor f => f a -> b -> f b
+voidLeft :: forall @f a b. Functor f => f a -> b -> f b
 voidLeft f x = const x <$> f
 
 infixl 4 voidLeft as $>
@@ -94,7 +94,7 @@ infixl 4 voidLeft as $>
 -- | flap (-) 3 4 == 1
 -- | threeve <$> Just 1 <@> 'a' <*> Just true == Just (threeve 1 'a' true)
 -- | ```
-flap :: forall f a b. Functor f => f (a -> b) -> a -> f b
+flap :: forall @f a b. Functor f => f (a -> b) -> a -> f b
 flap ff x = map (\f -> f x) ff
 
 infixl 4 flap as <@>

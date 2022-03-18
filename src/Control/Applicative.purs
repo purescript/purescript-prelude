@@ -30,7 +30,7 @@ import Type.Proxy (Proxy(..))
 -- | - Composition: `pure (<<<) <*> f <*> g <*> h = f <*> (g <*> h)`
 -- | - Homomorphism: `(pure f) <*> (pure x) = pure (f x)`
 -- | - Interchange: `u <*> (pure y) = (pure (_ $ y)) <*> u`
-class Apply f <= Applicative f where
+class Apply f <= Applicative @f where
   pure :: forall a. a -> f a
 
 instance applicativeFn :: Applicative ((->) r) where
@@ -54,15 +54,15 @@ instance applicativeProxy :: Applicative Proxy where
 -- | instance functorF :: Functor F where
 -- |   map = liftA1
 -- | ```
-liftA1 :: forall f a b. Applicative f => (a -> b) -> f a -> f b
+liftA1 :: forall @f @a @b. Applicative f => (a -> b) -> f a -> f b
 liftA1 f a = pure f <*> a
 
 -- | Perform an applicative action when a condition is true.
-when :: forall m. Applicative m => Boolean -> m Unit -> m Unit
+when :: forall @m. Applicative m => Boolean -> m Unit -> m Unit
 when true m = m
 when false _ = pure unit
 
 -- | Perform an applicative action unless a condition is true.
-unless :: forall m. Applicative m => Boolean -> m Unit -> m Unit
+unless :: forall @m. Applicative m => Boolean -> m Unit -> m Unit
 unless false m = m
 unless true _ = pure unit

@@ -12,7 +12,7 @@ import Data.Ord (class Ord1)
 -- | Disj x <> Disj y == Disj (x || y)
 -- | (mempty :: Disj _) == Disj bottom
 -- | ```
-newtype Disj a = Disj a
+newtype Disj @a = Disj a
 
 derive newtype instance eqDisj :: Eq a => Eq (Disj a)
 derive instance eq1Disj :: Eq1 Disj

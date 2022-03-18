@@ -11,7 +11,7 @@ import Data.Ord (class Ord1)
 -- | Dual x <> Dual y == Dual (y <> x)
 -- | (mempty :: Dual _) == Dual mempty
 -- | ```
-newtype Dual a = Dual a
+newtype Dual @a = Dual a
 
 derive newtype instance eqDual :: Eq a => Eq (Dual a)
 derive instance eq1Dual :: Eq1 Dual

@@ -17,7 +17,7 @@ import Type.Proxy (Proxy(..))
 -- | While not required, it is recommended that for any expression `x`, the
 -- | string `show x` be executable PureScript code which evaluates to the same
 -- | value as the expression `x`.
-class Show a where
+class Show @a where
   show :: a -> String
 
 instance showBoolean :: Show Boolean where
@@ -54,7 +54,7 @@ instance showRecord ::
 -- | A class for records where all fields have `Show` instances, used to
 -- | implement the `Show` instance for records.
 class ShowRecordFields :: RL.RowList Type -> Row Type -> Constraint
-class ShowRecordFields rowlist row where
+class ShowRecordFields @rowlist @row where
   showRecordFields :: Proxy rowlist -> Record row -> Array String
 
 instance showRecordFieldsNil :: ShowRecordFields RL.Nil row where

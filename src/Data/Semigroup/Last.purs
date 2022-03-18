@@ -10,7 +10,7 @@ import Data.Ord (class Ord1)
 -- | ``` purescript
 -- | Last x <> Last y == Last y
 -- | ```
-newtype Last a = Last a
+newtype Last @a = Last a
 
 derive newtype instance eqLast :: Eq a => Eq (Last a)
 derive instance eq1Last :: Eq1 Last

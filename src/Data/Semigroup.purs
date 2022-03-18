@@ -31,7 +31,7 @@ import Type.Proxy (Proxy(..))
 -- | wrapping the values in one of the two newtypes below:
 -- | 1. `First` - Use the first argument every time: `append first _ = first`.
 -- | 2. `Last` - Use the last argument every time: `append _ last = last`.
-class Semigroup a where
+class Semigroup @a where
   append :: a -> a -> a
 
 infixr 5 append as <>
@@ -63,7 +63,7 @@ foreign import concatArray :: forall a. Array a -> Array a -> Array a
 -- | A class for records where all fields have `Semigroup` instances, used to
 -- | implement the `Semigroup` instance for records.
 class SemigroupRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
-class SemigroupRecord rowlist row subrow | rowlist -> subrow where
+class SemigroupRecord @rowlist @row @subrow | rowlist -> subrow where
   appendRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
 
 instance semigroupRecordNil :: SemigroupRecord RL.Nil row () where

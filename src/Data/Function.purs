@@ -23,7 +23,7 @@ import Data.Ring ((-))
 -- |
 -- | flip const 1 "two" == const "two" 1 == "two"
 -- | ```
-flip :: forall a b c. (a -> b -> c) -> b -> a -> c
+flip :: forall @a @b @c. (a -> b -> c) -> b -> a -> c
 flip f b a = f a b
 
 -- | Returns its first argument and ignores its second.
@@ -37,13 +37,13 @@ flip f b a = f a b
 -- | ```purescript
 -- | const 1 = \_ -> 1
 -- | ```
-const :: forall a b. a -> b -> a
+const :: forall @a @b. a -> b -> a
 const a _ = a
 
 -- | Applies a function to an argument. This is primarily used as the operator
 -- | `($)` which allows parentheses to be omitted in some cases, or as a
 -- | natural way to apply a chain of composed functions to a value.
-apply :: forall a b. (a -> b) -> a -> b
+apply :: forall @a @b. (a -> b) -> a -> b
 apply f x = f x
 
 -- | Applies a function to an argument: the reverse of `(#)`.
@@ -69,7 +69,7 @@ infixr 0 apply as $
 -- | Applies an argument to a function. This is primarily used as the `(#)`
 -- | operator, which allows parentheses to be omitted in some cases, or as a
 -- | natural way to apply a value to a chain of composed functions.
-applyFlipped :: forall a b. a -> (a -> b) -> b
+applyFlipped :: forall @a @b. a -> (a -> b) -> b
 applyFlipped x f = f x
 
 -- | Applies an argument to a function: the reverse of `($)`.
@@ -99,7 +99,7 @@ infixl 1 applyFlipped as #
 -- | ```purescript
 -- | applyN (_ + 1) 10 0 == 10
 -- | ```
-applyN :: forall a. (a -> a) -> Int -> a -> a
+applyN :: forall @a. (a -> a) -> Int -> a -> a
 applyN f = go
   where
   go n acc
@@ -114,5 +114,5 @@ applyN f = go
 -- | compareX :: forall r. { x :: Number | r } -> { x :: Number | r } -> Ordering
 -- | compareX = compare `on` _.x
 -- | ```
-on :: forall a b c. (b -> b -> c) -> (a -> b) -> a -> a -> c
+on :: forall @a @b @c. (b -> b -> c) -> (a -> b) -> a -> a -> c
 on f g x y = g x `f` g y

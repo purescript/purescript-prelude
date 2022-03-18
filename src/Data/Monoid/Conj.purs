@@ -12,7 +12,7 @@ import Data.Ord (class Ord1)
 -- | Conj x <> Conj y == Conj (x && y)
 -- | (mempty :: Conj _) == Conj tt
 -- | ```
-newtype Conj a = Conj a
+newtype Conj @a = Conj a
 
 derive newtype instance eqConj :: Eq a => Eq (Conj a)
 derive instance eq1Conj :: Eq1 Conj

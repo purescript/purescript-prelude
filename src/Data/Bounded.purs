@@ -22,7 +22,7 @@ import Type.Proxy (Proxy(..))
 -- | Instances should satisfy the following law in addition to the `Ord` laws:
 -- |
 -- | - Bounded: `bottom <= a <= top`
-class Ord a <= Bounded a where
+class Ord a <= Bounded @a where
   top :: a
   bottom :: a
 
@@ -68,7 +68,7 @@ instance boundedProxy :: Bounded (Proxy a) where
   top = Proxy
 
 class BoundedRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
-class OrdRecord rowlist row <= BoundedRecord rowlist row subrow | rowlist -> subrow where
+class OrdRecord rowlist row <= BoundedRecord @rowlist @row @subrow | rowlist -> subrow where
   topRecord :: Proxy rowlist -> Proxy row -> Record subrow
   bottomRecord :: Proxy rowlist -> Proxy row -> Record subrow
 

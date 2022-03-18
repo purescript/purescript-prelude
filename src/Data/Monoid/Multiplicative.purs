@@ -11,7 +11,7 @@ import Data.Ord (class Ord1)
 -- | Multiplicative x <> Multiplicative y == Multiplicative (x * y)
 -- | (mempty :: Multiplicative _) == Multiplicative one
 -- | ```
-newtype Multiplicative a = Multiplicative a
+newtype Multiplicative @a = Multiplicative a
 
 derive newtype instance eqMultiplicative :: Eq a => Eq (Multiplicative a)
 derive instance eq1Multiplicative :: Eq1 Multiplicative

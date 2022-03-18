@@ -10,7 +10,7 @@ import Data.Ord (class Ord1)
 -- | ``` purescript
 -- | First x <> First y == First x
 -- | ```
-newtype First a = First a
+newtype First @a = First a
 
 derive newtype instance eqFirst :: Eq a => Eq (First a)
 derive instance eq1First :: Eq1 First

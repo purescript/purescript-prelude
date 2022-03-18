@@ -54,9 +54,9 @@ instance showArgument :: Show a => Show (Argument a) where
 
 -- | The `Generic` class asserts the existence of a type function from types
 -- | to their representations using the type constructors defined in this module.
-class Generic a rep | a -> rep where
+class Generic @a @rep | a -> rep where
   to :: rep -> a
   from :: a -> rep
 
-repOf :: forall a rep. Generic a rep => Proxy a -> Proxy rep
+repOf :: forall a@ @rep. Generic a rep => Proxy a -> Proxy rep
 repOf _ = Proxy

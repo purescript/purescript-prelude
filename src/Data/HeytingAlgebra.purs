@@ -49,7 +49,7 @@ import Type.Proxy (Proxy(..))
 -- |   - ``a `implies` (b && c) = (a `implies` b) && (a `implies` c)``
 -- | - Complemented:
 -- |   - ``not a = a `implies` ff``
-class HeytingAlgebra a where
+class HeytingAlgebra @a where
   ff :: a
   tt :: a
   implies :: a -> a -> a
@@ -107,7 +107,7 @@ foreign import boolNot :: Boolean -> Boolean
 -- | A class for records where all fields have `HeytingAlgebra` instances, used
 -- | to implement the `HeytingAlgebra` instance for records.
 class HeytingAlgebraRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
-class HeytingAlgebraRecord rowlist row subrow | rowlist -> subrow where
+class HeytingAlgebraRecord @rowlist @row @subrow | rowlist -> subrow where
   ffRecord :: Proxy rowlist -> Proxy row -> Record subrow
   ttRecord :: Proxy rowlist -> Proxy row -> Record subrow
   impliesRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow

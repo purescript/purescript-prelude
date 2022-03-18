@@ -45,7 +45,7 @@ import Type.Proxy (Proxy(..))
 -- |
 -- | **Note:** The `Number` type is not an entirely law abiding member of this
 -- | class due to the presence of `NaN`, since `NaN <= NaN` evaluates to `false`
-class Eq a <= Ord a where
+class Eq a <= Ord @a where
   compare :: a -> a -> Ordering
 
 instance ordBoolean :: Ord Boolean where
@@ -133,25 +133,25 @@ instance ordOrdering :: Ord Ordering where
   compare GT _ = GT
 
 -- | Test whether one value is _strictly less than_ another.
-lessThan :: forall a. Ord a => a -> a -> Boolean
+lessThan :: forall @a. Ord a => a -> a -> Boolean
 lessThan a1 a2 = case a1 `compare` a2 of
   LT -> true
   _ -> false
 
 -- | Test whether one value is _strictly greater than_ another.
-greaterThan :: forall a. Ord a => a -> a -> Boolean
+greaterThan :: forall @a. Ord a => a -> a -> Boolean
 greaterThan a1 a2 = case a1 `compare` a2 of
   GT -> true
   _ -> false
 
 -- | Test whether one value is _non-strictly less than_ another.
-lessThanOrEq :: forall a. Ord a => a -> a -> Boolean
+lessThanOrEq :: forall @a. Ord a => a -> a -> Boolean
 lessThanOrEq a1 a2 = case a1 `compare` a2 of
   GT -> false
   _ -> true
 
 -- | Test whether one value is _non-strictly greater than_ another.
-greaterThanOrEq :: forall a. Ord a => a -> a -> Boolean
+greaterThanOrEq :: forall @a. Ord a => a -> a -> Boolean
 greaterThanOrEq a1 a2 = case a1 `compare` a2 of
   LT -> false
   _ -> true
@@ -162,12 +162,12 @@ infixl 4 greaterThan as >
 infixl 4 greaterThanOrEq as >=
 
 -- | Compares two values by mapping them to a type with an `Ord` instance.
-comparing :: forall a b. Ord b => (a -> b) -> (a -> a -> Ordering)
+comparing :: forall @b @a. Ord b => (a -> b) -> (a -> a -> Ordering)
 comparing f x y = compare (f x) (f y)
 
 -- | Take the minimum of two values. If they are considered equal, the first
 -- | argument is chosen.
-min :: forall a. Ord a => a -> a -> a
+min :: forall @a. Ord a => a -> a -> a
 min x y =
   case compare x y of
     LT -> x
@@ -176,7 +176,7 @@ min x y =
 
 -- | Take the maximum of two values. If they are considered equal, the first
 -- | argument is chosen.
-max :: forall a. Ord a => a -> a -> a
+max :: forall @a. Ord a => a -> a -> a
 max x y =
   case compare x y of
     LT -> y
@@ -191,7 +191,7 @@ max x y =
 -- | f 5    == 5
 -- | f 15   == 10
 -- | ```
-clamp :: forall a. Ord a => a -> a -> a -> a
+clamp :: forall @a. Ord a => a -> a -> a -> a
 clamp low hi x = min hi (max low x)
 
 -- | Test whether a value is between a minimum and a maximum (inclusive).
@@ -205,7 +205,7 @@ clamp low hi x = min hi (max low x)
 -- | f 10   == true
 -- | f 15   == false
 -- | ```
-between :: forall a. Ord a => a -> a -> a -> Boolean
+between :: forall @a. Ord a => a -> a -> a -> Boolean
 between low hi x
   | x < low = false
   | x > hi = false
@@ -213,7 +213,7 @@ between low hi x
 
 -- | The absolute value function. `abs x` is defined as `if x >= zero then x
 -- | else negate x`.
-abs :: forall a. Ord a => Ring a => a -> a
+abs :: forall @a. Ord a => Ring a => a -> a
 abs x = if x >= zero then x else negate x
 
 -- | The sign function; returns `one` if the argument is positive,
@@ -221,7 +221,7 @@ abs x = if x >= zero then x else negate x
 -- | For floating point numbers with signed zeroes, when called with a zero,
 -- | this function returns the argument in order to preserve the sign.
 -- | For any `x`, we should have `signum x * abs x == x`.
-signum :: forall a. Ord a => Ring a => a -> a
+signum :: forall @a. Ord a => Ring a => a -> a
 signum x =
   if x < zero then negate one
   else if x > zero then one
@@ -235,7 +235,7 @@ instance ord1Array :: Ord1 Array where
   compare1 = compare
 
 class OrdRecord :: RL.RowList Type -> Row Type -> Constraint
-class EqRecord rowlist row <= OrdRecord rowlist row where
+class EqRecord rowlist row <= OrdRecord @rowlist @row where
   compareRecord :: Proxy rowlist -> Record row -> Record row -> Ordering
 
 instance ordRecordNil :: OrdRecord RL.Nil row where

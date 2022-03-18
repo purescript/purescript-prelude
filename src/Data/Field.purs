@@ -36,6 +36,6 @@ import Data.Semiring (class Semiring, add, mul, one, zero, (*), (+))
 -- | defined in libraries. Instead, simply define `EuclideanRing` and
 -- | `DivisionRing` instances, and this will permit your type to be used with a
 -- | `Field` constraint.
-class (EuclideanRing a, DivisionRing a) <= Field a
+class (EuclideanRing a, DivisionRing a) <= Field @a
 
 instance field :: (EuclideanRing a, DivisionRing a) => Field a

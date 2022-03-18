@@ -20,7 +20,7 @@ import Type.Proxy (Proxy)
 -- | laws:
 -- |
 -- | - Commutative multiplication: `a * b = b * a`
-class Ring a <= CommutativeRing a
+class Ring a <= CommutativeRing @a
 
 instance commutativeRingInt :: CommutativeRing Int
 instance commutativeRingNumber :: CommutativeRing Number
@@ -31,7 +31,7 @@ instance commutativeRingProxy :: CommutativeRing (Proxy a)
 
 -- | A class for records where all fields have `CommutativeRing` instances, used
 -- | to implement the `CommutativeRing` instance for records.
-class RingRecord rowlist row subrow <= CommutativeRingRecord rowlist row subrow | rowlist -> subrow
+class RingRecord rowlist row subrow <= CommutativeRingRecord @rowlist @row @subrow | rowlist -> subrow
 
 instance commutativeRingRecordNil :: CommutativeRingRecord RL.Nil row ()
 
