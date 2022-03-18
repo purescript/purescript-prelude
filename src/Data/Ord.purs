@@ -236,10 +236,10 @@ instance ord1Array :: Ord1 Array where
 
 class OrdRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row <= OrdRecord @rowlist @row where
-  compareRecord :: Proxy rowlist -> Record row -> Record row -> Ordering
+  compareRecord :: Record row -> Record row -> Ordering
 
 instance ordRecordNil :: OrdRecord RL.Nil row where
-  compareRecord _ _ _ = EQ
+  compareRecord _ _ = EQ
 
 instance ordRecordCons ::
   ( OrdRecord rowlistTail row
@@ -248,11 +248,11 @@ instance ordRecordCons ::
   , Ord focus
   ) =>
   OrdRecord (RL.Cons key focus rowlistTail) row where
-  compareRecord _ ra rb =
+  compareRecord ra rb =
     if left /= EQ then left
-    else compareRecord (Proxy :: Proxy rowlistTail) ra rb
+    else compareRecord @rowlistTail ra rb
     where
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     unsafeGet' = unsafeGet :: String -> Record row -> focus
     left = unsafeGet' key ra `compare` unsafeGet' key rb
 
@@ -261,4 +261,4 @@ instance ordRecord ::
   , OrdRecord list row
   ) =>
   Ord (Record row) where
-  compare = compareRecord (Proxy :: Proxy list)
+  compare = compareRecord @list

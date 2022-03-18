@@ -18,7 +18,7 @@ import Type.Proxy (Proxy(..))
 class Reflectable :: forall k. k -> Type -> Constraint
 class Reflectable @v @t | v -> t where
   -- | Reflect a type `v` to its term-level representation.
-  reflectType :: Proxy v -> t
+  reflectType :: t
 
 -- | A type class for reifiable types.
 -- |

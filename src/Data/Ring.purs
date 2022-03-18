@@ -58,10 +58,10 @@ foreign import numSub :: Number -> Number -> Number
 -- | implement the `Ring` instance for records.
 class RingRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemiringRecord rowlist row subrow <= RingRecord @rowlist @row @subrow | rowlist -> subrow where
-  subRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
+  subRecord :: Record row -> Record row -> Record subrow
 
 instance ringRecordNil :: RingRecord RL.Nil row () where
-  subRecord _ _ _ = {}
+  subRecord _ _ = {}
 
 instance ringRecordCons ::
   ( IsSymbol key
@@ -70,9 +70,9 @@ instance ringRecordCons ::
   , Ring focus
   ) =>
   RingRecord (RL.Cons key focus rowlistTail) row subrow where
-  subRecord _ ra rb = insert (get ra - get rb) tail
+  subRecord ra rb = insert (get ra - get rb) tail
     where
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     get = unsafeGet key :: Record row -> focus
-    tail = subRecord (Proxy :: Proxy rowlistTail) ra rb
+    tail = subRecord @rowlistTail ra rb

@@ -81,10 +81,10 @@ instance semiringProxy :: Semiring (Proxy a) where
   zero = Proxy
 
 instance semiringRecord :: (RL.RowToList row list, SemiringRecord list row row) => Semiring (Record row) where
-  add = addRecord (Proxy :: Proxy list)
-  mul = mulRecord (Proxy :: Proxy list)
-  one = oneRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
-  zero = zeroRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
+  add = addRecord @list
+  mul = mulRecord @list
+  one = oneRecord @list @row
+  zero = zeroRecord @list @row
 
 foreign import intAdd :: Int -> Int -> Int
 foreign import intMul :: Int -> Int -> Int
@@ -95,16 +95,16 @@ foreign import numMul :: Number -> Number -> Number
 -- | implement the `Semiring` instance for records.
 class SemiringRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemiringRecord @rowlist @row @subrow | rowlist -> subrow where
-  addRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
-  mulRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
-  oneRecord :: Proxy rowlist -> Proxy row -> Record subrow
-  zeroRecord :: Proxy rowlist -> Proxy row -> Record subrow
+  addRecord :: Record row -> Record row -> Record subrow
+  mulRecord :: Record row -> Record row -> Record subrow
+  oneRecord :: Record subrow
+  zeroRecord :: Record subrow
 
 instance semiringRecordNil :: SemiringRecord RL.Nil row () where
-  addRecord _ _ _ = {}
-  mulRecord _ _ _ = {}
-  oneRecord _ _ = {}
-  zeroRecord _ _ = {}
+  addRecord _ _ = {}
+  mulRecord _ _ = {}
+  oneRecord = {}
+  zeroRecord = {}
 
 instance semiringRecordCons ::
   ( IsSymbol key
@@ -113,28 +113,28 @@ instance semiringRecordCons ::
   , Semiring focus
   ) =>
   SemiringRecord (RL.Cons key focus rowlistTail) row subrow where
-  addRecord _ ra rb = insert (get ra + get rb) tail
+  addRecord ra rb = insert (get ra + get rb) tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     get = unsafeGet key :: Record row -> focus
-    tail = addRecord (Proxy :: Proxy rowlistTail) ra rb
+    tail = addRecord @rowlistTail ra rb
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
-  mulRecord _ ra rb = insert (get ra * get rb) tail
+  mulRecord ra rb = insert (get ra * get rb) tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     get = unsafeGet key :: Record row -> focus
-    tail = mulRecord (Proxy :: Proxy rowlistTail) ra rb
+    tail = mulRecord @rowlistTail ra rb
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
-  oneRecord _ _ = insert one tail
+  oneRecord = insert one tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
-    tail = oneRecord (Proxy :: Proxy rowlistTail) (Proxy :: Proxy row)
+    key = reflectSymbol @key
+    tail = oneRecord @rowlistTail @row
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
-  zeroRecord _ _ = insert zero tail
+  zeroRecord = insert zero tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
-    tail = zeroRecord (Proxy :: Proxy rowlistTail) (Proxy :: Proxy row)
+    key = reflectSymbol @key
+    tail = zeroRecord @rowlistTail @row
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow

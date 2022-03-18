@@ -69,12 +69,12 @@ instance boundedProxy :: Bounded (Proxy a) where
 
 class BoundedRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class OrdRecord rowlist row <= BoundedRecord @rowlist @row @subrow | rowlist -> subrow where
-  topRecord :: Proxy rowlist -> Proxy row -> Record subrow
-  bottomRecord :: Proxy rowlist -> Proxy row -> Record subrow
+  topRecord :: Record subrow
+  bottomRecord :: Record subrow
 
 instance boundedRecordNil :: BoundedRecord RL.Nil row () where
-  topRecord _ _ = {}
-  bottomRecord _ _ = {}
+  topRecord = {}
+  bottomRecord = {}
 
 instance boundedRecordCons ::
   ( IsSymbol key
@@ -84,22 +84,22 @@ instance boundedRecordCons ::
   , BoundedRecord rowlistTail row subrowTail
   ) =>
   BoundedRecord (RL.Cons key focus rowlistTail) row subrow where
-  topRecord _ rowProxy = insert top tail
+  topRecord = insert top tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-    tail = topRecord (Proxy :: Proxy rowlistTail) rowProxy
+    tail = topRecord @rowlistTail @row
 
   bottomRecord _ rowProxy = insert bottom tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-    tail = bottomRecord (Proxy :: Proxy rowlistTail) rowProxy
+    tail = bottomRecord @rowlistTail @row
 
 instance boundedRecord ::
   ( RL.RowToList row list
   , BoundedRecord list row row
   ) =>
   Bounded (Record row) where
-  top = topRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
-  bottom = bottomRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
+  top = topRecord @list @row
+  bottom = bottomRecord @list @row

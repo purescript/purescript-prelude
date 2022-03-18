@@ -96,10 +96,10 @@ notEq1 x y = (x `eq1` y) == false
 -- | the `Eq` instance for records.
 class EqRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord @rowlist @row where
-  eqRecord :: Proxy rowlist -> Record row -> Record row -> Boolean
+  eqRecord :: Record row -> Record row -> Boolean
 
 instance eqRowNil :: EqRecord RL.Nil row where
-  eqRecord _ _ _ = true
+  eqRecord _ _ = true
 
 instance eqRowCons ::
   ( EqRecord rowlistTail row
@@ -108,8 +108,8 @@ instance eqRowCons ::
   , Eq focus
   ) =>
   EqRecord (RL.Cons key focus rowlistTail) row where
-  eqRecord _ ra rb = (get ra == get rb) && tail
+  eqRecord ra rb = (get ra == get rb) && tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     get = unsafeGet key :: Record row -> focus
-    tail = eqRecord (Proxy :: Proxy rowlistTail) ra rb
+    tail = eqRecord @rowlisTail ra rb

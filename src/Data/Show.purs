@@ -55,10 +55,10 @@ instance showRecord ::
 -- | implement the `Show` instance for records.
 class ShowRecordFields :: RL.RowList Type -> Row Type -> Constraint
 class ShowRecordFields @rowlist @row where
-  showRecordFields :: Proxy rowlist -> Record row -> Array String
+  showRecordFields :: Record row -> Array String
 
 instance showRecordFieldsNil :: ShowRecordFields RL.Nil row where
-  showRecordFields _ _ = []
+  showRecordFields _ = []
 
 instance showRecordFieldsCons ::
   ( IsSymbol key
@@ -66,11 +66,11 @@ instance showRecordFieldsCons ::
   , Show focus
   ) =>
   ShowRecordFields (RL.Cons key focus rowlistTail) row where
-  showRecordFields _ record = cons (intercalate ": " [ key, show focus ]) tail
+  showRecordFields record = cons (intercalate ": " [ key, show focus ]) tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     focus = unsafeGet key record :: focus
-    tail = showRecordFields (Proxy :: Proxy rowlistTail) record
+    tail = showRecordFields @rowlistTail record
 
 foreign import showIntImpl :: Int -> String
 foreign import showNumberImpl :: Number -> String

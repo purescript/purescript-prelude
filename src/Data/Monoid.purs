@@ -101,10 +101,10 @@ guard false _ = mempty
 -- | implement the `Monoid` instance for records.
 class MonoidRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemigroupRecord rowlist row subrow <= MonoidRecord @rowlist @row @subrow | rowlist -> row subrow where
-  memptyRecord :: Proxy rowlist -> Record subrow
+  memptyRecord :: Record subrow
 
 instance monoidRecordNil :: MonoidRecord RL.Nil row () where
-  memptyRecord _ = {}
+  memptyRecord = {}
 
 instance monoidRecordCons ::
   ( IsSymbol key
@@ -113,8 +113,8 @@ instance monoidRecordCons ::
   , MonoidRecord rowlistTail row subrowTail
   ) =>
   MonoidRecord (RL.Cons key focus rowlistTail) row subrow where
-  memptyRecord _ = insert mempty tail
+  memptyRecord = insert mempty tail
     where
-    key = reflectSymbol (Proxy :: Proxy key)
+    key = reflectSymbol @key
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-    tail = memptyRecord (Proxy :: Proxy rowlistTail)
+    tail = memptyRecord @rowlistTail
