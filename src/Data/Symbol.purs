@@ -7,7 +7,8 @@ module Data.Symbol
 import Type.Proxy (Proxy(..))
 
 -- | A class for known symbols
-class IsSymbol (@sym :: Symbol) where
+class IsSymbol :: Symbol -> Constraint
+class IsSymbol @sym where
   reflectSymbol :: String
 
 -- local definition for use in `reifySymbol`
