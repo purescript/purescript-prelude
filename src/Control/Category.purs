@@ -1,5 +1,6 @@
 module Control.Category
-  ( class Category, identity
+  ( class Category
+  , identity
   , module Control.Semigroupoid
   ) where
 

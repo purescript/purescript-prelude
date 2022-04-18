@@ -27,24 +27,28 @@ instance genericShowSum :: (GenericShow a, GenericShow b) => GenericShow (Sum a 
   genericShow' (Inl a) = genericShow' a
   genericShow' (Inr b) = genericShow' b
 
-instance genericShowArgsProduct
-    :: (GenericShowArgs a, GenericShowArgs b)
-    => GenericShowArgs (Product a b) where
+instance genericShowArgsProduct ::
+  ( GenericShowArgs a
+  , GenericShowArgs b
+  ) =>
+  GenericShowArgs (Product a b) where
   genericShowArgs (Product a b) = genericShowArgs a <> genericShowArgs b
 
-instance genericShowConstructor
-  :: (GenericShowArgs a, IsSymbol name)
-  => GenericShow (Constructor name a) where
+instance genericShowConstructor ::
+  ( GenericShowArgs a
+  , IsSymbol name
+  ) =>
+  GenericShow (Constructor name a) where
   genericShow' (Constructor a) =
-      case genericShowArgs a of
-        [] -> ctor
-        args -> "(" <> intercalate " " ([ctor] <> args) <> ")"
+    case genericShowArgs a of
+      [] -> ctor
+      args -> "(" <> intercalate " " ([ ctor ] <> args) <> ")"
     where
-      ctor :: String
-      ctor = reflectSymbol (Proxy :: Proxy name)
+    ctor :: String
+    ctor = reflectSymbol (Proxy :: Proxy name)
 
 instance genericShowArgsArgument :: Show a => GenericShowArgs (Argument a) where
-  genericShowArgs (Argument a) = [show a]
+  genericShowArgs (Argument a) = [ show a ]
 
 -- | A `Generic` implementation of the `show` member from the `Show` type class.
 genericShow :: forall a rep. Generic a rep => GenericShow rep => a -> String

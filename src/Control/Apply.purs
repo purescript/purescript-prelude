@@ -1,8 +1,15 @@
 module Control.Apply
-  ( class Apply, apply, (<*>)
-  , applyFirst, (<*)
-  , applySecond, (*>)
-  , lift2, lift3, lift4, lift5
+  ( class Apply
+  , apply
+  , (<*>)
+  , applyFirst
+  , (<*)
+  , applySecond
+  , (*>)
+  , lift2
+  , lift3
+  , lift4
+  , lift5
   , module Data.Functor
   ) where
 
