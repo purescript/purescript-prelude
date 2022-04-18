@@ -5,6 +5,16 @@ Notable changes to this project are documented in this file. The format is based
 ## [Unreleased]
 
 Breaking changes:
+
+New features:
+
+Bugfixes:
+
+Other improvements:
+
+## [v6.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.0) - 2022-04-18
+
+Breaking changes:
 - Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
 - Change Generic Rep's `NoConstructors` to newtype `Void` (#282 by @JordanMartinez)
 - Replaced polymorphic proxies with monomorphic `Proxy` (#281, #288 by @JordanMartinez)
