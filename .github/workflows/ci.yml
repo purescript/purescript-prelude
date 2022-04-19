@@ -14,7 +14,6 @@ jobs:
       - uses: purescript-contrib/setup-purescript@main
         with:
           purescript: "unstable"
-          purs-tidy: "latest"
 
       - uses: actions/setup-node@v1
         with:
@@ -33,6 +32,3 @@ jobs:
         run: |
           bower install
           npm run-script test --if-present
-
-      - name: Check formatting
-        run: purs-tidy check src test
