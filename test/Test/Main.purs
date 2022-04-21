@@ -13,6 +13,7 @@ import Type.Proxy (Proxy(..))
 main :: AlmostEff
 main = do
     testNumberShow show
+    testStringShow
     testOrderings
     testOrdUtils
     testIntDivMod
@@ -24,6 +25,10 @@ main = do
     testSignum
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
+
+testStringShow :: AlmostEff
+testStringShow = do
+  assert "JS string implementation should match compiler's" $ (show "\x0000001") == (reflectType (Proxy :: Proxy "\x0000001"))
 
 testOrd :: forall a. Ord a => Show a => a -> a -> Ordering -> AlmostEff
 testOrd x y ord =
