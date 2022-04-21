@@ -10,6 +10,7 @@ Breaking changes:
 - Replaced polymorphic proxies with monomorphic `Proxy` (#281, #288 by @JordanMartinez)
 - Fix `signum zero` to return `zero` (#280 by @JordanMartinez)
 - Fix `Show` instance on records with duplicate labels by adding `Nub` constraint (#269 by @JordanMartinez)
+- Fix `Show` instance for String (#270 by @JordanMartinez)
 
 New features:
 - Added the `Data.Reflectable` module for type reflection (#289 by @PureFunctor)
