@@ -12,7 +12,7 @@ Bugfixes:
 
 Other improvements:
 
-## [v6.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.0) - 2022-04-18
+## [v6.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.0) - 2022-04-27
 
 Breaking changes:
 - Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
