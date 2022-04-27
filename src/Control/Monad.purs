@@ -62,7 +62,7 @@ whenM mb m = do
 -- | Perform a monadic action unless a condition is true, where the conditional
 -- | value is also in a monadic context.
 unlessM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
-unlessM mb m =  do
+unlessM mb m = do
   b <- mb
   unless b m
 

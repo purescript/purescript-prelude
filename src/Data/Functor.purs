@@ -1,10 +1,16 @@
 module Data.Functor
-  ( class Functor, map, (<$>)
-  , mapFlipped, (<#>)
+  ( class Functor
+  , map
+  , (<$>)
+  , mapFlipped
+  , (<#>)
   , void
-  , voidRight, (<$)
-  , voidLeft, ($>)
-  , flap, (<@>)
+  , voidRight
+  , (<$)
+  , voidLeft
+  , ($>)
+  , flap
+  , (<@>)
   ) where
 
 import Data.Function (const, compose)

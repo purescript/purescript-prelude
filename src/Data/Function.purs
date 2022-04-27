@@ -1,8 +1,10 @@
 module Data.Function
   ( flip
   , const
-  , apply, ($)
-  , applyFlipped, (#)
+  , apply
+  , ($)
+  , applyFlipped
+  , (#)
   , applyN
   , on
   , module Control.Category
@@ -103,7 +105,7 @@ applyN :: forall a. (a -> a) -> Int -> a -> a
 applyN f = go
   where
   go n acc
-    | n <= 0   = acc
+    | n <= 0 = acc
     | otherwise = go (n - 1) (f acc)
 
 -- | The `on` function is used to change the domain of a binary operator.

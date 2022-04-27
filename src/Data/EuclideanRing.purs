@@ -1,5 +1,9 @@
 module Data.EuclideanRing
-  ( class EuclideanRing, degree, div, mod, (/)
+  ( class EuclideanRing
+  , degree
+  , div
+  , mod
+  , (/)
   , gcd
   , lcm
   , module Data.CommutativeRing
@@ -86,13 +90,11 @@ foreign import numDiv :: Number -> Number -> Number
 -- | The *greatest common divisor* of two values.
 gcd :: forall a. Eq a => EuclideanRing a => a -> a -> a
 gcd a b =
-  if b == zero
-    then a
-    else gcd b (a `mod` b)
+  if b == zero then a
+  else gcd b (a `mod` b)
 
 -- | The *least common multiple* of two values.
 lcm :: forall a. Eq a => EuclideanRing a => a -> a -> a
 lcm a b =
-  if a == zero || b == zero
-    then zero
-    else a * b / gcd a b
+  if a == zero || b == zero then zero
+  else a * b / gcd a b

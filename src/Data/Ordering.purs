@@ -16,7 +16,7 @@ instance eqOrdering :: Eq Ordering where
   eq LT LT = true
   eq GT GT = true
   eq EQ EQ = true
-  eq _  _  = false
+  eq _ _ = false
 
 instance semigroupOrdering :: Semigroup Ordering where
   append LT _ = LT

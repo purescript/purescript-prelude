@@ -1,7 +1,9 @@
 module Control.Applicative
-  ( class Applicative, pure
+  ( class Applicative
+  , pure
   , liftA1
-  , unless, when
+  , unless
+  , when
   , module Control.Apply
   , module Data.Functor
   ) where
@@ -37,7 +39,7 @@ instance applicativeFn :: Applicative ((->) r) where
   pure x _ = x
 
 instance applicativeArray :: Applicative Array where
-  pure x = [x]
+  pure x = [ x ]
 
 instance applicativeProxy :: Applicative Proxy where
   pure _ = Proxy

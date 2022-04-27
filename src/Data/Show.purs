@@ -46,10 +46,11 @@ instance showRecord ::
   ( Nub rs rs
   , RL.RowToList rs ls
   , ShowRecordFields ls rs
-  ) => Show (Record rs) where
+  ) =>
+  Show (Record rs) where
   show record = case showRecordFields (Proxy :: Proxy ls) record of
     [] -> "{}"
-    fields -> intercalate " " ["{", intercalate ", " fields, "}"]
+    fields -> intercalate " " [ "{", intercalate ", " fields, "}" ]
 
 -- | A class for records where all fields have `Show` instances, used to
 -- | implement the `Show` instance for records.
