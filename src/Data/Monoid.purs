@@ -6,6 +6,7 @@ module Data.Monoid
   , module Data.Semigroup
   , class MonoidRecord
   , memptyRecord
+  , moyo
   ) where
 
 import Data.Boolean (otherwise)
@@ -96,6 +97,10 @@ power x = go
 guard :: forall m. Monoid m => Boolean -> m -> m
 guard true a = a
 guard false _ = mempty
+
+-- | Thunks a closure with the mempty of a monoid to retrieve its value.
+moyo :: forall m a. Monoid m => (m -> a) -> a
+moyo f = f mempty
 
 -- | A class for records where all fields have `Monoid` instances, used to
 -- | implement the `Monoid` instance for records.

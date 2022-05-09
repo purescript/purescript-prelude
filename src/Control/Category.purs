@@ -2,6 +2,7 @@ module Control.Category
   ( class Category
   , identity
   , module Control.Semigroupoid
+  , cayo
   ) where
 
 import Control.Semigroupoid (class Semigroupoid, compose, (<<<), (>>>))
@@ -20,3 +21,7 @@ class Semigroupoid a <= Category a where
 
 instance categoryFn :: Category (->) where
   identity x = x
+
+-- | Thunks a closure with the identity of a category to retrieve its value.
+cayo :: forall p a b. Category p => (p a a -> b) -> b
+cayo f = f identity
