@@ -4,13 +4,13 @@ var refEq = function (r1) {
   };
 };
 
-export const eqBooleanImpl = refEq;
-export const eqIntImpl = refEq;
-export const eqNumberImpl = refEq;
-export const eqCharImpl = refEq;
-export const eqStringImpl = refEq;
+export var eqBooleanImpl = refEq;
+export var eqIntImpl = refEq;
+export var eqNumberImpl = refEq;
+export var eqCharImpl = refEq;
+export var eqStringImpl = refEq;
 
-export const eqArrayImpl = function (f) {
+export var eqArrayImpl = function (f) {
   return function (xs) {
     return function (ys) {
       if (xs.length !== ys.length) return false;

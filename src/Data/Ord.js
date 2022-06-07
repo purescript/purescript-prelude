@@ -10,13 +10,13 @@ var unsafeCompareImpl = function (lt) {
   };
 };
 
-export const ordBooleanImpl = unsafeCompareImpl;
-export const ordIntImpl = unsafeCompareImpl;
-export const ordNumberImpl = unsafeCompareImpl;
-export const ordStringImpl = unsafeCompareImpl;
-export const ordCharImpl = unsafeCompareImpl;
+export var ordBooleanImpl = unsafeCompareImpl;
+export var ordIntImpl = unsafeCompareImpl;
+export var ordNumberImpl = unsafeCompareImpl;
+export var ordStringImpl = unsafeCompareImpl;
+export var ordCharImpl = unsafeCompareImpl;
 
-export const ordArrayImpl = function (f) {
+export var ordArrayImpl = function (f) {
   return function (xs) {
     return function (ys) {
       var i = 0;

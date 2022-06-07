@@ -9,6 +9,7 @@ Breaking changes:
 New features:
 
 Bugfixes:
+- Replace `const` with `var`, since esbuild cannot lower `const` and `let` to `var` at the moment, preventing transpiling to ES5 using esbuild (#296 by @mhmdanas)
 
 Other improvements:
 
