@@ -11,6 +11,7 @@ New features:
 Bugfixes:
 
 Other improvements:
+- Documentation: Clarify relationship between `Ord` and `Eq` (#298 by @JamieBallingall)
 
 ## [v6.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.0) - 2022-04-27
 
