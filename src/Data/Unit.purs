@@ -1,7 +1,5 @@
 module Data.Unit where
 
-import Data.Show (class Show)
-
 -- | The `Unit` type has a single inhabitant, called `unit`. It represents
 -- | values with no computational content.
 -- |
@@ -14,6 +12,3 @@ foreign import data Unit :: Type
 
 -- | `unit` is the sole inhabitant of the `Unit` type.
 foreign import unit :: Unit
-
-instance showUnit :: Show Unit where
-  show _ = "unit"

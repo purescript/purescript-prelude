@@ -57,15 +57,3 @@ export const showArrayImpl = function (f) {
     return "[" + ss.join(",") + "]";
   };
 };
-
-export const cons = function (head) {
-  return function (tail) {
-    return [head].concat(tail);
-  };
-};
-
-export const intercalate = function (separator) {
-  return function (xs) {
-    return xs.join(separator);
-  };
-};
