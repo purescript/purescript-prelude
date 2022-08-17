@@ -57,9 +57,7 @@ instance showRecord ::
   , ShowRecordFields ls rs
   ) =>
   Show (Record rs) where
-  show record = case showRecordFields (Proxy :: Proxy ls) record of
-    "" -> "{}"
-    r -> "{ " <> r <> " }"
+  show record = "{" <> showRecordFields (Proxy :: Proxy ls) record <> "}"
 
 -- | A class for records where all fields have `Show` instances, used to
 -- | implement the `Show` instance for records.
@@ -75,7 +73,7 @@ instance showRecordFieldsConsNil ::
   , Show focus
   ) =>
   ShowRecordFields (RL.Cons key focus RL.Nil) row where
-  showRecordFields _ record = key <> ": " <> show focus
+  showRecordFields _ record = " " <> key <> ": " <> show focus <> " "
     where
     key = reflectSymbol (Proxy :: Proxy key)
     focus = unsafeGet key record :: focus
@@ -86,7 +84,7 @@ instance showRecordFieldsCons ::
   , Show focus
   ) =>
   ShowRecordFields (RL.Cons key focus rowlistTail) row where
-  showRecordFields _ record = key <> ": " <> show focus <> ", " <> tail
+  showRecordFields _ record = " " <> key <> ": " <> show focus <> "," <> tail
     where
     key = reflectSymbol (Proxy :: Proxy key)
     focus = unsafeGet key record :: focus
