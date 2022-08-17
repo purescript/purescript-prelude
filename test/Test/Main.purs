@@ -124,7 +124,9 @@ testRecordInstances :: AlmostEff
 testRecordInstances = do
   assert "Record equality" $ { a: 1 } == { a: 1 }
   assert "Record inequality" $ { a: 2 } /= { a: 1 }
-  assert "Record show" $ show { a: 1 } == "{ a: 1 }"
+  assert "Record show nil" $ show { } == "{}"
+  assert "Record show one" $ show { a: 1 } == "{ a: 1 }"
+  assert "Record show more" $ show { a: 1, b: 2 } == "{ a: 1, b: 2 }"
   assert "Record +" $ ({ a: 1, b: 2.0 } + { a: 0, b: (-2.0) }) == { a: 1, b: 0.0 }
   assert "Record *" $ ({ a: 1, b: 2.0 } * { a: 0, b: (-2.0) }) == { a: 0, b: -4.0 }
   assert "Record one" $ one == { a: 1, b: 1.0 }

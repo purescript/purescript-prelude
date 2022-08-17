@@ -12,6 +12,7 @@ Bugfixes:
 
 Other improvements:
 - Documentation: Clarify relationship between `Ord` and `Eq` (#298 by @JamieBallingall)
+- Remove array allocation and local array FFI from the `Show` instance for records. (#299 by @ajnsit)
 
 ## [v6.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.0) - 2022-04-27
 
