@@ -1,18 +1,26 @@
 module Data.Ord
-  ( class Ord, compare
-  , class Ord1, compare1
-  , lessThan, (<)
-  , lessThanOrEq, (<=)
-  , greaterThan, (>)
-  , greaterThanOrEq, (>=)
+  ( class Ord
+  , compare
+  , class Ord1
+  , compare1
+  , lessThan
+  , (<)
+  , lessThanOrEq
+  , (<=)
+  , greaterThan
+  , (>)
+  , greaterThanOrEq
+  , (>=)
   , comparing
-  , min, max
+  , min
+  , max
   , clamp
   , between
   , abs
   , signum
   , module Data.Ordering
-  , class OrdRecord, compareRecord
+  , class OrdRecord
+  , compareRecord
   ) where
 
 import Data.Eq (class Eq, class Eq1, class EqRecord, (/=))
@@ -24,7 +32,7 @@ import Data.Void (Void)
 import Prim.Row as Row
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Proxy (Proxy(..), Proxy2, Proxy3)
+import Type.Proxy (Proxy(..))
 
 -- | The `Ord` type class represents types which support comparisons with a
 -- | _total order_.
@@ -32,8 +40,11 @@ import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 -- | `Ord` instances should satisfy the laws of total orderings:
 -- |
 -- | - Reflexivity: `a <= a`
--- | - Antisymmetry: if `a <= b` and `b <= a` then `a = b`
+-- | - Antisymmetry: if `a <= b` and `b <= a` then `a == b`
 -- | - Transitivity: if `a <= b` and `b <= c` then `a <= c`
+-- |
+-- | **Note:** The `Number` type is not an entirely law abiding member of this
+-- | class due to the presence of `NaN`, since `NaN <= NaN` evaluates to `false`
 class Eq a <= Ord a where
   compare :: a -> a -> Ordering
 
@@ -59,12 +70,6 @@ instance ordVoid :: Ord Void where
   compare _ _ = EQ
 
 instance ordProxy :: Ord (Proxy a) where
-  compare _ _ = EQ
-
-instance ordProxy2 :: Ord (Proxy2 a) where
-  compare _ _ = EQ
-
-instance ordProxy3 :: Ord (Proxy3 a) where
   compare _ _ = EQ
 
 instance ordArray :: Ord a => Ord (Array a) where
@@ -122,10 +127,10 @@ instance ordOrdering :: Ord Ordering where
   compare LT LT = EQ
   compare EQ EQ = EQ
   compare GT GT = EQ
-  compare LT _  = LT
+  compare LT _ = LT
   compare EQ LT = GT
   compare EQ GT = LT
-  compare GT _  = GT
+  compare GT _ = GT
 
 -- | Test whether one value is _strictly less than_ another.
 lessThan :: forall a. Ord a => a -> a -> Boolean
@@ -211,10 +216,16 @@ between low hi x
 abs :: forall a. Ord a => Ring a => a -> a
 abs x = if x >= zero then x else negate x
 
--- | The sign function; always evaluates to either `one` or `negate one`. For
--- | any `x`, we should have `signum x * abs x == x`.
+-- | The sign function; returns `one` if the argument is positive,
+-- | `negate one` if the argument is negative, or `zero` if the argument is `zero`.
+-- | For floating point numbers with signed zeroes, when called with a zero,
+-- | this function returns the argument in order to preserve the sign.
+-- | For any `x`, we should have `signum x * abs x == x`.
 signum :: forall a. Ord a => Ring a => a -> a
-signum x = if x >= zero then one else negate one
+signum x =
+  if x < zero then negate one
+  else if x > zero then one
+  else x
 
 -- | The `Ord1` type class represents totally ordered type constructors.
 class Eq1 f <= Ord1 f where
@@ -225,30 +236,29 @@ instance ord1Array :: Ord1 Array where
 
 class OrdRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row <= OrdRecord rowlist row where
-  compareRecord :: forall rlproxy. rlproxy rowlist -> Record row -> Record row -> Ordering
+  compareRecord :: Proxy rowlist -> Record row -> Record row -> Ordering
 
 instance ordRecordNil :: OrdRecord RL.Nil row where
   compareRecord _ _ _ = EQ
 
-instance ordRecordCons
-    :: ( OrdRecord rowlistTail row
-       , Row.Cons key focus rowTail row
-       , IsSymbol key
-       , Ord focus
-       )
-    => OrdRecord (RL.Cons key focus rowlistTail) row where
-  compareRecord _ ra rb
-    = if left /= EQ
-        then left
-        else compareRecord (Proxy :: Proxy rowlistTail) ra rb
+instance ordRecordCons ::
+  ( OrdRecord rowlistTail row
+  , Row.Cons key focus rowTail row
+  , IsSymbol key
+  , Ord focus
+  ) =>
+  OrdRecord (RL.Cons key focus rowlistTail) row where
+  compareRecord _ ra rb =
+    if left /= EQ then left
+    else compareRecord (Proxy :: Proxy rowlistTail) ra rb
     where
-      key = reflectSymbol (Proxy :: Proxy key)
-      unsafeGet' = unsafeGet :: String -> Record row -> focus
-      left = unsafeGet' key ra `compare` unsafeGet' key rb
+    key = reflectSymbol (Proxy :: Proxy key)
+    unsafeGet' = unsafeGet :: String -> Record row -> focus
+    left = unsafeGet' key ra `compare` unsafeGet' key rb
 
-instance ordRecord
-    :: ( RL.RowToList row list
-       , OrdRecord list row
-       )
-    => Ord (Record row) where
+instance ordRecord ::
+  ( RL.RowToList row list
+  , OrdRecord list row
+  ) =>
+  Ord (Record row) where
   compare = compareRecord (Proxy :: Proxy list)

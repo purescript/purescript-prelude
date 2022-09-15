@@ -5,10 +5,10 @@ import Prelude
 import Data.Generic.Rep (class Generic, Argument(..), Constructor(..), NoArguments(..), Product(..), from, to)
 
 class GenericSemiring a where
-  genericAdd'  :: a -> a -> a
+  genericAdd' :: a -> a -> a
   genericZero' :: a
-  genericMul'  :: a -> a -> a
-  genericOne'  :: a
+  genericMul' :: a -> a -> a
+  genericOne' :: a
 
 instance genericSemiringNoArguments :: GenericSemiring NoArguments where
   genericAdd' _ _ = NoArguments

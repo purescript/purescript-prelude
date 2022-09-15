@@ -1,12 +1,18 @@
 module Data.Show
-  ( class Show, show
-  , class ShowRecordFields, showRecordFields
+  ( class Show
+  , show
+  , class ShowRecordFields
+  , showRecordFields
   ) where
 
+import Data.Semigroup ((<>))
 import Data.Symbol (class IsSymbol, reflectSymbol)
+import Data.Unit (Unit)
+import Data.Void (Void, absurd)
+import Prim.Row (class Nub)
 import Prim.RowList as RL
 import Record.Unsafe (unsafeGet)
-import Type.Proxy (Proxy(..), Proxy2, Proxy3)
+import Type.Proxy (Proxy(..))
 
 -- | The `Show` type class represents those types which can be converted into
 -- | a human-readable `String` representation.
@@ -16,6 +22,9 @@ import Type.Proxy (Proxy(..), Proxy2, Proxy3)
 -- | value as the expression `x`.
 class Show a where
   show :: a -> String
+
+instance showUnit :: Show Unit where
+  show _ = "unit"
 
 instance showBoolean :: Show Boolean where
   show true = "true"
@@ -39,43 +48,50 @@ instance showArray :: Show a => Show (Array a) where
 instance showProxy :: Show (Proxy a) where
   show _ = "Proxy"
 
-instance showProxy2 :: Show (Proxy2 a) where
-  show _ = "Proxy2"
+instance showVoid :: Show Void where
+  show = absurd
 
-instance showProxy3 :: Show (Proxy3 a) where
-  show _ = "Proxy3"
-
-instance showRecord :: (RL.RowToList rs ls, ShowRecordFields ls rs) => Show (Record rs) where
-  show record = case showRecordFields (Proxy :: Proxy ls) record of
-    [] -> "{}"
-    fields -> join " " ["{", join ", " fields, "}"]
+instance showRecord ::
+  ( Nub rs rs
+  , RL.RowToList rs ls
+  , ShowRecordFields ls rs
+  ) =>
+  Show (Record rs) where
+  show record = "{" <> showRecordFields (Proxy :: Proxy ls) record <> "}"
 
 -- | A class for records where all fields have `Show` instances, used to
 -- | implement the `Show` instance for records.
 class ShowRecordFields :: RL.RowList Type -> Row Type -> Constraint
 class ShowRecordFields rowlist row where
-  showRecordFields :: forall rlproxy. rlproxy rowlist -> Record row -> Array String
+  showRecordFields :: Proxy rowlist -> Record row -> String
 
 instance showRecordFieldsNil :: ShowRecordFields RL.Nil row where
-  showRecordFields _ _ = []
-
-instance showRecordFieldsCons
-    :: ( IsSymbol key
-       , ShowRecordFields rowlistTail row
-       , Show focus
-       )
-    => ShowRecordFields (RL.Cons key focus rowlistTail) row where
-  showRecordFields _ record
-    = cons (join ": " [ key, show focus ]) tail
+  showRecordFields _ _ = ""
+else
+instance showRecordFieldsConsNil ::
+  ( IsSymbol key
+  , Show focus
+  ) =>
+  ShowRecordFields (RL.Cons key focus RL.Nil) row where
+  showRecordFields _ record = " " <> key <> ": " <> show focus <> " "
     where
-      key = reflectSymbol (Proxy :: Proxy key)
-      focus = unsafeGet key record :: focus
-      tail = showRecordFields (Proxy :: Proxy rowlistTail) record
+    key = reflectSymbol (Proxy :: Proxy key)
+    focus = unsafeGet key record :: focus
+else
+instance showRecordFieldsCons ::
+  ( IsSymbol key
+  , ShowRecordFields rowlistTail row
+  , Show focus
+  ) =>
+  ShowRecordFields (RL.Cons key focus rowlistTail) row where
+  showRecordFields _ record = " " <> key <> ": " <> show focus <> "," <> tail
+    where
+    key = reflectSymbol (Proxy :: Proxy key)
+    focus = unsafeGet key record :: focus
+    tail = showRecordFields (Proxy :: Proxy rowlistTail) record
 
 foreign import showIntImpl :: Int -> String
 foreign import showNumberImpl :: Number -> String
 foreign import showCharImpl :: Char -> String
 foreign import showStringImpl :: String -> String
 foreign import showArrayImpl :: forall a. (a -> String) -> Array a -> String
-foreign import cons :: forall a. a -> Array a -> Array a
-foreign import join :: String -> Array String -> String

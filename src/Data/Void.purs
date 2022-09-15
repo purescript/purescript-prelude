@@ -1,9 +1,7 @@
 module Data.Void (Void, absurd) where
 
-import Data.Show (class Show)
-
 -- | An uninhabited data type. In other words, one can never create
--- | a runtime value of type `Void` becaue no such value exists.
+-- | a runtime value of type `Void` because no such value exists.
 -- |
 -- | `Void` is useful to eliminate the possibility of a value being created.
 -- | For example, a value of type `Either Void Boolean` can never have
@@ -20,9 +18,6 @@ import Data.Show (class Show)
 -- | In PureScript, one often uses `Unit` to achieve similar effects as
 -- | the `void` of C-family languages above.
 newtype Void = Void Void
-
-instance showVoid :: Show Void where
-  show = absurd
 
 -- | Eliminator for the `Void` type.
 -- | Useful for stating that some code branch is impossible because you've

@@ -11,7 +11,7 @@ import Data.Symbol (class IsSymbol)
 import Data.Unit (Unit)
 import Prim.Row as Row
 import Prim.RowList as RL
-import Type.Proxy (Proxy, Proxy2, Proxy3)
+import Type.Proxy (Proxy)
 
 -- | The `CommutativeRing` class is for rings where multiplication is
 -- | commutative.
@@ -28,8 +28,6 @@ instance commutativeRingUnit :: CommutativeRing Unit
 instance commutativeRingFn :: CommutativeRing b => CommutativeRing (a -> b)
 instance commutativeRingRecord :: (RL.RowToList row list, CommutativeRingRecord list row row) => CommutativeRing (Record row)
 instance commutativeRingProxy :: CommutativeRing (Proxy a)
-instance commutativeRingProxy2 :: CommutativeRing (Proxy2 a)
-instance commutativeRingProxy3 :: CommutativeRing (Proxy3 a)
 
 -- | A class for records where all fields have `CommutativeRing` instances, used
 -- | to implement the `CommutativeRing` instance for records.
@@ -37,10 +35,10 @@ class RingRecord rowlist row subrow <= CommutativeRingRecord rowlist row subrow 
 
 instance commutativeRingRecordNil :: CommutativeRingRecord RL.Nil row ()
 
-instance commutativeRingRecordCons
-    :: ( IsSymbol key
-       , Row.Cons key focus subrowTail subrow
-       , CommutativeRingRecord rowlistTail row subrowTail
-       , CommutativeRing focus
-       )
-    => CommutativeRingRecord (RL.Cons key focus rowlistTail) row subrow
+instance commutativeRingRecordCons ::
+  ( IsSymbol key
+  , Row.Cons key focus subrowTail subrow
+  , CommutativeRingRecord rowlistTail row subrowTail
+  , CommutativeRing focus
+  ) =>
+  CommutativeRingRecord (RL.Cons key focus rowlistTail) row subrow

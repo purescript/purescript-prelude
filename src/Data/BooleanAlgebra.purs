@@ -9,7 +9,7 @@ import Data.Symbol (class IsSymbol)
 import Data.Unit (Unit)
 import Prim.Row as Row
 import Prim.RowList as RL
-import Type.Proxy (Proxy, Proxy2, Proxy3)
+import Type.Proxy (Proxy)
 
 -- | The `BooleanAlgebra` type class represents types that behave like boolean
 -- | values.
@@ -26,8 +26,6 @@ instance booleanAlgebraUnit :: BooleanAlgebra Unit
 instance booleanAlgebraFn :: BooleanAlgebra b => BooleanAlgebra (a -> b)
 instance booleanAlgebraRecord :: (RL.RowToList row list, BooleanAlgebraRecord list row row) => BooleanAlgebra (Record row)
 instance booleanAlgebraProxy :: BooleanAlgebra (Proxy a)
-instance booleanAlgebraProxy2 :: BooleanAlgebra (Proxy2 a)
-instance booleanAlgebraProxy3 :: BooleanAlgebra (Proxy3 a)
 
 -- | A class for records where all fields have `BooleanAlgebra` instances, used
 -- | to implement the `BooleanAlgebra` instance for records.
@@ -36,10 +34,10 @@ class HeytingAlgebraRecord rowlist row subrow <= BooleanAlgebraRecord rowlist ro
 
 instance booleanAlgebraRecordNil :: BooleanAlgebraRecord RL.Nil row ()
 
-instance booleanAlgebraRecordCons
-    :: ( IsSymbol key
-       , Row.Cons key focus subrowTail subrow
-       , BooleanAlgebraRecord rowlistTail row subrowTail
-       , BooleanAlgebra focus
-       )
-    => BooleanAlgebraRecord (RL.Cons key focus rowlistTail) row subrow
+instance booleanAlgebraRecordCons ::
+  ( IsSymbol key
+  , Row.Cons key focus subrowTail subrow
+  , BooleanAlgebraRecord rowlistTail row subrowTail
+  , BooleanAlgebra focus
+  ) =>
+  BooleanAlgebraRecord (RL.Cons key focus rowlistTail) row subrow

@@ -12,9 +12,34 @@ New features:
 Bugfixes:
 
 Other improvements:
+
+## [v6.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.1) - 2022-08-18
+
+Other improvements:
+- Documentation: Clarify relationship between `Ord` and `Eq` (#298 by @JamieBallingall)
+- Remove array allocation and local array FFI from the `Show` instance for records. (#299 by @ajnsit)
+
+## [v6.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.0) - 2022-04-27
+
+Breaking changes:
+- Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
+- Change Generic Rep's `NoConstructors` to newtype `Void` (#282 by @JordanMartinez)
+- Replaced polymorphic proxies with monomorphic `Proxy` (#281, #288 by @JordanMartinez)
+- Fix `signum zero` to return `zero` (#280 by @JordanMartinez)
+- Fix `Show` instance on records with duplicate labels by adding `Nub` constraint (#269 by @JordanMartinez)
+
+New features:
+- Added the `Data.Reflectable` module for type reflection (#289 by @PureFunctor)
+
+Bugfixes:
+
+Other improvements:
 - Changed `unit`'s FFI representation from `{}` to `undefined` (#267 by @JordanMartinez)
 - Added clearer docs for Prelude module (#270 by @JordanMartinez)
 - Clarify docs for `flip` (#271 by @JordanMartinez)
+- Add comment that `Number` is not a fully law abiding instance of `Ord` (#277 by @JamieBallingall)
+- The internal FFI function `join` in `Data.Show` has been renamed to `intercalate` to
+  match the same function in `Data.Show.Generic` (#274 by @cdepillabout)
 
 ## [v5.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.1) - 2021-05-11
 

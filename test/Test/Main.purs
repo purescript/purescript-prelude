@@ -2,9 +2,13 @@ module Test.Main where
 
 import Prelude
 import Data.HeytingAlgebra (ff, tt, implies)
-import Data.Ord (abs)
+import Data.Ord (abs, signum)
+import Data.Reflectable (reflectType, reifyType)
+import Prim.Boolean (True, False)
+import Prim.Ordering (LT, GT, EQ)
 import Test.Data.Generic.Rep (testGenericRep)
 import Test.Utils (AlmostEff, assert)
+import Type.Proxy (Proxy(..))
 
 main :: AlmostEff
 main = do
@@ -15,6 +19,9 @@ main = do
     testIntDegree
     testRecordInstances
     testGenericRep
+    testReflectType
+    testReifyType
+    testSignum
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 
@@ -117,7 +124,9 @@ testRecordInstances :: AlmostEff
 testRecordInstances = do
   assert "Record equality" $ { a: 1 } == { a: 1 }
   assert "Record inequality" $ { a: 2 } /= { a: 1 }
-  assert "Record show" $ show { a: 1 } == "{ a: 1 }"
+  assert "Record show nil" $ show { } == "{}"
+  assert "Record show one" $ show { a: 1 } == "{ a: 1 }"
+  assert "Record show more" $ show { a: 1, b: 2 } == "{ a: 1, b: 2 }"
   assert "Record +" $ ({ a: 1, b: 2.0 } + { a: 0, b: (-2.0) }) == { a: 1, b: 0.0 }
   assert "Record *" $ ({ a: 1, b: 2.0 } * { a: 0, b: (-2.0) }) == { a: 0, b: -4.0 }
   assert "Record one" $ one == { a: 1, b: 1.0 }
@@ -151,3 +160,32 @@ testRecordInstances = do
   assert "Record top" $
     (top :: { a :: Boolean }).a
     == top
+
+testReflectType :: AlmostEff
+testReflectType = do
+  assert "reflectType: Symbol -> String" $ reflectType (Proxy :: _ "erin!") == "erin!"
+  assert "reflectType: Boolean -> Boolean, True" $ reflectType (Proxy :: _ True) == true
+  assert "reflectType: Boolean -> Boolean, False" $ reflectType (Proxy :: _ False) == false
+  assert "reflectType: Ordering -> Ordering, LT" $ reflectType (Proxy :: _ LT) == LT
+  assert "reflectType: Ordering -> Ordering, GT" $ reflectType (Proxy :: _ GT) == GT
+  assert "reflectType: Ordering -> Ordering, EQ" $ reflectType (Proxy :: _ EQ) == EQ
+  assert "reflectType: Int -> Int, 42" $ reflectType (Proxy :: _ 42) == 42
+  assert "reflectType: Int -> Int, -42" $ reflectType (Proxy :: _ (-42)) == -42
+
+testReifyType :: AlmostEff
+testReifyType = do
+  assert "reifyType: String -> Symbol" $ reifyType "erin!" reflectType == "erin!"
+  assert "reifyType: Boolean -> Boolean, true" $ reifyType true reflectType == true
+  assert "reifyType: Boolean -> Boolean, false" $ reifyType false reflectType == false
+  assert "reifyType: Ordering -> Ordering, LT" $ reifyType LT reflectType == LT
+  assert "reifyType: Ordering -> Ordering, GT" $ reifyType GT reflectType == GT
+  assert "reifyType: Ordering -> Ordering, EQ" $ reifyType EQ reflectType == EQ
+  assert "reifyType: Int -> Int, 42" $ reifyType 42 reflectType == 42
+  assert "reifyType: Int -> Int, -42" $ reifyType (-42) reflectType == -42
+
+testSignum :: AlmostEff
+testSignum = do
+  assert "Clarifies what 'signum positive zero' test is doing" $ show (1.0/0.0) == "Infinity"
+  assert "signum positive zero" $ show (1.0/(signum 0.0)) == "Infinity"
+  assert "Clarifies what 'signum negative zero' test is doing" $ show (1.0/(-0.0)) == "-Infinity"
+  assert "signum negative zero" $ show (1.0/(signum (-0.0))) == "-Infinity"
