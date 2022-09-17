@@ -109,3 +109,6 @@ instance debugProxy :: Debug (Proxy a) where
   debug _ = D.opaque_ "Proxy"
 
 foreign import cons :: forall a. a -> Array a -> Array a
+
+instance debugRepr :: Debug D.Repr where
+  debug r = D.opaque "Repr" r
