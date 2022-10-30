@@ -7,6 +7,7 @@ module Data.Eq
   , class Eq1
   , eq1
   , notEq1
+  , ERecord
   , class EqRecord
   , eqRecord
   ) where
@@ -69,7 +70,7 @@ instance eqArray :: Eq a => Eq (Array a) where
   eq = eqArrayImpl eq
 
 instance eqRec :: (RL.RowToList row list, EqRecord list row) => Eq (Record row) where
-  eq = eqRecord (Proxy :: Proxy list)
+  eq l = eqRecord (ERecord l :: ERecord list row)
 
 instance eqProxy :: Eq (Proxy a) where
   eq _ _ = true
@@ -92,14 +93,17 @@ instance eq1Array :: Eq1 Array where
 notEq1 :: forall f a. Eq1 f => Eq a => f a -> f a -> Boolean
 notEq1 x y = (x `eq1` y) == false
 
+newtype ERecord :: RL.RowList Type -> Row Type -> Type
+newtype ERecord rowlist row = ERecord { | row }
+
 -- | A class for records where all fields have `Eq` instances, used to implement
 -- | the `Eq` instance for records.
 class EqRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row where
-  eqRecord :: Proxy rowlist -> Record row -> Record row -> Boolean
+  eqRecord :: ERecord rowlist row -> Record row -> Boolean
 
 instance eqRowNil :: EqRecord RL.Nil row where
-  eqRecord _ _ _ = true
+  eqRecord _ _ = true
 
 instance eqRowCons ::
   ( EqRecord rowlistTail row
@@ -108,8 +112,8 @@ instance eqRowCons ::
   , Eq focus
   ) =>
   EqRecord (RL.Cons key focus rowlistTail) row where
-  eqRecord _ ra rb = (get ra == get rb) && tail
+  eqRecord (ERecord ra) rb = (get ra == get rb) && tail
     where
     key = reflectSymbol (Proxy :: Proxy key)
     get = unsafeGet key :: Record row -> focus
-    tail = eqRecord (Proxy :: Proxy rowlistTail) ra rb
+    tail = eqRecord (ERecord ra :: ERecord rowlistTail row) rb

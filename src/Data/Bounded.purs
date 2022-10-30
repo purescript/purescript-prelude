@@ -3,6 +3,7 @@ module Data.Bounded
   , bottom
   , top
   , module Data.Ord
+  , BRecord
   , class BoundedRecord
   , bottomRecord
   , topRecord
@@ -67,14 +68,20 @@ instance boundedProxy :: Bounded (Proxy a) where
   bottom = Proxy
   top = Proxy
 
+newtype BRecord :: RL.RowList Type -> Row Type -> Row Type -> Type
+newtype BRecord rowlist row subrow = BRecord { | subrow }
+
+unBRecord :: forall rowlist row subrow. BRecord rowlist row subrow -> { | subrow }
+unBRecord (BRecord r) = r
+
 class BoundedRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class OrdRecord rowlist row <= BoundedRecord rowlist row subrow | rowlist -> subrow where
-  topRecord :: Proxy rowlist -> Proxy row -> Record subrow
-  bottomRecord :: Proxy rowlist -> Proxy row -> Record subrow
+  topRecord :: BRecord rowlist row subrow
+  bottomRecord :: BRecord rowlist row subrow
 
 instance boundedRecordNil :: BoundedRecord RL.Nil row () where
-  topRecord _ _ = {}
-  bottomRecord _ _ = {}
+  topRecord = BRecord {}
+  bottomRecord = BRecord {}
 
 instance boundedRecordCons ::
   ( IsSymbol key
@@ -84,22 +91,22 @@ instance boundedRecordCons ::
   , BoundedRecord rowlistTail row subrowTail
   ) =>
   BoundedRecord (RL.Cons key focus rowlistTail) row subrow where
-  topRecord _ rowProxy = insert top tail
+  topRecord = BRecord (insert top tail)
     where
     key = reflectSymbol (Proxy :: Proxy key)
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-    tail = topRecord (Proxy :: Proxy rowlistTail) rowProxy
+    tail = unBRecord (topRecord :: BRecord rowlistTail row subrowTail)
 
-  bottomRecord _ rowProxy = insert bottom tail
+  bottomRecord = BRecord (insert bottom tail)
     where
     key = reflectSymbol (Proxy :: Proxy key)
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-    tail = bottomRecord (Proxy :: Proxy rowlistTail) rowProxy
+    tail = unBRecord (bottomRecord :: BRecord rowlistTail row subrowTail)
 
 instance boundedRecord ::
   ( RL.RowToList row list
   , BoundedRecord list row row
   ) =>
   Bounded (Record row) where
-  top = topRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
-  bottom = bottomRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
+  top = unBRecord (topRecord :: BRecord list row row)
+  bottom = unBRecord (bottomRecord :: BRecord list row row)

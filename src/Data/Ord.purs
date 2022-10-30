@@ -19,6 +19,7 @@ module Data.Ord
   , abs
   , signum
   , module Data.Ordering
+  , ORecord
   , class OrdRecord
   , compareRecord
   ) where
@@ -234,12 +235,15 @@ class Eq1 f <= Ord1 f where
 instance ord1Array :: Ord1 Array where
   compare1 = compare
 
+newtype ORecord :: RL.RowList Type -> Row Type -> Type
+newtype ORecord rowlist row = ORecord { | row }
+
 class OrdRecord :: RL.RowList Type -> Row Type -> Constraint
 class EqRecord rowlist row <= OrdRecord rowlist row where
-  compareRecord :: Proxy rowlist -> Record row -> Record row -> Ordering
+  compareRecord :: ORecord rowlist row -> Record row -> Ordering
 
 instance ordRecordNil :: OrdRecord RL.Nil row where
-  compareRecord _ _ _ = EQ
+  compareRecord _ _ = EQ
 
 instance ordRecordCons ::
   ( OrdRecord rowlistTail row
@@ -248,9 +252,9 @@ instance ordRecordCons ::
   , Ord focus
   ) =>
   OrdRecord (RL.Cons key focus rowlistTail) row where
-  compareRecord _ ra rb =
+  compareRecord (ORecord ra) rb =
     if left /= EQ then left
-    else compareRecord (Proxy :: Proxy rowlistTail) ra rb
+    else compareRecord (ORecord ra :: ORecord rowlistTail row) rb
     where
     key = reflectSymbol (Proxy :: Proxy key)
     unsafeGet' = unsafeGet :: String -> Record row -> focus
@@ -261,4 +265,4 @@ instance ordRecord ::
   , OrdRecord list row
   ) =>
   Ord (Record row) where
-  compare = compareRecord (Proxy :: Proxy list)
+  compare l = compareRecord (ORecord l :: ORecord list row)

@@ -4,6 +4,7 @@ module Data.Monoid
   , power
   , guard
   , module Data.Semigroup
+  , MRecord
   , class MonoidRecord
   , memptyRecord
   ) where
@@ -62,7 +63,7 @@ instance monoidArray :: Monoid (Array a) where
   mempty = []
 
 instance monoidRecord :: (RL.RowToList row list, MonoidRecord list row row) => Monoid (Record row) where
-  mempty = memptyRecord (Proxy :: Proxy list)
+  mempty = unMRecord (memptyRecord :: MRecord list row)
 
 -- | Append a value to itself a certain number of times. For the
 -- | `Multiplicative` type, and for a non-negative power, this is the same as
@@ -97,14 +98,20 @@ guard :: forall m. Monoid m => Boolean -> m -> m
 guard true a = a
 guard false _ = mempty
 
+newtype MRecord :: RL.RowList Type -> Row Type -> Type
+newtype MRecord rowlist subrow = MRecord { | subrow }
+
+unMRecord :: forall rowlist subrow. MRecord rowlist subrow -> { | subrow }
+unMRecord (MRecord r) = r
+
 -- | A class for records where all fields have `Monoid` instances, used to
 -- | implement the `Monoid` instance for records.
 class MonoidRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemigroupRecord rowlist row subrow <= MonoidRecord rowlist row subrow | rowlist -> row subrow where
-  memptyRecord :: Proxy rowlist -> Record subrow
+  memptyRecord :: MRecord rowlist subrow
 
 instance monoidRecordNil :: MonoidRecord RL.Nil row () where
-  memptyRecord _ = {}
+  memptyRecord = MRecord {}
 
 instance monoidRecordCons ::
   ( IsSymbol key
@@ -113,8 +120,8 @@ instance monoidRecordCons ::
   , MonoidRecord rowlistTail row subrowTail
   ) =>
   MonoidRecord (RL.Cons key focus rowlistTail) row subrow where
-  memptyRecord _ = insert mempty tail
+  memptyRecord = MRecord (insert mempty tail)
     where
     key = reflectSymbol (Proxy :: Proxy key)
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
-    tail = memptyRecord (Proxy :: Proxy rowlistTail)
+    tail = unMRecord (memptyRecord :: MRecord rowlistTail subrowTail)

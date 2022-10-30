@@ -6,6 +6,8 @@ module Data.Semiring
   , mul
   , (*)
   , one
+  , SRecord1
+  , SRecord2
   , class SemiringRecord
   , addRecord
   , mulRecord
@@ -81,30 +83,39 @@ instance semiringProxy :: Semiring (Proxy a) where
   zero = Proxy
 
 instance semiringRecord :: (RL.RowToList row list, SemiringRecord list row row) => Semiring (Record row) where
-  add = addRecord (Proxy :: Proxy list)
-  mul = mulRecord (Proxy :: Proxy list)
-  one = oneRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
-  zero = zeroRecord (Proxy :: Proxy list) (Proxy :: Proxy row)
+  add l = addRecord (SRecord1 l :: SRecord1 list row)
+  mul l = mulRecord (SRecord1 l :: SRecord1 list row)
+  one = unSRecord2 (oneRecord :: SRecord2 list row row)
+  zero = unSRecord2 (zeroRecord :: SRecord2 list row row)
 
 foreign import intAdd :: Int -> Int -> Int
 foreign import intMul :: Int -> Int -> Int
 foreign import numAdd :: Number -> Number -> Number
 foreign import numMul :: Number -> Number -> Number
 
+newtype SRecord1 :: RL.RowList Type -> Row Type -> Type
+newtype SRecord1 rowlist row = SRecord1 { | row }
+
+newtype SRecord2 :: RL.RowList Type -> Row Type -> Row Type -> Type
+newtype SRecord2 rowlist row subrow = SRecord2 { | subrow }
+
+unSRecord2 :: forall rowlist row subrow. SRecord2 rowlist row subrow -> { | subrow }
+unSRecord2 (SRecord2 r) = r
+
 -- | A class for records where all fields have `Semiring` instances, used to
 -- | implement the `Semiring` instance for records.
 class SemiringRecord :: RL.RowList Type -> Row Type -> Row Type -> Constraint
 class SemiringRecord rowlist row subrow | rowlist -> subrow where
-  addRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
-  mulRecord :: Proxy rowlist -> Record row -> Record row -> Record subrow
-  oneRecord :: Proxy rowlist -> Proxy row -> Record subrow
-  zeroRecord :: Proxy rowlist -> Proxy row -> Record subrow
+  addRecord :: SRecord1 rowlist row -> Record row -> Record subrow
+  mulRecord :: SRecord1 rowlist row -> Record row -> Record subrow
+  oneRecord :: SRecord2 rowlist row subrow
+  zeroRecord :: SRecord2 rowlist row subrow
 
 instance semiringRecordNil :: SemiringRecord RL.Nil row () where
-  addRecord _ _ _ = {}
-  mulRecord _ _ _ = {}
-  oneRecord _ _ = {}
-  zeroRecord _ _ = {}
+  addRecord _ _ = {}
+  mulRecord _ _ = {}
+  oneRecord = SRecord2 {}
+  zeroRecord = SRecord2 {}
 
 instance semiringRecordCons ::
   ( IsSymbol key
@@ -113,28 +124,28 @@ instance semiringRecordCons ::
   , Semiring focus
   ) =>
   SemiringRecord (RL.Cons key focus rowlistTail) row subrow where
-  addRecord _ ra rb = insert (get ra + get rb) tail
+  addRecord (SRecord1 ra) rb = insert (get ra + get rb) tail
     where
     key = reflectSymbol (Proxy :: Proxy key)
     get = unsafeGet key :: Record row -> focus
-    tail = addRecord (Proxy :: Proxy rowlistTail) ra rb
+    tail = addRecord (SRecord1 ra :: SRecord1 rowlistTail row) rb
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
-  mulRecord _ ra rb = insert (get ra * get rb) tail
+  mulRecord (SRecord1 ra) rb = insert (get ra * get rb) tail
     where
     key = reflectSymbol (Proxy :: Proxy key)
     get = unsafeGet key :: Record row -> focus
-    tail = mulRecord (Proxy :: Proxy rowlistTail) ra rb
+    tail = mulRecord (SRecord1 ra :: SRecord1 rowlistTail row) rb
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
-  oneRecord _ _ = insert one tail
+  oneRecord = SRecord2 (insert one tail)
     where
     key = reflectSymbol (Proxy :: Proxy key)
-    tail = oneRecord (Proxy :: Proxy rowlistTail) (Proxy :: Proxy row)
+    tail = unSRecord2 (oneRecord :: SRecord2 rowlistTail row subrowTail)
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
 
-  zeroRecord _ _ = insert zero tail
+  zeroRecord = SRecord2 (insert zero tail)
     where
     key = reflectSymbol (Proxy :: Proxy key)
-    tail = zeroRecord (Proxy :: Proxy rowlistTail) (Proxy :: Proxy row)
+    tail = unSRecord2 (zeroRecord :: SRecord2 rowlistTail row subrowTail)
     insert = unsafeSet key :: focus -> Record subrowTail -> Record subrow
