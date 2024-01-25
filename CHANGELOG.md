@@ -9,6 +9,7 @@ Breaking changes:
 New features:
 
 Bugfixes:
+- call stack exceeded in Control.Bind.Bind instance for Array (#311 by @michaelficarra)
 
 Other improvements:
 
