@@ -151,10 +151,9 @@ ifM :: forall a m. Bind m => m Boolean -> m a -> m a -> m a
 ifM cond t f = cond >>= \cond' -> if cond' then t else f
 
 -- | Similar to `ifM` but for use in cases where one of the monadic actions may
--- | be expensive to compute or be responsible for side effects. As PureScript
--- | is not lazy, the standard `ifM` has to construct both monadic actions
--- | before returning the result, whereas here only the corresponding monadic
--- | action is constructed.
+-- | be expensive to compute. As PureScript is not lazy, the standard `ifM` has
+-- | to construct both monadic actions before returning the result, whereas here
+-- | only the corresponding monadic action is constructed.
 -- |
 -- | ```purescript
 -- | main :: Effect Unit
