@@ -2,7 +2,9 @@ module Control.Monad
   ( class Monad
   , liftM1
   , whenM
+  , whenM'
   , unlessM
+  , unlessM'
   , ap
   , module Data.Functor
   , module Control.Apply
@@ -12,10 +14,13 @@ module Control.Monad
 
 import Control.Applicative (class Applicative, liftA1, pure, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
-import Control.Bind (class Bind, bind, ifM, join, (<=<), (=<<), (>=>), (>>=))
+import Control.Bind (class Bind, bind, join, (<=<), (=<<), (>=>), (>>=), ifM, ifM')
+import Control.Category ((>>>))
 
+import Data.HeytingAlgebra (not)
+import Data.Function (($))
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
-import Data.Unit (Unit)
+import Data.Unit (Unit, unit)
 import Type.Proxy (Proxy)
 
 -- | The `Monad` type class combines the operations of the `Bind` and
@@ -55,16 +60,22 @@ liftM1 f a = do
 -- | Perform a monadic action when a condition is true, where the conditional
 -- | value is also in a monadic context.
 whenM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
-whenM mb m = do
-  b <- mb
-  when b m
+whenM mb m = ifM mb m $ pure unit
+
+-- | Perform a monadic action lazily when a condition is true, where the conditional
+-- | value is also in a monadic context.
+whenM' :: forall m a. Monad m => (a -> m Boolean) -> (a -> m Unit) -> a -> m Unit
+whenM' mb m = ifM' mb m $ \_ -> pure unit
 
 -- | Perform a monadic action unless a condition is true, where the conditional
 -- | value is also in a monadic context.
 unlessM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
-unlessM mb m = do
-  b <- mb
-  unless b m
+unlessM mb = whenM $ not <$> mb
+
+-- | Perform a monadic action lazily unless a condition is true, where the conditional
+-- | value is also in a monadic context.
+unlessM' :: forall m a. Monad m => (a -> m Boolean) -> (a -> m Unit) -> a -> m Unit
+unlessM' mb = whenM' $ \x -> mb x >>= not >>> pure
 
 -- | `ap` provides a default implementation of `(<*>)` for any `Monad`, without
 -- | using `(<*>)` as provided by the `Apply`-`Monad` superclass relationship.
