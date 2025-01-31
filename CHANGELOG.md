@@ -8,6 +8,9 @@ Breaking changes:
 
 New features:
 
+- Add lazily evaluated versions of the conditional functions for applicatives
+  and monads ifM', when', whenM', unless' and unlessM'
+
 Bugfixes:
 
 Other improvements:
