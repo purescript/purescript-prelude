@@ -65,7 +65,7 @@ whenM mb m = ifM mb m $ pure unit
 -- | Perform a monadic action lazily when a condition is true, where the conditional
 -- | value is also in a monadic context.
 whenM' :: forall m a. Monad m => (a -> m Boolean) -> (a -> m Unit) -> a -> m Unit
-whenM' mb m = ifM' mb m $ \_ -> pure unit
+whenM' mb m = ifM' mb m \_ -> pure unit
 
 -- | Perform a monadic action unless a condition is true, where the conditional
 -- | value is also in a monadic context.
@@ -75,7 +75,7 @@ unlessM mb = whenM $ not <$> mb
 -- | Perform a monadic action lazily unless a condition is true, where the conditional
 -- | value is also in a monadic context.
 unlessM' :: forall m a. Monad m => (a -> m Boolean) -> (a -> m Unit) -> a -> m Unit
-unlessM' mb = whenM' $ \x -> mb x >>= not >>> pure
+unlessM' mb = whenM' \x -> mb x >>= not >>> pure
 
 -- | `ap` provides a default implementation of `(<*>)` for any `Monad`, without
 -- | using `(<*>)` as provided by the `Apply`-`Monad` superclass relationship.
