@@ -13,7 +13,6 @@ module Control.Applicative
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
 import Control.Category ((<<<))
 
-import Data.Boolean (otherwise)
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.HeytingAlgebra (not)
 import Data.Unit (Unit, unit)
@@ -69,7 +68,7 @@ when :: forall m. Applicative m => Boolean -> m Unit -> m Unit
 when true m = m
 when false _ = pure unit
 
--- | Perform an applicative action lazily when a condition is true.
+-- | Construct an applicative action when a condition is true.
 when' :: forall m a. Applicative m => (a -> Boolean) -> (a -> m Unit) -> a -> m Unit
 when' f m a = if f a then m a else pure unit
 
@@ -77,6 +76,6 @@ when' f m a = if f a then m a else pure unit
 unless :: forall m. Applicative m => Boolean -> m Unit -> m Unit
 unless = when <<< not
 
--- | Perform an applicative action lazily unless a condition is true.
+-- | Construct an applicative action unless a condition is true.
 unless' :: forall m a. Applicative m => (a -> Boolean) -> (a -> m Unit) -> a -> m Unit
 unless' = when' <<< not

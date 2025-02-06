@@ -62,7 +62,7 @@ liftM1 f a = do
 whenM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
 whenM mb m = ifM mb m $ pure unit
 
--- | Perform a monadic action lazily when a condition is true, where the conditional
+-- | Construct a monadic action when a condition is true, where the conditional
 -- | value is also in a monadic context.
 whenM' :: forall m a. Monad m => (a -> m Boolean) -> (a -> m Unit) -> a -> m Unit
 whenM' mb m = ifM' mb m \_ -> pure unit
@@ -72,7 +72,7 @@ whenM' mb m = ifM' mb m \_ -> pure unit
 unlessM :: forall m. Monad m => m Boolean -> m Unit -> m Unit
 unlessM mb = whenM $ not <$> mb
 
--- | Perform a monadic action lazily unless a condition is true, where the conditional
+-- | Construct a monadic action unless a condition is true, where the conditional
 -- | value is also in a monadic context.
 unlessM' :: forall m a. Monad m => (a -> m Boolean) -> (a -> m Unit) -> a -> m Unit
 unlessM' mb = whenM' \x -> mb x >>= not >>> pure
