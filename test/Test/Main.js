@@ -40,3 +40,11 @@ export function testNumberShow(showNumber) {
     ]);
   };
 }
+
+export function makeArray(length) {
+  var arr = [];
+  for (var i = 0; i < length; i++) {
+    arr.push(i);
+  }
+  return arr;
+}
