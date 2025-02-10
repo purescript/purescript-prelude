@@ -9,6 +9,7 @@ Breaking changes:
 New features:
 
 Bugfixes:
+- Avoid `RangeError` in `arrayBind` foreign implementation (#314 by @pete-murphy)
 
 Other improvements:
 
