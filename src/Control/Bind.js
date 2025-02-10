@@ -6,9 +6,12 @@ export const arrayBind = function (arr) {
   }
 
   return function (f) {
-    var result = [];
-    for (var i = 0, l = arr.length; i < l; i++) {
-      Array.prototype.push.apply(result, f(arr[i]));
+    const result = [];
+    for (let i = 0, l = arr.length; i < l; i++) {
+      const xs = f(arr[i]);
+      for (let j = 0, m = xs.length; j < m; j++) {
+        result.push(xs[j]);
+      }
     }
     return result;
   };
