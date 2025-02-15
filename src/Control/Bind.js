@@ -1,18 +1,21 @@
-export const arrayBind = function (arr) {
-  if (typeof Array.prototype.flatMap === "function") {
-    return function (f) {
-      return arr.flatMap(f);
-    };
-  }
-
-  return function (f) {
-    const result = [];
-    for (let i = 0, l = arr.length; i < l; i++) {
-      const xs = f(arr[i]);
-      for (let j = 0, m = xs.length; j < m; j++) {
-        result.push(xs[j]);
-      }
+export const arrayBind =
+  typeof Array.prototype.flatMap === "function"
+    ? function (arr) {
+      return function (f) {
+        return arr.flatMap(f);
+      };
     }
-    return result;
-  };
-};
+    : function (arr) {
+      return function (f) {
+        var result = [];
+        var l = arr.length;
+        for (var i = 0; i < l; i++) {
+          var xs = f(arr[i]);
+          var k = xs.length;
+          for (var j = 0; j < k; j++) {
+            result.push(xs[j]);
+          }
+        }
+        return result;
+      };
+    };
