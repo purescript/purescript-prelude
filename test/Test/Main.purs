@@ -22,6 +22,7 @@ main = do
     testReflectType
     testReifyType
     testSignum
+    testArrayBind
 
 foreign import testNumberShow :: (Number -> String) -> AlmostEff
 
@@ -189,3 +190,14 @@ testSignum = do
   assert "signum positive zero" $ show (1.0/(signum 0.0)) == "Infinity"
   assert "Clarifies what 'signum negative zero' test is doing" $ show (1.0/(-0.0)) == "-Infinity"
   assert "signum negative zero" $ show (1.0/(signum (-0.0))) == "-Infinity"
+
+foreign import makeArray :: Int -> Array Int
+
+testArrayBind :: AlmostEff
+testArrayBind = do
+  assert "Array bind does not cause RangeError" do
+    let
+      _ = do
+        _ <- [unit]
+        makeArray 106_000
+    true
