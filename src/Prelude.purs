@@ -40,11 +40,11 @@ module Prelude
   , module Data.Void
   ) where
 
-import Control.Applicative (class Applicative, pure, liftA1, unless, when)
+import Control.Applicative (class Applicative, liftA1, pure, unless, unless', when, when')
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
-import Control.Bind (class Bind, bind, class Discard, discard, ifM, join, (<=<), (=<<), (>=>), (>>=))
+import Control.Bind (class Bind, bind, class Discard, discard, ifM, ifM', join, (<=<), (=<<), (>=>), (>>=))
 import Control.Category (class Category, identity)
-import Control.Monad (class Monad, liftM1, unlessM, whenM, ap)
+import Control.Monad (class Monad, ap, liftM1, unlessM, unlessM', whenM, whenM')
 import Control.Semigroupoid (class Semigroupoid, compose, (<<<), (>>>))
 
 import Data.Boolean (otherwise)

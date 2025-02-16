@@ -3,14 +3,18 @@ module Control.Applicative
   , pure
   , liftA1
   , unless
+  , unless'
   , when
+  , when'
   , module Control.Apply
   , module Data.Functor
   ) where
 
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
+import Control.Category ((<<<))
 
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
+import Data.HeytingAlgebra (not)
 import Data.Unit (Unit, unit)
 import Type.Proxy (Proxy(..))
 
@@ -64,7 +68,14 @@ when :: forall m. Applicative m => Boolean -> m Unit -> m Unit
 when true m = m
 when false _ = pure unit
 
+-- | Construct an applicative action when a condition is true.
+when' :: forall m a. Applicative m => (a -> Boolean) -> (a -> m Unit) -> a -> m Unit
+when' f m a = if f a then m a else pure unit
+
 -- | Perform an applicative action unless a condition is true.
 unless :: forall m. Applicative m => Boolean -> m Unit -> m Unit
-unless false m = m
-unless true _ = pure unit
+unless = when <<< not
+
+-- | Construct an applicative action unless a condition is true.
+unless' :: forall m a. Applicative m => (a -> Boolean) -> (a -> m Unit) -> a -> m Unit
+unless' = when' <<< not
