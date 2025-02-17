@@ -12,6 +12,7 @@ Bugfixes:
 - Avoid `RangeError` in `arrayBind` foreign implementation (#314 by @pete-murphy)
 
 Other improvements:
+- Documentation: Further clarify relationship between `Ord` and `Eq` (#301 by @JamieBallingall)
 
 ## [v6.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.1) - 2022-08-18
 
