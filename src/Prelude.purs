@@ -27,6 +27,7 @@ module Prelude
   , module Data.Field
   , module Data.Function
   , module Data.Functor
+  , module Data.Hashable
   , module Data.HeytingAlgebra
   , module Data.Monoid
   , module Data.NaturalTransformation
@@ -57,6 +58,7 @@ import Data.EuclideanRing (class EuclideanRing, degree, div, mod, (/), gcd, lcm)
 import Data.Field (class Field)
 import Data.Function (const, flip, ($), (#))
 import Data.Functor (class Functor, flap, map, void, ($>), (<#>), (<$), (<$>), (<@>))
+import Data.Hashable (class Hashable, Hash(..), hash, hashWithSalt)
 import Data.HeytingAlgebra (class HeytingAlgebra, conj, disj, not, (&&), (||))
 import Data.Monoid (class Monoid, mempty)
 import Data.NaturalTransformation (type (~>))

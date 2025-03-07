@@ -124,6 +124,7 @@ testIntDegree = do
 testRecordInstances :: AlmostEff
 testRecordInstances = do
   assert "Record equality" $ { a: 1 } == { a: 1 }
+  assert "Record hash" $ hash { a: 1 } == hash { a: 1 }
   assert "Record inequality" $ { a: 2 } /= { a: 1 }
   assert "Record show nil" $ show { } == "{}"
   assert "Record show one" $ show { a: 1 } == "{ a: 1 }"
