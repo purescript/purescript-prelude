@@ -1,0 +1,19 @@
+{
+  "workspace": {
+    "packages": {
+      "prelude": {
+        "path": "./",
+        "core": {
+          "dependencies": [],
+          "build_plan": []
+        },
+        "test": {
+          "dependencies": [],
+          "build_plan": []
+        }
+      }
+    },
+    "extra_packages": {}
+  },
+  "packages": {}
+}
