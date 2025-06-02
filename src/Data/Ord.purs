@@ -39,7 +39,7 @@ import Type.Proxy (Proxy(..))
 -- |
 -- | `Ord` instances should satisfy the laws of total orderings:
 -- |
--- | - Reflexivity: `a <= a`
+-- | - Reflexivity: if `a == b` then `a <= b`
 -- | - Antisymmetry: if `a <= b` and `b <= a` then `a == b`
 -- | - Transitivity: if `a <= b` and `b <= c` then `a <= c`
 -- |
