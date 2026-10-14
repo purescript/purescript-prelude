@@ -1,0 +1,13 @@
+package:
+  name: prelude
+  description: The PureScript Prelude
+  build:
+    strict: true
+    pedanticPackages: true
+  test:
+    main: Test.Main
+    strict: true
+    pedanticPackages: true
+    dependencies: []
+  dependencies: []
+workspace: {}

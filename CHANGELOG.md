@@ -12,6 +12,7 @@ Bugfixes:
 - Avoid `RangeError` in `arrayBind` foreign implementation (#314 by @pete-murphy)
 
 Other improvements:
+- Migrate from Bower/Pulp to Spago and modernize CI, linting, and formatting tools.
 
 ## [v6.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.1) - 2022-08-18
 
