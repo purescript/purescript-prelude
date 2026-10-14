@@ -1,7 +1,7 @@
 {
   "private": true,
-  "license": "BSD-3-Clause",
   "homepage": "https://github.com/purescript/purescript-prelude",
+  "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
     "url": "https://github.com/purescript/purescript-prelude.git"

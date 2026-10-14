@@ -13,7 +13,6 @@ module Control.Monad
 import Control.Applicative (class Applicative, liftA1, pure, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
 import Control.Bind (class Bind, bind, ifM, join, (<=<), (=<<), (>=>), (>>=))
-
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Unit (Unit)
 import Type.Proxy (Proxy)

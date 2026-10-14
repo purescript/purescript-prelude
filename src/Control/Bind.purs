@@ -20,7 +20,6 @@ module Control.Bind
 import Control.Applicative (class Applicative, liftA1, pure, unless, when)
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
 import Control.Category (identity)
-
 import Data.Function (flip)
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Unit (Unit)

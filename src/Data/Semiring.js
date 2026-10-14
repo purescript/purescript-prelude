@@ -1,12 +1,12 @@
 export const intAdd = function (x) {
   return function (y) {
-    return x + y | 0;
+    return (x + y) | 0;
   };
 };
 
 export const intMul = function (x) {
   return function (y) {
-    return x * y | 0;
+    return (x * y) | 0;
   };
 };
 

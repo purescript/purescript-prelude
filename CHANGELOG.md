@@ -9,20 +9,24 @@ Breaking changes:
 New features:
 
 Bugfixes:
+
 - Avoid `RangeError` in `arrayBind` foreign implementation (#314 by @pete-murphy)
 
 Other improvements:
+
 - Migrate from Bower/Pulp to Spago and modernize CI, linting, and formatting tools.
 
 ## [v6.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.1) - 2022-08-18
 
 Other improvements:
+
 - Documentation: Clarify relationship between `Ord` and `Eq` (#298 by @JamieBallingall)
 - Remove array allocation and local array FFI from the `Show` instance for records. (#299 by @ajnsit)
 
 ## [v6.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.0) - 2022-04-27
 
 Breaking changes:
+
 - Migrated FFI to ES Modules (#287 by @kl0tl and @JordanMartinez)
 - Change Generic Rep's `NoConstructors` to newtype `Void` (#282 by @JordanMartinez)
 - Replaced polymorphic proxies with monomorphic `Proxy` (#281, #288 by @JordanMartinez)
@@ -30,11 +34,13 @@ Breaking changes:
 - Fix `Show` instance on records with duplicate labels by adding `Nub` constraint (#269 by @JordanMartinez)
 
 New features:
+
 - Added the `Data.Reflectable` module for type reflection (#289 by @PureFunctor)
 
 Bugfixes:
 
 Other improvements:
+
 - Changed `unit`'s FFI representation from `{}` to `undefined` (#267 by @JordanMartinez)
 - Added clearer docs for Prelude module (#270 by @JordanMartinez)
 - Clarify docs for `flip` (#271 by @JordanMartinez)
@@ -45,28 +51,33 @@ Other improvements:
 ## [v5.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.1) - 2021-05-11
 
 Other improvements:
+
 - Fix warnings revealed by `v0.14.1` PS release (#262 by @JordanMartinez)
 
 ## [v5.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v5.0.0) - 2021-02-26
 
 Breaking changes:
+
 - Support compiler version `v0.14.0`, and drop support for previous versions (#206, #226)
 - `purescript-proxy` was ported to this repo (#230)
 - `purescript-generics-rep` was ported to this repo (#235)
 - Move the `Applicative` Superclass law from `Monad` to `Bind` and rename it
-to the `Apply` Superclass law (#229)
+  to the `Apply` Superclass law (#229)
 - Removed `unsafeCompare` (#257)
 
 New features:
+
 - Added `Bounded` instance for records (#208)
 - Added `Show` instances to `Data.Generics.Rep` types (#250)
 - Added `toRep` (#238)
 
 Bugfixes:
+
 - No longer use reference equality check in `Array`'s `Eq` instance because it breaks referential transparency (#187).
 - Fix Ring laws (#228)
 
 Documentation improvements:
+
 - Added `lift2` example using `Maybe` (#213)
 - Added `const` example (#214)
 - Added `power` example (#253)
@@ -75,6 +86,7 @@ Documentation improvements:
 - Fix typo: 'ommitted' -> 'omitted' (#220)
 
 Other improvements:
+
 - Migrated to GitHub Actions (#234)
 - Added a `CHANGELOG.md` file and PR template (#254)
 
@@ -122,8 +134,8 @@ Remove unused `refIneq` function (@metaleap)
 
 ## [v3.1.0](https://github.com/purescript/purescript-prelude/releases/tag/v3.1.0) - 2017-06-27
 
-* Fixes for out-of-date documentation (@joneshf, @matthewleon)
-* Add a new `DivisionRing` class
+- Fixes for out-of-date documentation (@joneshf, @matthewleon)
+- Add a new `DivisionRing` class
 
 ## [v3.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v3.0.0) - 2017-03-25
 
@@ -158,10 +170,12 @@ Remove unused `refIneq` function (@metaleap)
 ## [v2.0.0](https://github.com/purescript/purescript-prelude/releases/tag/v2.0.0) - 2016-09-26
 
 **Breaking changes**
+
 - Fixed `=<<` to be right associative, as originally intended
 - Changed behaviour of `Eq` and `Ord` for `NaN` numeric value #91 (@berdario)
 
 **Enhancements**
+
 - Updated docs to include notes about the non-law-abiding numeric instances
 - Semigroup `append` for `Array` will no longer shallow copy the array if either side is empty #63 (suggested by @natefaubion)
 

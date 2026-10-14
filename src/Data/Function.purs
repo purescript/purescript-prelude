@@ -10,7 +10,7 @@ module Data.Function
   , module Control.Category
   ) where
 
-import Control.Category (identity, compose, (<<<), (>>>))
+import Control.Category (compose, identity, (<<<), (>>>))
 import Data.Boolean (otherwise)
 import Data.Ord ((<=))
 import Data.Ring ((-))

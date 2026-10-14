@@ -1,6 +1,6 @@
 export const intSub = function (x) {
   return function (y) {
-    return x - y | 0;
+    return (x - y) | 0;
   };
 };
 

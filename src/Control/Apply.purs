@@ -13,9 +13,9 @@ module Control.Apply
   , module Data.Functor
   ) where
 
-import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
-import Data.Function (const)
 import Control.Category (identity)
+import Data.Function (const)
+import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Type.Proxy (Proxy(..))
 
 -- | The `Apply` class provides the `(<*>)` which is used to apply a function

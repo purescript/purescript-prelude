@@ -9,7 +9,6 @@ module Control.Applicative
   ) where
 
 import Control.Apply (class Apply, apply, (*>), (<*), (<*>))
-
 import Data.Functor (class Functor, map, void, ($>), (<#>), (<$), (<$>))
 import Data.Unit (Unit, unit)
 import Type.Proxy (Proxy(..))
