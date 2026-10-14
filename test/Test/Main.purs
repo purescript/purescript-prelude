@@ -88,16 +88,15 @@ testIntDivMod = do
   go (-2) (-3)
 
   where
-  go a b =
+  go a b = do
     let
       q = a / b
       r = a `mod` b
       msg = show a <> " / " <> show b <> ": "
-    in do
-      assert (msg <> "Quotient/remainder law") $
-        q * b + r == a
-      assert (msg <> "Remainder should be between 0 and `abs b`, got: " <> show r) $
-        0 <= r && r < abs b
+    assert (msg <> "Quotient/remainder law") $
+      q * b + r == a
+    assert (msg <> "Remainder should be between 0 and `abs b`, got: " <> show r) $
+      0 <= r && r < abs b
 
 testIntDegree :: AlmostEff
 testIntDegree = do

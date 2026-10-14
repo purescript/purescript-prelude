@@ -27,7 +27,9 @@ export const showCharImpl = function (c) {
 export const showStringImpl = function (s) {
   var l = s.length;
   return "\"" + s.replace(
-    /[\0-\x1F\x7F"\\]/g, // eslint-disable-line no-control-regex
+    // This pattern must match control characters so they can be escaped in the output.
+    // oxlint-disable-next-line no-control-regex
+    /[\0-\x1F\x7F"\\]/g,
     function (c, i) {
       switch (c) {
         case "\"":

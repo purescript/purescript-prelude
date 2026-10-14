@@ -1,13 +1,11 @@
 export const intAdd = function (x) {
   return function (y) {
-    /* jshint bitwise: false */
     return x + y | 0;
   };
 };
 
 export const intMul = function (x) {
   return function (y) {
-    /* jshint bitwise: false */
     return x * y | 0;
   };
 };
