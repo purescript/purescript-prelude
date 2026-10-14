@@ -4,10 +4,10 @@ package:
   build:
     strict: true
     pedanticPackages: true
+  dependencies: []
   test:
     main: Test.Main
     strict: true
     pedanticPackages: true
     dependencies: []
-  dependencies: []
 workspace: {}
