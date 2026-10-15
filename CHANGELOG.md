@@ -2,19 +2,17 @@
 
 Notable changes to this project are documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-
-Breaking changes:
-
-New features:
-
-Bugfixes:
-
-- Avoid `RangeError` in `arrayBind` foreign implementation (#314 by @pete-murphy)
+## [v6.0.3](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.3)
 
 Other improvements:
 
 - Migrate from Bower/Pulp to Spago and modernize CI, linting, and formatting tools (#318 by @thomashoneyman)
+
+## [v6.0.2](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.2) - 2025-02-15
+
+Bugfixes:
+
+- Avoid `RangeError` in `arrayBind` foreign implementation (#314 by @pete-murphy)
 
 ## [v6.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.1) - 2022-08-18
 
