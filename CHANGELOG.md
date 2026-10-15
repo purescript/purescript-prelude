@@ -14,7 +14,7 @@ Bugfixes:
 
 Other improvements:
 
-- Migrate from Bower/Pulp to Spago and modernize CI, linting, and formatting tools.
+- Migrate from Bower/Pulp to Spago and modernize CI, linting, and formatting tools (#318 by @thomashoneyman)
 
 ## [v6.0.1](https://github.com/purescript/purescript-prelude/releases/tag/v6.0.1) - 2022-08-18
 
