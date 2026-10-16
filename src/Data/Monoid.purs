@@ -8,7 +8,6 @@ module Data.Monoid
   , memptyRecord
   ) where
 
-import Data.Boolean (otherwise)
 import Data.Eq ((==))
 import Data.EuclideanRing (mod, (/))
 import Data.Ord ((<=))
@@ -86,11 +85,18 @@ power :: forall m. Monoid m => m -> Int -> m
 power x = go
   where
   go :: Int -> m
-  go p
-    | p <= 0 = mempty
-    | p == 1 = x
-    | p `mod` 2 == 0 = let x' = go (p / 2) in x' <> x'
-    | otherwise = let x' = go (p / 2) in x' <> x' <> x
+  go p =
+    if p <= 0 then
+      mempty
+    else if p == 1 then
+      x
+    else do
+      let x' = go (p / 2)
+
+      if p `mod` 2 == 0 then
+        x' <> x'
+      else
+        x' <> x' <> x
 
 -- | Allow or "truncate" a Monoid to its `mempty` value based on a condition.
 guard :: forall m. Monoid m => Boolean -> m -> m
