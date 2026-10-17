@@ -1,14 +1,23 @@
 {
   "private": true,
+  "homepage": "https://github.com/purescript/purescript-prelude",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/purescript/purescript-prelude.git"
+  },
   "scripts": {
-    "clean": "rimraf output && rimraf .pulp-cache",
-    "build": "eslint src && pulp build -- --censor-lib --strict",
-    "test": "pulp test"
+    "build": "spago build",
+    "test": "spago test",
+    "lint": "oxlint --deny-warnings src test",
+    "format": "purs-tidy format-in-place src test && oxfmt --write .",
+    "format:check": "purs-tidy check src test && oxfmt --check ."
   },
   "devDependencies": {
-    "eslint": "^7.15.0",
-    "purescript-psa": "^0.8.2",
-    "pulp": "16.0.0-0",
-    "rimraf": "^3.0.2"
+    "oxfmt": "^0.73.0",
+    "oxlint": "^1.88.0",
+    "purescript": "^0.15.16",
+    "purs-tidy": "^0.11.1",
+    "spago": "^1.0.5"
   }
 }

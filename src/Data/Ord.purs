@@ -24,9 +24,9 @@ module Data.Ord
   ) where
 
 import Data.Eq (class Eq, class Eq1, class EqRecord, (/=))
-import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Ordering (Ordering(..))
-import Data.Ring (class Ring, zero, one, negate)
+import Data.Ring (class Ring, negate, one, zero)
+import Data.Symbol (class IsSymbol, reflectSymbol)
 import Data.Unit (Unit)
 import Data.Void (Void)
 import Prim.Row as Row

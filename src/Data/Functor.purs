@@ -13,7 +13,7 @@ module Data.Functor
   , (<@>)
   ) where
 
-import Data.Function (const, compose)
+import Data.Function (compose, const)
 import Data.Unit (Unit, unit)
 import Type.Proxy (Proxy(..))
 

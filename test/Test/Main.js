@@ -1,14 +1,11 @@
 export function testNumberShow(showNumber) {
-  return function() {
+  return function () {
     function testAll(cases) {
-      cases.forEach(function(c) {
+      cases.forEach(function (c) {
         var expected = c[1];
         var actual = showNumber(c[0]);
         if (expected !== actual) {
-          throw new Error(
-            "For " + c[0] +
-            ", expected " + expected +
-            ", got: " + actual + ".");
+          throw new Error("For " + c[0] + ", expected " + expected + ", got: " + actual + ".");
         }
       });
     }

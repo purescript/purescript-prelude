@@ -4,7 +4,7 @@ module Data.BooleanAlgebra
   , class BooleanAlgebraRecord
   ) where
 
-import Data.HeytingAlgebra (class HeytingAlgebra, class HeytingAlgebraRecord, ff, tt, implies, conj, disj, not, (&&), (||))
+import Data.HeytingAlgebra (class HeytingAlgebra, class HeytingAlgebraRecord, conj, disj, ff, implies, not, tt, (&&), (||))
 import Data.Symbol (class IsSymbol)
 import Data.Unit (Unit)
 import Prim.Row as Row

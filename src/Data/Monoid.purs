@@ -89,8 +89,12 @@ power x = go
   go p
     | p <= 0 = mempty
     | p == 1 = x
-    | p `mod` 2 == 0 = let x' = go (p / 2) in x' <> x'
-    | otherwise = let x' = go (p / 2) in x' <> x' <> x
+    | p `mod` 2 == 0 = do
+        let x' = go (p / 2)
+        x' <> x'
+    | otherwise = do
+        let x' = go (p / 2)
+        x' <> x' <> x
 
 -- | Allow or "truncate" a Monoid to its `mempty` value based on a condition.
 guard :: forall m. Monoid m => Boolean -> m -> m

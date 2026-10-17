@@ -67,8 +67,7 @@ class ShowRecordFields rowlist row where
 
 instance showRecordFieldsNil :: ShowRecordFields RL.Nil row where
   showRecordFields _ _ = ""
-else
-instance showRecordFieldsConsNil ::
+else instance showRecordFieldsConsNil ::
   ( IsSymbol key
   , Show focus
   ) =>
@@ -77,8 +76,7 @@ instance showRecordFieldsConsNil ::
     where
     key = reflectSymbol (Proxy :: Proxy key)
     focus = unsafeGet key record :: focus
-else
-instance showRecordFieldsCons ::
+else instance showRecordFieldsCons ::
   ( IsSymbol key
   , ShowRecordFields rowlistTail row
   , Show focus

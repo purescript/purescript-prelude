@@ -4,8 +4,9 @@ module Data.Eq.Generic
   , genericEq
   ) where
 
-import Prelude (class Eq, (==), (&&))
 import Data.Generic.Rep
+
+import Prelude (class Eq, (&&), (==))
 
 class GenericEq a where
   genericEq' :: a -> a -> Boolean

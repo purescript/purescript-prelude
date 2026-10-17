@@ -1,5 +1,5 @@
 export function throwErr(msg) {
-  return function() {
+  return function () {
     throw new Error(msg);
   };
 }

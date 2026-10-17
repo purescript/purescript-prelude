@@ -4,8 +4,9 @@ module Data.Ord.Generic
   , genericCompare
   ) where
 
-import Prelude (class Ord, compare, Ordering(..))
 import Data.Generic.Rep
+
+import Prelude (class Ord, Ordering(..), compare)
 
 class GenericOrd a where
   genericCompare' :: a -> a -> Ordering

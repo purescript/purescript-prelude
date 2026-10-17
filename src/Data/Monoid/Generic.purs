@@ -4,8 +4,9 @@ module Data.Monoid.Generic
   , genericMempty
   ) where
 
-import Data.Monoid (class Monoid, mempty)
 import Data.Generic.Rep
+
+import Data.Monoid (class Monoid, mempty)
 
 class GenericMonoid a where
   genericMempty' :: a

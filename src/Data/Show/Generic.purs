@@ -6,9 +6,10 @@ module Data.Show.Generic
   , genericShowArgs
   ) where
 
-import Prelude (class Show, show, (<>))
 import Data.Generic.Rep
+
 import Data.Symbol (class IsSymbol, reflectSymbol)
+import Prelude (class Show, show, (<>))
 import Type.Proxy (Proxy(..))
 
 class GenericShow a where

@@ -4,8 +4,9 @@ module Data.Semigroup.Generic
   , genericAppend
   ) where
 
-import Prelude (class Semigroup, append)
 import Data.Generic.Rep
+
+import Prelude (class Semigroup, append)
 
 class GenericSemigroup a where
   genericAppend' :: a -> a -> a
